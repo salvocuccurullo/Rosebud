@@ -32,9 +32,7 @@
 				alert("You must be logged in for saving carusate!!");
 				return false;
 			}				
-
-			var d = getX();
-			encryptText2( d, "saveMinchiata" );
+			encryptText2( getX(), "saveMinchiata" );
 		});
 		
 		

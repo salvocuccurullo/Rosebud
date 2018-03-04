@@ -1,6 +1,7 @@
 		
 		var storage = window.localStorage;
 		var icarusi_user = "";
+		var kanazzi = "";
 		var swipe_left_target = "index.html";
 		var swipe_right_target = "carusi.html";
 		
@@ -20,8 +21,7 @@
 			if (icarusi_user == "salvo")
 				$("#sabba_info").html(BE_URL);
 			
-			get_song();
-			
+			encryptText2(getX(), "get_song");
 			
 			PullToRefresh.init({
 				mainElement: '#lyrics-list',
@@ -58,10 +58,10 @@
 		$.ajax(
 		{
 		  url: BE_URL + "/randomSong",
-		  method: "GET",
+		  method: "POST",
 		  data: { 
 			  username : icarusi_user,
-			  kanazzi : ''
+			  kanazzi : kanazzi
 			},
 		  dataType: "json"
 		})

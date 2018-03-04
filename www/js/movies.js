@@ -395,20 +395,21 @@
 			content_nw += '<a data-transition="slide" href="javascript:setPopupData(' + value.id + ')">';
 			content_nw += '<b>' + value.title + '</b> <br/>';
 			content_nw += '<span style="color:#000099; font-style:italic; font-size:11px;">'
-			$.each(value.users_nw, function( index1, value1 ) {
-				if ( index1 == value.users_nw.length - 1)
-					content_nw += value1 ;
-				else
-					content_nw += value1 + ', ';
+			
+			at_least_one_nw = false;
+			users_votes_keys = Object.keys(value.u_v_dict);
+			$.each(users_votes_keys, function( index1, value1 ) {
+				if (value.u_v_dict[value1]['now_watching']){
+					at_least_one_nw = true;
+					name = value.u_v_dict[value1]['us_name'];
+					content_nw += name + ' ';
+				}
 			});
 			content_nw += '</span>';
 			content_nw += '</a>';
 			content_nw += '</li>';
-			
-			//if (DEBUG) console.log("iCarusi App============> ===================> " + value.title + " ** " + value.media + " ** " + value.username + " ** " + value.avg_vote);
-			//if (DEBUG) console.log("iCarusi App============> ===================> " + value.users_nw);
-			
-			if (value.users_nw.length > 0) {
+						
+			if (at_least_one_nw) {
 				$('#movies-list_nw').append(content_nw);
 			};
 			
@@ -784,28 +785,36 @@
 
 	function setPopupData(id){
 		$("#popupMovie").popup("open");
-		//$("#the_voters_d").trigger("collapse").collapsible("collapse");
+		$("#checkbox-nw").prop("checked",false).checkboxradio("refresh");
+
 		var item = jsonTvShows[id];
 		if (DEBUG) console.log("iCarusi App============> ===================> " + item.title + " ** " + item.media + " ** " + item.username + " ** " + item.avg_vote);
 		currentId = id;
+		
+		if (DEBUG) console.log("iCarusi App============> ===================>" + JSON.stringify(item.u_v_dict));
+		if (!(icarusi_user in item.u_v_dict)){
+			vote = 5;
+			if (DEBUG) console.log("iCarusi App============> ===================> User " + icarusi_user + " has not voted for this movie. Setting default value to: " + vote);
+		}
+		else{
+			vote = item.u_v_dict[icarusi_user].us_vote;
+			nw = item.u_v_dict[icarusi_user].now_watching;
+			if (nw) $("#checkbox-nw").prop("checked",true).checkboxradio("refresh");
+			if (DEBUG) console.log("iCarusi App============> ===================> Vote for user " + icarusi_user + " = " + vote + " (Now watching: " + nw + ")");
+		}
+		
 		$("#title").val(item.title);
 		$("#link").val(item.link);
 		$('#media').val(item.media).selectmenu('refresh',true);
 		$('#type').val(item.type).selectmenu('refresh',true);
-		$("#slider-fill").val(item.vote).slider("refresh");
+		$("#slider-fill").val(vote).slider("refresh");
 		$("#the_votes_d").show();
 
 		if (icarusi_user == "" || icarusi_user == undefined || icarusi_user == null){
 			$("#send_movie_btn").addClass("ui-btn ui-state-disabled");
 			$("#delete_movie_btn").addClass("ui-btn ui-state-disabled");
 		}
-
-		if (item.users_nw.indexOf(icarusi_user) != -1){
-			$("#checkbox-nw").prop("checked",true).checkboxradio("refresh");
-		}
-		else
-			$("#checkbox-nw").prop("checked",false).checkboxradio("refresh");
-			
+	
 		if (icarusi_user != item.username){
 			$("#title").textinput('disable');
 			$("#link").textinput('disable');
@@ -829,10 +838,10 @@
 		*/
 		
 		$('#users_votes').empty();
-		$.each(item.u_v_list, function( index, value ) {
+		$.each(item.u_v_dict, function( index, value ) {
 			var content = '<li style="white-space:normal;">';
 			if (value.now_watching == true)
-				content += '<b>' + value.us_username + '</b> <span style="color:red; float:right">#NW...</span>';
+				content += '<b>' + value.us_username + '</b> <span style="color:red; float:right">now watching...</span>';
 			else
 				content += '<b>' + value.us_username + '</b> <span style="color:red; float:right">' + value.us_vote + '</span>';
 			content += '</li>';

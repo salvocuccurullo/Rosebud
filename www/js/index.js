@@ -35,7 +35,7 @@
 		});
 
 		$(document).on("click", "#login_button", function(){
-			encryptText( $("#password").val() );
+			encryptText2( $("#password").val(), "submit" );
 		});
 
 		
@@ -284,58 +284,52 @@
 	 * SUBMIT
 	 */
 	
-	function submit(u,p){
-			if (u == "" || p == ""){
-				alert("Username and/or Passowrd cannot be empty!");
-				return false;
-			}
-			
-			$.mobile.loading("show");
+	function submit(){
+		
+		u = $("#username").val();
+		p = kanazzi;
+		
+		if (u == "" || p == ""){
+			alert("Username and/or Passowrd cannot be empty!");
+			return false;
+		}
+		
+		$.mobile.loading("show");
 
-			$.ajax(
-			{
-			  url: BE_URL + "/login",
-			  method: "POST",
-			  dataType: "json",
-			  data: {
-				username: u,
-				password: p,
-				},
-			})
-			  .done(function(response) {
-					if (DEBUG) console.log("========> iCarusi : login completed ");
-					console.log("========> iCarusi : Result... ");
-					if ( response.result == "success" && response.payload.logged == "yes"){
-						if (DEBUG) console.log("========> iCarusi : Login successful");	
-						if (DEBUG) console.log("========> iCarusi : " + response.payload.username);
-						if (DEBUG) console.log("========> iCarusi : " + response.payload.message);				
-						storage.setItem("icarusi_user", response.payload.username);
-						$("#logged").html('Logged in as <span style="color:green">' + storage.getItem("icarusi_user") + '</span>');
-						$("#popupLogin").popup("close");
-						$("#login_message").html(response.payload.message);
-						$("#popupLoginResult").popup("open");
-					}
-					else{
-						console.log("========> iCarusi : Login unsuccessful");	
-					}
-			  })
-			  .fail(function(err) {
-				var msg = eval(err.responseJSON);
-				alert(msg.payload.message);
-				console.log( "========> iCarusi : error during login");
-			  })
-			  .always(function() {
-				$.mobile.loading("hide");
-			  });
+		$.ajax(
+		{
+		  url: BE_URL + "/login",
+		  method: "POST",
+		  dataType: "json",
+		  data: {
+			username: u,
+			password: p,
+			},
+		})
+		  .done(function(response) {
+				if (DEBUG) console.log("========> iCarusi : login completed ");
+				console.log("========> iCarusi : Result... ");
+				if ( response.result == "success" && response.payload.logged == "yes"){
+					if (DEBUG) console.log("========> iCarusi : Login successful");	
+					if (DEBUG) console.log("========> iCarusi : " + response.payload.username);
+					if (DEBUG) console.log("========> iCarusi : " + response.payload.message);				
+					storage.setItem("icarusi_user", response.payload.username);
+					$("#logged").html('Logged in as <span style="color:green">' + storage.getItem("icarusi_user") + '</span>');
+					$("#popupLogin").popup("close");
+					$("#login_message").html(response.payload.message);
+					$("#popupLoginResult").popup("open");
+				}
+				else{
+					console.log("========> iCarusi : Login unsuccessful");	
+				}
+		  })
+		  .fail(function(err) {
+			var msg = eval(err.responseJSON);
+			alert(msg.payload.message);
+			console.log( "========> iCarusi : error during login");
+		  })
+		  .always(function() {
+			$.mobile.loading("hide");
+		  });
 	}
 
-	function encryptText(pText) {
-		cryptographyAES.doEncryption(pText, 
-			key,
-			function(crypted){
-				submit($("#username").val(), crypted);
-			},
-			function(err){
-				console.log("onFailure: " + JSON.stringify(err));
-			});
-	}	
