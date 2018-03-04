@@ -1,0 +1,188 @@
+<html>
+	<head>
+		<title>iCarusi Index</title>
+		
+		<link rel="stylesheet" href="css/jquery.mobile-1.4.5.min.css" />
+		<script src="js/jquery-1.12.4.min.js" type="text/javascript"></script>
+		<script src="js/jquery.mobile-1.4.5.min.js"></script>
+		<!-- -->
+		<script type="text/javascript" src="cordova.js"></script>
+		<script type="text/javascript" src="cordova_plugins.js"></script>
+		<!-- -->
+		<script type="text/javascript" src="js/shared.js" ></script>
+		<script type="text/javascript" src="js/movies.js" ></script>
+		<script type="text/javascript" src="js/pulltorefresh.min.js" ></script>
+		<script type="text/javascript" src="js/utils.js" ></script>
+	</head>
+	
+	<body>
+		<div data-role="page" id="movies_page">
+			
+			<!-- navbar -->
+			<div data-role="header" data-nobackbtn="true" data-theme="b">
+				
+				<div style="text-align:center;" class="ui-bar ui-bar-b">
+					iCarusi - The App
+				</div>
+					
+				<div data-role="navbar" id="navbar" data-theme="a">
+					<ul>
+						<li><a href="index.html" data-ajax="false" rel="external">Home</a></li>
+						<li><a href="movies.html" data-ajax="false" rel="external" id="mv_btn" class="ui-btn-active ui-state-persist">Movies</a></li>
+						<li><a href="carusi.html" data-ajax="false" rel="external" id="carusi_btn">iCarusi</a></li>
+						<li><a href="song.html"  data-ajax="false" rel="external" id="song_btn">Music</a></li>
+					</ul>
+				</div>
+			</div>
+			<div id="connection" style="font-size:11px; font-style:italic; text-align:center; background-color:#C60419; color:white;"></div>
+			<div id="cache_info" style="font-size:11px; text-align:center; background-color:#000099; color:white;"></div>
+
+			<div role="main" class="ui-content" style="">
+
+				<div data-role="tabs" id="movie_header_tabs" name="movie_header_tabs">
+					<div data-role="navbar" >
+						<ul>
+							<li><a href="#tab_movies" class="ui-btn-active">Movies</a></li>
+							<li><a href="#tab_charts">Top Charts</a></li>
+							<li><a href="#tab_ct">Catania</a></li>
+						</ul>
+					</div>
+
+					<div id="tab_movies" style="margin-top:15px"> <!-- Tab Movies -->
+						<div data-role="popup" id="popupMovie" data-theme="a" class="ui-corner-all">
+							<div style="padding:10px 20px;">
+
+								<div style="text-align: right">
+									<a href="#" data-rel="back" data-role="button" data-theme="a" data-icon="delete" data-iconpos="notext" class="ui-btn-right">Close</a>
+								</div>
+								<br/>
+								
+								<input type="text" name="title" id="title" data-mini="true" placeholder="Set movie title (required)" data-clear-btn="true"/>
+
+								<div class="ui-field-contain">
+									<label for="media">Media *:</label>
+									<select id="media" name="media" data-type="horizontal">
+											<option value="">-</option>
+											<option value="netflix">Netflix</option>
+											<option value="camillina">Camillina</option>
+											<option value="sky">Sky</option>
+											<option value="tv">TV</option>
+											<option value="amazon">Amazon Video</option>
+											<option value="cinema">Cinema</option>
+											<option value="other">Other</option>
+									</select>
+								</div>
+
+								<div class="ui-field-contain">
+									<label for="type">Type *:</label>
+									<select id="type" name="type" data-type="horizontal">
+											<option value="brand_new">Brand New</option>
+											<option value="r4">I Bellissimi</option>
+									</select>
+								</div>
+								
+								<div data-role="collapsible" id="the_votes_d" data-theme="a" data-content-theme="a" data-collapsed="true">
+										<h4>How iCarusi voted...</h4>
+										<ul data-role="listview" data-theme="a" data-inset="true" data-filter="false" id="users_votes" ></ul>
+								</div>
+
+								<div class="ui-field-contain">
+									<label for="slider-fill">Vote</label>
+									<input type="range" name="slider-fill" id="slider-fill" value="5" min="0" max="10" step="1" data-highlight="true" />
+								</div>
+								
+								<div>
+									<input type="checkbox" name="checkbox-nw" id="checkbox-nw" data-mini="true" class="ui-btn-inline">
+									<label for="checkbox-nw">#NowWatching (Vote suspended)</label>
+								</div>
+
+								<div class="ui-field-contain">								
+									<input type="text" name="link" id="link" data-mini="true" placeholder="link (optional)" data-clear-btn="true"/>
+								</div>
+								
+								<div style="text-align: center">
+									<a href="#" id="send_movie_btn" data-role="button" data-icon="check" data-inline="true" data-iconpos="right">Send...</a>
+									<a href="#" id="delete_movie_btn" data-role="button" data-icon="recycle" data-inline="true" data-iconpos="right">Delete...</a>
+								</div>
+							</div>
+						</div> <!-- end popup new movie -->
+
+						<a href="#popupMovie" id="new_movie_btn" data-rel="popup" data-position-to="window" class="ui-btn ui-icon-plus ui-btn-icon-notext ui-corner-all ui-btn-inline"></a>
+						<span style="float:right" id="sort_span">
+							Sort
+							<a href="#" class="ui-btn ui-icon-clock ui-btn-icon-notext ui-mini ui-btn-icon-right ui-corner-all ui-btn-inline" id="btn_d_sort"></a>
+							<a href="#" class="ui-btn ui-icon-tag ui-btn-icon-notext ui-mini ui-btn-icon-right ui-corner-all ui-btn-inline" id="btn_t_sort"></a>
+							<a href="#" class="ui-btn ui-icon-star ui-btn-icon-notext ui-mini ui-btn-icon-right ui-corner-all ui-btn-inline" id="btn_v_sort"></a>
+							<a href="#" class="ui-btn ui-icon-video ui-btn-icon-notext ui-mini ui-btn-icon-right ui-corner-all ui-btn-inline" id="btn_m_sort"></a>
+						</span>
+						<div data-role="tabs" id="movie_type_tabs" name="movie_type_tabs">
+							<div data-role="navbar">
+								<ul>
+									<li><a href="#movies_content" class="ui-btn-active ui-state-persist" id="#movies_link">Brand New</a></li>
+									<li><a href="#movies_r4" id="#movies_r4_link">I bellissimi</a></li>
+									<li><a href="#movies_nw" id="#movies_nw_link">#NW</a></li>
+								</ul>
+							</div>
+							
+							<div id="movie_search_div">
+								<input type="text" data-type="search" name="movie_search" id="movie_search" value="" data-mini="true" placeholder="search (min 4 chars)" />
+							</div>
+							
+							<div id="movies_content" style="text-align:center">
+								<ul data-role="listview" data-theme="a" data-inset="true" data-filter="false" id="movies-list" ></ul>
+							</div>
+							
+							<div id="movies_r4" style="text-align:center">
+								<ul data-role="listview" data-theme="a" data-inset="true" data-filter="false" id="movies-list_r4" ></ul>
+							</div>
+							
+							<div id="movies_nw" style="text-align:center">
+								<ul data-role="listview" data-theme="a" data-inset="true" data-filter="false" id="movies-list_nw" ></ul>
+							</div>
+						</div>
+					</div> <!-- end tab movies -->
+
+					<div id="tab_charts" style="margin-top:15px"> <!-- Tab Charts -->
+						<div data-role="tabs"  id="chart_type_tabs" name="chart_type_tabs">
+							<div data-role="navbar">
+								<ul>
+									<li><a href="#tab_top_movies" class="ui-btn-active">Top Movies</a></li>
+									<li><a href="#tab_top_voters">Top Voters</a></li>
+								</ul>
+							</div>
+							<div id="tab_top_movies">
+								<ol data-role="listview" data-theme="a" data-inset="true" data-filter="false" id="top-list-movies" ></ol>
+							</div>
+							<div id="tab_top_voters">
+								<ol data-role="listview" data-theme="a" data-inset="true" data-filter="false" id="top-list-voters" ></ol>				
+							</div>
+						</div> <!-- end tabs movies and voters -->
+					</div> <!-- END tab charts -->
+
+					<!-- CT MOVIES TAB -->
+					<div id="tab_ct" style="margin-top:15px">
+						<input type="text" data-type="search" name="ct_search" id="ct_search" value="" data-mini="true" placeholder="search (min 4 chars)"/>
+						
+						<div id="total_ct_movies" style="text-align:center"></div>
+						<ul data-role="listview" data-theme="a" data-inset="true" data-filter="false" id="ct-movies" ></ul>
+
+						<div data-role="panel" data-position="left" data-display="overlay" id="popupMovieCt" data-theme="a" class="ui-corner-all" data-swipe-close="false">
+							<div id="movie-table-custom"></div>
+						</div>
+					</div>
+					<!-- END CT MOVIES TAB -->
+
+				</div>	<!-- end tabs -->
+				
+				<!--
+				<a href="#charts" class="ui-btn ui-corner-all ui-shadow ui-btn-inline ui-btn-icon-left ui-icon-bullets ui-btn-a" data-transition="slidefade">Top</a>
+				<a href="#ctmovies" class="ui-btn ui-corner-all ui-shadow ui-btn-inline ui-btn-icon-left ui-icon-video ui-btn-a" data-transition="slidefade">CT</a>
+				-->
+
+			</div>	<!-- end main role -->
+						
+			<div data-role="footer" id="footer">	
+			</div>
+		</div> <!-- END TVSHOW PAGE -->		 
+	</body>
+</html>
