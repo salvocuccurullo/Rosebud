@@ -5,7 +5,7 @@
 	var jsonTvShows = [];
 	var currentId = 0;
 	var kanazzi;
-	var DEBUG = true;
+	var DEBUG = false;
 	var top_movies_count = 10;
 	var sort_type = "datetime_sec";
 	var sort_order = 1;

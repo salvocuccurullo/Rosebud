@@ -136,7 +136,7 @@
 			url: COVER_BE_URL + "/getRandomCover",
 			method: "GET",
 			beforeSend: function (xhr) {
-				xhr.setRequestHeader('Authorization', make_base_auth(cover_username, cover_passowrd));
+				xhr.setRequestHeader('Authorization', make_base_auth(cover_username, cover_password));
 			},			  
 		  dataType: "json"
 		})
