@@ -173,7 +173,7 @@
 		})
 		  .done(function(data) {
 
-			console.log(data);
+			//console.log(data);
 			covers = eval(data);
 
 			if (covers.length==0)
