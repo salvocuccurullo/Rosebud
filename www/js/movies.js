@@ -219,13 +219,31 @@
 		 */
 
 		PullToRefresh.init({
-			triggerElement: '#movies-list',
+			mainElement: '#movies-list',
 			onRefresh: function(){
 				getTvShows(false);
 			},
+			instructionsReleaseToRefresh: "Pull down for get fresh data from remote server...",
 			distThreshold : 20,
-			instructionsReleaseToRefresh: "I kani anassiri!",
 		});			
+	
+		PullToRefresh.init({
+			mainElement: '#movies-list_r4',
+			onRefresh: function(){
+					getTvShows(false);
+			},
+			instructionsReleaseToRefresh: "Pull down for get fresh data from remote server...",
+			distThreshold : 20,
+		});
+
+		PullToRefresh.init({
+			triggerElement: '#movies-list_nw',
+			onRefresh: function(){
+					getTvShows(false);
+			},
+			instructionsReleaseToRefresh: "Pull down for get fresh data from remote server...",
+			distThreshold : 20,
+		});
 		
 		/*
 		 * SWIPE RUDIMENTALE
