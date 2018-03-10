@@ -1,5 +1,5 @@
 
-	var DEBUG = true;
+	var DEBUG = false;
 
 	var storage = window.localStorage;
 	var kanazzi;
@@ -113,7 +113,7 @@
 		 */ 
 
 		listDir(cordova.file.applicationDirectory + "www/images/covers/");
-		get_remote_random_cover_2();		// GET REMOTE RANDOM COVER
+		//get_remote_random_cover_2();		// GET REMOTE RANDOM COVER
 		get_covers();					// GET REMOTE RANDOM COVER
 		
 	
@@ -148,6 +148,7 @@
 			if (cover != undefined){
 				if (DEBUG) console.log("iCarusi App============> Fetched remote random cover data: " + cover.name);
 				storage.setItem("remote_cover_url", cover.location);
+				set_remote_image();
 			}
 			
 		  })
@@ -184,6 +185,8 @@
 			});
 			
 			$("#remote_covers").html(covers.length);
+			if (covers.length > 0)
+				storage.setItem("remote_covers_count", covers.length);
 			
 		  })
 		  .fail(function(err) {
@@ -252,16 +255,35 @@
 	 * 		SET IMAGE
 	 */
 
+	function set_remote_image(){
+		remote_url = storage.getItem("remote_cover_url");
+		if (remote_url != "" && remote_url != undefined)
+			$("#cover_img").attr("src", remote_url);
+		else
+			$("#cover_img").attr("src", "images/covers/01.jpg");
+	}
+
 	function setImage(tot_imgs){
 		
 		dld_imgs = storage.getItem("flip-dld-images");
 		remote_url = storage.getItem("remote_cover_url");
-		var id_img;
-		if (remote_url != "" && dld_imgs != "" && eval(dld_imgs))
-			id_img = Math.floor((Math.random() * tot_imgs ) + 2);		// Adding 1 for considering also the remote rando image
-		else
-			id_img = Math.floor((Math.random() * tot_imgs ) + 1);
-			
+		remote_covers_count = storage.getItem("remote_covers_count");
+		
+		if (DEBUG) console.log("iCarusi App============> Remote covers count: " + remote_covers_count);
+		
+		var id_img = 0;
+		
+		if (remote_url != "" && dld_imgs != "" && eval(dld_imgs) && remote_covers_count != undefined && remote_covers_count > 0 ){
+			if (DEBUG) console.log("iCarusi App============> Considering remote images...");
+			id_img = Math.floor((Math.random() * (parseInt(tot_imgs) + parseInt(remote_covers_count)) ) + 1);		// Consider also the remote images
+		}
+		else{
+			if (DEBUG) console.log("iCarusi App============> Considering ony local images...");
+			id_img = Math.floor((Math.random() * tot_imgs ) + 1);							// Consider only local images
+		}
+		
+		if (DEBUG) console.log("iCarusi App============> Image id selected: " + id_img);
+		
 		var image = "";
 		
 		if (id_img<10)
@@ -270,7 +292,9 @@
 			image = id_img + ".jpg";
 			
 		if (id_img>24){
-			image = remote_url;
+			$("#cover_img").attr("images/covers/loading_spinner.gif");
+			get_remote_random_cover_2();
+			return false;
 		}
 		else
 			image = "images/covers/" + image;
@@ -278,6 +302,12 @@
 		if (DEBUG) console.log("iCarusi App============> Cover image seleted: " + image);
 		$("#cover_img").attr("src", image);
 			
+	}
+	
+	function set_fallback_image(){
+	
+		$("#cover_img").attr("src", "images/covers/01.jpg");
+	
 	}
 	
 	/*
