@@ -57,48 +57,57 @@
 								</div>
 								<br/>
 								
-								<input type="text" name="title" id="title" data-mini="true" placeholder="Set movie title (required)" data-clear-btn="true"/>
+								<form id="movie_form" method="POST" enctype="multipart/form-data">
+									<input type="text" name="title" id="title" data-mini="true" placeholder="Set movie title (required)" data-clear-btn="true"/>
 
-								<div class="ui-field-contain">
-									<label for="media">Media *:</label>
-									<select id="media" name="media" data-type="horizontal"  data-mini="true">
-											<option value="">-</option>
-											<option value="netflix">Netflix</option>
-											<option value="camillina">Camillina</option>
-											<option value="sky">Sky</option>
-											<option value="tv">TV</option>
-											<option value="amazon">Amazon Video</option>
-											<option value="cinema">Cinema</option>
-											<option value="other">Other</option>
-									</select>
-								</div>
+									<input type="file" name="pic" accept="image/*">
+									<input type="hidden" name="username" id="username"/>
+									<input type="hidden" name="kanazzi" id="kanazzi"/>
+									<input type="hidden" name="id" id="id"/>
+									<input type="hidden" name="year" id="year" value="0"/>
+									<input type="hidden" name="director" id="director" value=""/>
 
-								<div class="ui-field-contain">
-									<label for="type">Type *:</label>
-									<select id="type" name="type" data-type="horizontal" data-mini="true">
-											<option value="brand_new">Brand New</option>
-											<option value="r4">I Bellissimi</option>
-									</select>
-								</div>
-								
-								<div data-role="collapsible" id="the_votes_d" data-theme="a" data-content-theme="a" data-collapsed="true">
-										<h4>How iCarusi voted...</h4>
-										<ul data-role="listview" data-theme="a" data-inset="true" data-filter="false" id="users_votes" ></ul>
-								</div>
+									<div class="ui-field-contain">
+										<label for="media">Media *:</label>
+										<select id="media" name="media" data-type="horizontal"  data-mini="true">
+												<option value="">-</option>
+												<option value="netflix">Netflix</option>
+												<option value="camillina">Camillina</option>
+												<option value="sky">Sky</option>
+												<option value="tv">TV</option>
+												<option value="amazon">Amazon Video</option>
+												<option value="cinema">Cinema</option>
+												<option value="other">Other</option>
+										</select>
+									</div>
 
-								<div class="ui-field-contain">
-									<label for="slider-fill">Vote</label>
-									<input type="range" name="slider-fill" id="slider-fill" value="5" min="0" max="10" step="1" data-highlight="true" />
-								</div>
-								
-								<div>
-									<input type="checkbox" name="checkbox-nw" id="checkbox-nw" data-mini="true" class="ui-btn-inline">
-									<label for="checkbox-nw">#NowWatching (Vote suspended)</label>
-								</div>
+									<div class="ui-field-contain">
+										<label for="type">Type *:</label>
+										<select id="type" name="type" data-type="horizontal" data-mini="true">
+												<option value="brand_new">Brand New</option>
+												<option value="r4">I Bellissimi</option>
+										</select>
+									</div>
+									
+									<div data-role="collapsible" id="the_votes_d" data-theme="a" data-content-theme="a" data-collapsed="true">
+											<h4>How iCarusi voted...</h4>
+											<ul data-role="listview" data-theme="a" data-inset="true" data-filter="false" id="users_votes" ></ul>
+									</div>
 
-								<div class="ui-field-contain">
-									<input type="text" name="link" id="link" data-mini="true" placeholder="link (optional)" data-clear-btn="true"/>
-								</div>
+									<div class="ui-field-contain">
+										<label for="vote">Vote</label>
+										<input type="range" name="vote" id="vote" value="5" min="0" max="10" step="1" data-highlight="true" />
+									</div>
+									
+									<div>
+										<label for="nw">#NowWatching (Vote suspended)</label>
+										<input type="checkbox" name="nw" id="nw" data-mini="true" class="ui-btn-inline">
+									</div>
+
+									<div class="ui-field-contain">
+										<input type="text" name="link" id="link" data-mini="true" placeholder="link (optional)" data-clear-btn="true"/>
+									</div>
+								</form>
 								
 								<div style="text-align: center">
 									<a href="#" id="send_movie_btn" data-role="button" data-icon="check" data-inline="true" data-iconpos="right">Send...</a>

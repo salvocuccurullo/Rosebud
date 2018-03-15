@@ -660,8 +660,88 @@
 
 	$(document).on("click", "#send_movie_btn", function(){
 		var d = getX();
-		encryptText2( d, "saveMovie" );
+		//encryptText2( d, "saveMovie" );
+		encryptText2( d, "saveMovieNew" );
 	});
+
+function saveMovieNew(){
+
+		var username = icarusi_user;
+
+		$("#username").val(username);
+		$("#kanazzi").val(kanazzi);
+		$("#id").val(currentId);
+		
+		var the_form = $("#movie_form");
+		var formData = new FormData( the_form[0] );
+		
+
+		if (username == "" || username == undefined || username == null){
+			alert("You must be logged in for saving or updating Movies/Serie");
+			return false;
+		}
+		
+		if (title == "" || title == undefined || title == null || media == "" || media == undefined || media == null){
+			alert("Title and media cannot be blank!! Title: " + title + " - Media: " + media);
+			return false;
+		}
+		
+		$.mobile.loading("show", {
+			text:'Submitting movie...',
+			textVisible:true,
+			theme: 'e',
+			html: '',
+			});
+
+		$.ajax(
+		{
+			url: BE_URL + "/savemovienew",
+			method: "POST",
+			data: formData,
+			cache: false,
+			contentType: false,
+			processData: false
+			/*
+		  data: {
+			id: currentId,
+			title: title,
+			link: link,
+			media: media,
+			type: type,
+			director: director,
+			year: year,
+			vote: vote,
+			username: icarusi_user,
+			kanazzi: kanazzi,
+			nw:nw,
+		  },
+		  */ 
+		})
+		  .done(function(data) {
+			 
+			response = eval(data);
+			
+			if (response.result == "failure"){
+				alert(response.message);
+				return false;
+			} 
+			  
+			$("#popupMovie").popup("close");
+			resetPopupElements();
+			getTvShows(false);
+			currentId = 0;
+		  })
+		  .fail(function(err) {
+				alert("Server error!");
+			//var msg = eval(err.responseJSON);
+			//alert(msg.message);
+			//if (DEBUG) console.log("iCarusi App============> ========> iCarusi : failed to save tv show");
+			//if (DEBUG) console.log("iCarusi App============> ========> iCarusi : username " + storage.getItem("icarusi_user"));
+		  })
+		  .always(function() {
+			$.mobile.loading("hide");
+		  });
+	};
 
 	function saveMovie(){
 		
@@ -671,8 +751,8 @@
 		var director = ''
 		var year = 0;
 		var type = $("#type :selected").val();
-		var vote = $("#slider-fill").val();
-		var nw = $("#checkbox-nw").prop("checked");
+		var vote = $("#vote").val();
+		var nw = $("#nw").prop("checked");
 		var username = icarusi_user;
 
 		if (username == "" || username == undefined || username == null){
@@ -803,7 +883,7 @@
 
 	function setPopupData(id){
 		$("#popupMovie").popup("open");
-		$("#checkbox-nw").prop("checked",false).checkboxradio("refresh");
+		$("#nw").prop("checked",false).checkboxradio("refresh");
 
 		var item = jsonTvShows[id];
 		if (DEBUG) console.log("iCarusi App============> ===================> " + item.title + " ** " + item.media + " ** " + item.username + " ** " + item.avg_vote);
@@ -817,7 +897,7 @@
 		else{
 			vote = item.u_v_dict[icarusi_user].us_vote;
 			nw = item.u_v_dict[icarusi_user].now_watching;
-			if (nw) $("#checkbox-nw").prop("checked",true).checkboxradio("refresh");
+			if (nw) $("#nw").prop("checked",true).checkboxradio("refresh");
 			if (DEBUG) console.log("iCarusi App============> ===================> Vote for user " + icarusi_user + " = " + vote + " (Now watching: " + nw + ")");
 		}
 		
@@ -825,7 +905,7 @@
 		$("#link").val(item.link);
 		$('#media').val(item.media).selectmenu('refresh',true);
 		$('#type').val(item.type).selectmenu('refresh',true);
-		$("#slider-fill").val(vote).slider("refresh");
+		$("#vote").val(vote).slider("refresh");
 		$("#the_votes_d").show();
 
 		if (icarusi_user == "" || icarusi_user == undefined || icarusi_user == null){
@@ -884,11 +964,11 @@
 		$('#type').val(0).selectmenu('refresh',true);
 		$("#the_voters_d").collapsible("collapse");
 		$("#the_votes_d").hide();
-		$("#slider-fill").val(5).slider("refresh");
+		$("#vote").val(5).slider("refresh");
 		$("#send_movie_btn").text("Send...");
 		$("#delete_movie_btn").addClass("ui-btn ui-state-disabled");
 		$("#send_movie_btn").removeClass("ui-state-disabled");
-		$("#checkbox-nw").prop("checked",false).checkboxradio("refresh");
+		$("#nw").prop("checked",false).checkboxradio("refresh");
 		$('#users_votes').empty();
 	}
 
