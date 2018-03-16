@@ -112,6 +112,11 @@
 			sort_movies();
 		});
 		
+		$("#btn_show_poster").on("click", function(){
+			console.log("Show poster called...");
+			PhotoViewer.show("https://www.salvocuccurullo.com/icarusi_covers/poster/pulp_fiction.jpg","Mi chiamo Gerda");
+		});
+		
 		$('#ct_search').on('change', function() {
 			var search = $( "#ct_search" ).val();
 			if ( search.length == 0){
@@ -664,7 +669,7 @@
 		encryptText2( d, "saveMovieNew" );
 	});
 
-function saveMovieNew(){
+	function saveMovieNew(){
 
 		var username = icarusi_user;
 
@@ -919,7 +924,7 @@ function saveMovieNew(){
 			$('#media').selectmenu('disable');
 			$('#type').selectmenu('disable');
 			$("#send_movie_btn").text("Vote...");
-			//$("#send_movie_btn").addClass("ui-btn ui-state-disabled");		// TO BE REMOVED
+			$("#pic").addClass("ui-btn ui-state-disabled");
 			$("#delete_movie_btn").addClass("ui-btn ui-state-disabled");
 		}
 		else{
@@ -968,7 +973,9 @@ function saveMovieNew(){
 		$("#send_movie_btn").text("Send...");
 		$("#delete_movie_btn").addClass("ui-btn ui-state-disabled");
 		$("#send_movie_btn").removeClass("ui-state-disabled");
+		$("#pic").removeClass("ui-btn ui-state-disabled");
 		$("#nw").prop("checked",false).checkboxradio("refresh");
+		$("#pic").val(null);
 		$('#users_votes').empty();
 	}
 
