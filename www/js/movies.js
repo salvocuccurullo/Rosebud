@@ -113,8 +113,16 @@
 		});
 		
 		$("#btn_show_poster").on("click", function(){
-			console.log("Show poster called...");
-			PhotoViewer.show("https://www.salvocuccurullo.com/icarusi_covers/poster/pulp_fiction.jpg","Mi chiamo Gerda");
+			
+			curr_pic = $("#curr_pic").val();
+			
+			if (curr_pic != "")
+				final_pic_url = base_url_poster + curr_pic;
+			else
+				final_pic_url = cordova.file.applicationDirectory + "www/images/no-image-available.jpg";
+				
+			console.log("Show poster called on " + final_pic_url);
+			PhotoViewer.show(final_pic_url, "");
 		});
 		
 		$('#ct_search').on('change', function() {
@@ -910,6 +918,7 @@
 		$("#link").val(item.link);
 		$('#media').val(item.media).selectmenu('refresh',true);
 		$('#type').val(item.type).selectmenu('refresh',true);
+		$("#curr_pic").val(item.poster);
 		$("#vote").val(vote).slider("refresh");
 		$("#the_votes_d").show();
 
@@ -965,6 +974,7 @@
 		$('#type').selectmenu('enable');
 		$("#title").val('');
 		$("#link").val('');
+		$("#curr_pic").val('');
 		$('#media').val(0).selectmenu('refresh',true);
 		$('#type').val(0).selectmenu('refresh',true);
 		$("#the_voters_d").collapsible("collapse");
