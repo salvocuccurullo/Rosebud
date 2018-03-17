@@ -10,7 +10,7 @@
 	
 	function onDeviceReady() {			// CORDOVA
 		
-		console.log("========> iCarusi started ");
+		console.log("========> iCarusi started. Running on Android " + device.version);
 
 		/*
 		 * 	BINDINGS

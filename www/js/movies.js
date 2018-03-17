@@ -5,12 +5,13 @@
 	var jsonTvShows = [];
 	var currentId = 0;
 	var kanazzi;
-	var DEBUG = false;
+	var DEBUG = true;
 	var top_movies_count = 10;
 	var sort_type = "datetime_sec";
 	var sort_order = 1;
 	var swipe_left_target = "carusi.html";
 	var swipe_right_target = "index.html";
+	var device_app_path = "";
 
 	var icarusi_user = "";
 	var tv_shows_storage;
@@ -23,6 +24,7 @@
 		icarusi_user = storage.getItem("icarusi_user");
 		tv_shows_storage = storage.getItem("tv_shows");
 		tv_shows_storage_ts = storage.getItem("tv_shows_count_ts");
+		device_app_path = cordova.file.applicationDirectory;
 		if (DEBUG) console.log("iCarusi App============> Found Tv Shows Storage");
 		if (DEBUG) console.log("iCarusi App============> Tv Shows Storage datetime " + tv_shows_storage_ts);
 
@@ -87,6 +89,19 @@
 					resetPopupElements();
 			}				
 		});
+
+		$( "#popupPhotoPortrait" ).bind(
+			{
+			popupafteropen: function(event, ui) { 
+					if (DEBUG) console.log("iCarusi App============> Opening Picture Popup -> ");
+					//$("#poster_pic").attr("src", device_app_path + "www/images/loading_spinner.gif");
+			},
+			popupafterclose: function(event, ui) { 
+					if (DEBUG) console.log("iCarusi App============> Closing Picture Popup -> Resetting picture src");
+					//$("#poster_pic").attr("src","");
+					//$("#poster_pic").attr("src", device_app_path + "www/images/loading_spinner.gif");
+			}				
+		});
 		
 		/*
 		 * BUTTONS ACTIONS
@@ -112,18 +127,6 @@
 			sort_movies();
 		});
 		
-		$("#btn_show_poster").on("click", function(){
-			
-			curr_pic = $("#curr_pic").val();
-			
-			if (curr_pic != "")
-				final_pic_url = base_url_poster + curr_pic;
-			else
-				final_pic_url = cordova.file.applicationDirectory + "www/images/no-image-available.jpg";
-				
-			console.log("Show poster called on " + final_pic_url);
-			PhotoViewer.show(final_pic_url, "");
-		});
 		
 		$('#ct_search').on('change', function() {
 			var search = $( "#ct_search" ).val();
@@ -282,6 +285,30 @@
  
 
 	};	// CORDOVA
+
+		//$("#btn_show_poster").on("click", function(){
+		function poster(img_name){	
+			
+			curr_pic = img_name; //$("#curr_pic").val();
+			
+			if (curr_pic != "")
+				final_pic_url = base_url_poster + curr_pic;
+			else
+				final_pic_url = device_app_path + "www/images/no-image-available.jpg";
+				
+			console.log("Show poster called on " + final_pic_url);
+			
+			android_version = device.version.split(".");
+			
+			if ( parseInt(android_version[0]) < 5 ){
+				//alert(final_pic_url);
+				$("#poster_pic").attr("src",final_pic_url);
+				$("#popupPhotoPortrait").popup('open');
+			}
+			else
+				PhotoViewer.show(final_pic_url, "");
+		}
+		//});
 		
 	 /***
 		GET TV SHOWS
@@ -410,16 +437,25 @@
 			jsonTvShows[value.id] = value;
 			
 			var content = '<li style="white-space:normal;">';
-			content += '<a data-transition="slide" href="javascript:setPopupData(' + value.id + ')">';
+			//content += '<a data-transition="slide" href="javascript:setPopupData(' + value.id + ')">';
+			
 			if (value.avg_vote == 0)
-				content += '<b>' + value.title + '</b> <span style="color:#C60419; float:right"> [ N/A ]</span><br/>';
+				content += '<b>' + value.title + '</b> <span style="color:#C60419; float:right"> [ N/A ]';
 			else
-				content += '<b>' + value.title + '</b> <span style="color:#C60419; float:right"> [ ' + value.avg_vote + ' ]</span><br/>';
+				content += '<b>' + value.title + '</b> <span style="color:#C60419; float:right"> [ ' + value.avg_vote + ' ]';
+				
+			if (value.poster != ""){
+				content += '<button class="ui-btn ui-icon-camera ui-btn-icon-notext ui-corner-all ui-mini ui-btn-inline" id="btn_show_poster" onclick="poster(\''+value.poster+'\')"></button>'		
+			}
+			
+			content += '<button class="ui-btn ui-icon-edit ui-btn-icon-notext ui-mini ui-corner-all ui-btn-inline" id="btn_show_poster" onclick="setPopupData(\''+value.id+'\')"></button>'	
+			content += '</span><br/>';
+				
 			content += '<span style="text-align:right; font-size:10px;">Added on ' + value.datetime + ' by </span>';
 			content += '<span style="color:#000099; font-style:italic; font-size:10px;">' +  value.username + '</span>';
 			if (sort_type=="media")
 				content += '<br/><span style="color:#000099; font-style:italic; font-size:10px;">' +  value.media + '</span>';
-			content += '</a>';
+			//content += '</a>';
 			content += '</li>';
 
 			var content_nw = '<li style="white-space:normal;">';
@@ -738,7 +774,12 @@
 				alert(response.message);
 				return false;
 			} 
-			  
+			
+			if (DEBUG) console.log(JSON.stringify(response));
+			if (response.upload_result.result == "failure"){
+				alert(response.upload_result.message);
+			} 
+			
 			$("#popupMovie").popup("close");
 			resetPopupElements();
 			getTvShows(false);
