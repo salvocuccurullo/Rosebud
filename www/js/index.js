@@ -1,5 +1,5 @@
 
-	var DEBUG = false;
+	var DEBUG = true;
 
 	var storage = window.localStorage;
 	var kanazzi;
@@ -38,6 +38,9 @@
 			encryptText2( $("#password").val(), "submit" );
 		});
 
+		$(document).on("click", "#send_album_btn", function(){
+			encryptText2( getX(), "uploadCover" );
+		});
 		
 		/*
 		 * 		INIT
@@ -362,4 +365,86 @@
 			$.mobile.loading("hide");
 		  });
 	}
+	
+	/*
+	 * 	UPLOAD COVER
+	 */ 
+	
+	function uploadCover(){
+
+		console.log("UPLOAD COVER CALLED...");
+
+		var username = icarusi_user;
+
+		$("#username2").val(icarusi_user);
+		$("#kanazzi").val(kanazzi);
+		var title = $("#title").val();
+		var author = $("#author").val();
+		var year = $("#year").val();
+		
+		var the_form = $("#cover_form");
+		var formData = new FormData( the_form[0] );
+		
+
+		if (username == "" || username == undefined || username == null){
+			alert("You must be logged in for saving a cover");
+			return false;
+		}
+		
+		if (title == "" || title == undefined || title == null || author == "" || author == undefined || author == null){
+			alert("Title and author cannot be blank!! Title: " + title + " - Author: " + author);
+			return false;
+		}
+		
+		if ( year != "" && (isNaN(parseInt(year)) || parseInt(year)<0) ){
+			alert("Year value not valid: " + year);
+			return false;
+		}
+		
+		$.mobile.loading("show", {
+			text:'Submitting album cover...',
+			textVisible:true,
+			theme: 'e',
+			html: '',
+			});
+
+		$.ajax(
+		{
+			url: BE_URL + "/uploadcover",
+			method: "POST",
+			data: formData,
+			cache: false,
+			contentType: false,
+			processData: false
+		})
+		  .done(function(data) {
+			 
+			response = eval(data);
+			
+			/*
+			if (response.result == "failure"){
+				alert(response.message);
+				return false;
+			} 
+			*/
+			
+			//if (DEBUG) console.log(JSON.stringify(response));
+			
+			/*
+			if (response.upload_result.result == "failure"){
+				alert(response.upload_result.message);
+			} 
+			*/
+		  })
+		  .fail(function(err) {
+				alert("Server error!");
+			//var msg = eval(err.responseJSON);
+			//alert(msg.message);
+			//if (DEBUG) console.log("iCarusi App============> ========> iCarusi : failed to save tv show");
+			//if (DEBUG) console.log("iCarusi App============> ========> iCarusi : username " + storage.getItem("icarusi_user"));
+		  })
+		  .always(function() {
+			$.mobile.loading("hide");
+		  });
+	};
 

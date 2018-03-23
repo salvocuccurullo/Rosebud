@@ -720,6 +720,9 @@
 		$("#username").val(username);
 		$("#kanazzi").val(kanazzi);
 		$("#id").val(currentId);
+		var title = $("#title").val();
+		var media = $("#media :selected").val();
+		var type = $("#type :selected").val();
 		
 		var the_form = $("#movie_form");
 		var formData = new FormData( the_form[0] );
@@ -730,8 +733,8 @@
 			return false;
 		}
 		
-		if (title == "" || title == undefined || title == null || media == "" || media == undefined || media == null){
-			alert("Title and media cannot be blank!! Title: " + title + " - Media: " + media);
+		if (title == "" || title == undefined || title == null || media == "" || media == undefined || media == null || type == "" || type == undefined || type == null){
+			alert("Title, media and type cannot be blank!! Title: " + title + " - Media: " + media);
 			return false;
 		}
 		
