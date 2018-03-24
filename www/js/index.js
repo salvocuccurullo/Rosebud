@@ -1,10 +1,11 @@
 
-	var DEBUG = true;
+	var DEBUG = false;
 
 	var storage = window.localStorage;
 	var kanazzi;
 	var swipe_left_target = "movies.html";
 	var swipe_right_target = "song.html";
+	var curr_file_size = 0;
 	 
 	document.addEventListener('deviceready', this.onDeviceReady.bind(this), false);
 	
@@ -40,6 +41,16 @@
 
 		$(document).on("click", "#send_album_btn", function(){
 			encryptText2( getX(), "uploadCover" );
+		});
+		
+		$('#pic').bind('change', function() {
+			var size = this.files[0].size;
+			curr_file_size = size;
+			var sizekb = this.files[0].size/1024;
+			if (size <= 512000)
+				$("#upload_result").html('<span style="color:green">File size (' +  sizekb.toFixed(2) + " KB) OK !</span>");
+			else
+				$("#upload_result").html('<span style="color:red">File size (' +  sizekb.toFixed(2) + " KB) not OK! Max 500 KB! </span>");
 		});
 		
 		/*
@@ -86,6 +97,12 @@
 
 		$("#info_user").html(icarusi_user);
 		$("#info_network").html(networkState);
+		
+		$("#title").val("");
+		$("#author").val("");
+		$("#year").val("");
+		$("#pic").val("");
+		$("#upload_result").html("");
 		
 		if (networkState === Connection.NONE) {
 			$("#connection").html("No network... Pantalica mode...");
@@ -396,6 +413,16 @@
 			return false;
 		}
 		
+		if (curr_file_size > 512000){
+			alert("File size exceeded! Max 500KB");
+			return false;
+		}
+
+		if ($("#pic").val() == ""){
+			alert("File cannot be empty!");
+			return false;
+		}
+		
 		if ( year != "" && (isNaN(parseInt(year)) || parseInt(year)<0) ){
 			alert("Year value not valid: " + year);
 			return false;
@@ -419,22 +446,35 @@
 		})
 		  .done(function(data) {
 			 
-			response = eval(data);
+			response = data;
 			
-			/*
-			if (response.result == "failure"){
-				alert(response.message);
-				return false;
-			} 
-			*/
+			try {
+				res = JSON.parse(response);
+				if (DEBUG) console.log("Upload Cover -> Result: " + res.result);
+				if (DEBUG) console.log("Upload Cover -> Message: " + res.message);
+				
+				if (res.result == "failure"){
+					alert("Error" + res.message);
+					return false;
+				}
+			}
+			catch(err) {
+				console.log("JSON parsing of upload cover response failed.");
+				if (DEBUG) console.log(JSON.stringify(response));
+			}
 			
-			//if (DEBUG) console.log(JSON.stringify(response));
 			
-			/*
-			if (response.upload_result.result == "failure"){
-				alert(response.upload_result.message);
-			} 
-			*/
+			if (DEBUG) console.log("Reloading covers...");
+			get_covers();
+
+			
+			$("#title").val("");
+			$("#author").val("");
+			$("#year").val("");
+			$("#pic").val("");
+
+			$("#upload_result").html('<span style="font-weight:bold; color:green">Success</span>');
+
 		  })
 		  .fail(function(err) {
 				alert("Server error!");

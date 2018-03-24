@@ -56,7 +56,7 @@
 							<img src="images/loading_spinner.gif" alt="Photo portrait" id="poster_pic">
 						</div>
 						
-						<div data-role="popup" id="popupMovie" data-theme="a" class="ui-corner-all">
+						<div data-role="popup" id="popupMovie" data-theme="a" data-overlay-theme="b" class="ui-corner-all" data-dismissible="false">
 							<div style="padding:10px 20px;">
 
 								<div style="text-align: right">
@@ -66,9 +66,7 @@
 								
 								<form id="movie_form" method="POST" enctype="multipart/form-data">
 									<input type="text" name="title" id="title" data-mini="true" placeholder="Set movie title (required)" data-clear-btn="true"/>
-									<!--
-									<a href="#" class="ui-btn ui-icon-camera ui-btn-icon-notext ui-mini ui-btn-icon-right ui-corner-all ui-btn-inline" id="btn_show_poster"></a>
-									-->
+							
 									<input type="file" name="pic" id="pic" accept="image/*" data-mini="true">
 									<input type="hidden" name="username" id="username"/>
 									<input type="hidden" name="kanazzi" id="kanazzi"/>
@@ -78,26 +76,28 @@
 									
 									<input type="hidden" name="curr_pic" id="curr_pic" value=""/>
 
-									<!--<div class="ui-field-contain">-->
+									<div class="ui-field-contain">
+										<label for="media">Media Type *</label>
 										<select id="media" name="media" data-type="horizontal" data-mini="true">
-												<option value="" selected="selected">Select a media *</option>
-												<option value="netflix">Netflix</option>
-												<option value="camillina">Camillina</option>
-												<option value="sky">Sky</option>
-												<option value="tv">TV</option>
-												<option value="amazon">Amazon Video</option>
-												<option value="cinema">Cinema</option>
-												<option value="other">Other</option>
+											<option value="">&mdash;</option>
+											<option value="netflix">Netflix</option>
+											<option value="camillina">Camillina</option>
+											<option value="sky">Sky</option>
+											<option value="tv">TV</option>
+											<option value="amazon">Amazon Video</option>
+											<option value="cinema">Cinema</option>
+											<option value="other">Other</option>
 										</select>
-									<!--</div>-->
+									</div>
 
-									<!--<div class="ui-field-contain">-->
+									<div class="ui-field-contain">
+										<label for="media">Movie Type *</label>
 										<select id="type" name="type" data-type="horizontal" data-mini="true">
-												<option value="" selected="selected">Select movie type *</option>
-												<option value="brand_new">Brand New</option>
-												<option value="r4">I Bellissimi</option>
+											<option value="">&mdash;</option>
+											<option value="brand_new">Brand New</option>
+											<option value="r4">I Bellissimi</option>
 										</select>
-									<!--</div>-->
+									</div>
 									
 									<div data-role="collapsible" id="the_votes_d" data-theme="a" data-content-theme="a" data-collapsed="true">
 											<h4>How iCarusi voted...</h4>
@@ -109,9 +109,26 @@
 										<input type="range" name="vote" id="vote" value="5" min="0" max="10" step="1" data-highlight="true" />
 									</div>
 									
-									<div>
+									<div data-role="collapsible">
+										<h4>Additional info...</h4>
 										<label for="nw">#NowWatching (Vote suspended)</label>
 										<input type="checkbox" name="nw" id="nw" data-mini="true" class="ui-btn-inline">
+
+										<label for="giveup">Give Up (Clear your Vote)</label>
+										<input type="checkbox" name="giveup" id="giveup" data-mini="true" class="ui-btn-inline">
+
+										<div class="ui-grid-b">
+											<div class="ui-block-a">
+												<div class="ui-bar ui-bar-a">
+													Season<input type="number" pattern="[0-9]*" name="season" id="season" data-mini="true" />
+												</div>
+											</div>
+											<div class="ui-block-b">
+												<div class="ui-bar ui-bar-a">
+													Episode<input type="number" pattern="[0-9]*" name="episode" id="episode" data-mini="true" />
+												</div>
+											</div>
+										</div>
 									</div>
 
 									<div class="ui-field-contain">

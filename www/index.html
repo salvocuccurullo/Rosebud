@@ -94,8 +94,9 @@
 							<input type="file" name="pic" id="pic" accept="image/*" data-mini="true">
 							<input type="text" name="title" id="title" data-mini="true" placeholder="Set album title (required)" data-clear-btn="true"/>
 							<input type="text" name="author" id="author" data-mini="true" placeholder="Set album author (required)" data-clear-btn="true"/>
-							<input type="text" name="year" id="year" data-mini="true" placeholder="Set album release year (optional)" data-clear-btn="true"/>
+							<input type="number" pattern="[0-9]*" name="year" id="year" data-mini="true" placeholder="Set album release year (optional)" data-clear-btn="true"/>
 							<a href="#" id="send_album_btn" data-role="button" data-icon="check" data-inline="true" data-iconpos="right" data-mini="true">Send...</a>
+							<div id="upload_result"></div>
 						</form>
 				 </div>
 			</div>
