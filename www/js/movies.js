@@ -5,7 +5,7 @@
 	var jsonTvShows = [];
 	var currentId = 0;
 	var kanazzi;
-	var DEBUG = false;
+	var DEBUG = true;
 	var top_movies_count = 10;
 	var sort_type = "datetime_sec";
 	var sort_order = 1;
@@ -72,12 +72,12 @@
 	/*
 	 *	BINDINGS
 	 */
-
+		/*
 		$(document).on("change", "#media", function(){
-			//if (DEBUG) console.log("iCarusi App============> XXXXXXXXXXXXXXXXX");
-			//Keyboard.hide();
 		});
+		*/
 		
+		/*
 		$( "#popupMovie" ).bind(
 			{
 			popupafteropen: function(event, ui) { 
@@ -89,6 +89,7 @@
 					resetPopupElements();
 			}				
 		});
+		*/
 
 		$( "#popupPhotoPortrait" ).bind(
 			{
@@ -143,7 +144,6 @@
 		$("#movies_page").on( "tabsactivate", function(event,ui){
 			console.log(JSON.stringify(ui.oldPanel.selector));
 			console.log(JSON.stringify(ui.newPanel.selector));
-			console.log("=======================================================================");
 			
 			if (ui.newPanel.selector == "#tab_movies"){
 				$("#movie_type_tabs").tabs( "option", "active", 0 );
@@ -723,9 +723,18 @@
 		var media = $("#media :selected").val();
 		var type = $("#type :selected").val();
 		
+		// TRICK
+		$('#media').selectmenu('enable');
+		$('#type').selectmenu('enable');
+		// END TRICK
+		console.log("----------> TITLE: " + title);
+		console.log("----------> Media: " + media);
+		console.log("----------> Type: " + type);
+		
 		var the_form = $("#movie_form");
 		var formData = new FormData( the_form[0] );
 		
+		console.log("----------> Form: " + formData);
 
 		if (username == "" || username == undefined || username == null){
 			alert("You must be logged in for saving or updating Movies/Serie");
@@ -767,83 +776,11 @@
 				alert(response.upload_result.message);
 			} 
 			
-			$("#popupMovie").popup("close");
 			resetPopupElements();
 			getTvShows(false);
 			currentId = 0;
-		  })
-		  .fail(function(err) {
-				alert("Server error!");
-			//var msg = eval(err.responseJSON);
-			//alert(msg.message);
-			//if (DEBUG) console.log("iCarusi App============> ========> iCarusi : failed to save tv show");
-			//if (DEBUG) console.log("iCarusi App============> ========> iCarusi : username " + storage.getItem("icarusi_user"));
-		  })
-		  .always(function() {
-			$.mobile.loading("hide");
-		  });
-	};
-
-	function saveMovie(){
-		
-		var title = $("#title").val();
-		var link = $("#link").val();
-		var media = $("#media :selected").val();
-		var director = ''
-		var year = 0;
-		var type = $("#type :selected").val();
-		var vote = $("#vote").val();
-		var nw = $("#nw").prop("checked");
-		var username = icarusi_user;
-
-		if (username == "" || username == undefined || username == null){
-			alert("You must be logged in for saving or updating Movies/Serie");
-			return false;
-		}
-		
-		if (title == "" || title == undefined || title == null || media == "" || media == undefined || media == null){
-			alert("Title and media cannot be blank!! Title: " + title + " - Media: " + media);
-			return false;
-		}
-		
-		$.mobile.loading("show", {
-			text:'Submitting movie...',
-			textVisible:true,
-			theme: 'e',
-			html: '',
-			});
-
-		$.ajax(
-		{
-		  url: BE_URL + "/savemovie",
-		  method: "POST",
-		  data: {
-			id: currentId,
-			title: title,
-			link: link,
-			media: media,
-			type: type,
-			director: director,
-			year: year,
-			vote: vote,
-			username: icarusi_user,
-			kanazzi: kanazzi,
-			nw:nw,
-		  },
-		})
-		  .done(function(data) {
-			 
-			response = eval(data);
-			
-			if (response.result == "failure"){
-				alert(response.message);
-				return false;
-			} 
-			  
-			$("#popupMovie").popup("close");
-			resetPopupElements();
-			getTvShows(false);
-			currentId = 0;
+			//$("#popupMovie").popup("close");		//OLD
+			$.mobile.back();						//NEW
 		  })
 		  .fail(function(err) {
 				alert("Server error!");
@@ -900,10 +837,13 @@
 				return false;
 			}
 			
-			$("#popupMovie").popup("close");
 			resetPopupElements();
 			getTvShows(false);
 			currentId = 0;
+			
+			//$("#popupMovie").popup("close");		//OLD
+			$.mobile.back();						//NEW
+
 		  })
 		  .fail(function(err) {
 			 alert("Server error!");
@@ -917,36 +857,50 @@
 		  });
 	};
 
+	function newMoviePage(){
+		$(':mobile-pagecontainer').pagecontainer('change', '#detail_page');
+		resetPopupElements();
+	}
 
 	/***
 	 SET POPUP DATA
 	***/
 
 	function setPopupData(id){
-		$("#popupMovie").popup("open");
+		//OLD
+		//$("#popupMovie").popup("open");
+		
+		// NEW
+		$(':mobile-pagecontainer').pagecontainer('change', '#detail_page');
+		resetPopupElements();
+		//END NEW
+		
 		$("#nw").prop("checked",false).checkboxradio("refresh");
 		$('#giveup').checkboxradio('enable');
 
 		var item = jsonTvShows[id];
-		if (DEBUG) console.log("iCarusi App============> ===================> " + item.title + " ** " + item.media + " ** " + item.username + " ** " + item.avg_vote);
+		if (DEBUG) console.log("iCarusi App============> " + item.title + " ** " + item.media + " ** " + item.username + " ** " + item.avg_vote);
 		currentId = id;
 		
-		if (DEBUG) console.log("iCarusi App============> ===================>" + JSON.stringify(item.u_v_dict));
+		if (DEBUG) console.log("iCarusi App============> " + JSON.stringify(item.u_v_dict));
 		if (!(icarusi_user in item.u_v_dict)){
 			vote = 5;
 			episode = 1;
 			season = 1;
-			if (DEBUG) console.log("iCarusi App============> ===================> User " + icarusi_user + " has not voted for this movie. Setting default value to: " + vote);
+			comment = '';
+			if (DEBUG) console.log("iCarusi App============> User " + icarusi_user + " has not voted for this movie. Setting default value to: " + vote);
 		}
 		else{
 			vote = item.u_v_dict[icarusi_user].us_vote;
 			nw = item.u_v_dict[icarusi_user].now_watching;
 			episode = item.u_v_dict[icarusi_user].episode;
 			season = item.u_v_dict[icarusi_user].season;
+			comment = item.u_v_dict[icarusi_user].comment;
 			if (nw) $("#nw").prop("checked",true).checkboxradio("refresh");
-			if (DEBUG) console.log("iCarusi App============> ===================> Vote for user " + icarusi_user + " = " + vote + " (Now watching: " + nw + ")");
+			if (DEBUG) console.log("iCarusi App============> Vote for user " + icarusi_user + " = " + vote + " (Now watching: " + nw + ")");
 		}
 		
+		$("#top_title").html('<span style="text-align:center; vertical-align:middle">' + item.title + '</span>');
 		$("#title").val(item.title);
 		$("#link").val(item.link);
 		$('#media').val(item.media).selectmenu('refresh',true);
@@ -956,17 +910,28 @@
 		$("#the_votes_d").show();
 		$("#episode").val(episode);
 		$("#season").val(season);
+		$("#comment").val(comment);
 
 		if (icarusi_user == "" || icarusi_user == undefined || icarusi_user == null){
 			$("#send_movie_btn").addClass("ui-btn ui-state-disabled");
 			$("#delete_movie_btn").addClass("ui-btn ui-state-disabled");
 		}
 	
+		console.log("ICARUSI USER: " + icarusi_user);
+		console.log("MOVIE USERNAME: " + item.username);
+		
 		if (icarusi_user != item.username){
+			console.log("DISABLING SOME INPUT...");
+			/*
 			$("#title").textinput('disable');
 			$("#link").textinput('disable');
+			*/ 
 			$('#media').selectmenu('disable');
-			$('#type').selectmenu('disable');
+			$('#type').selectmenu('disable'); 
+			$("#title").prop('readonly',true);
+			$("#link").prop('readonly',true);
+			$('#media').prop('readonly',true);
+			$('#type').prop('readonly',true);
 			$("#send_movie_btn").text("Vote...");
 			$("#pic").addClass("ui-btn ui-state-disabled");
 			$("#delete_movie_btn").addClass("ui-btn ui-state-disabled");
@@ -989,8 +954,10 @@
 			var content = '<li style="white-space:normal;">';
 			if (value.now_watching == true)
 				content += '<b>' + value.us_username + '</b> <span style="color:red; float:right">now watching...</span>';
-			else
+			else{
 				content += '<b>' + value.us_username + '</b> <span style="color:red; float:right">' + value.us_vote + '</span>';
+				content += '<br/><i>' + value.comment+ '</i>';
+			}
 			content += '</li>';
 			$('#users_votes').append(content);
 		});
@@ -1003,8 +970,8 @@
 
 	function resetPopupElements(){
 		currentId = 0;
-		$("#title").textinput('enable');
-		$("#link").textinput('enable');
+		$("#title").prop('readonly',true);
+		$("#link").prop('readonly',true);
 		$('#media').selectmenu('enable');
 		$('#type').selectmenu('enable');
 		$('#giveup').checkboxradio('disable');
@@ -1026,8 +993,10 @@
 		$("#giveup").prop("checked",false).checkboxradio("refresh");
 		$("#season").val('');
 		$("#episode").val('');
+		$("#comment").val('');
 		$("#pic").val(null);
 		$('#users_votes').empty();
+		$("#top_title").html('Add a new movie/serie...');
 	}
 
 
