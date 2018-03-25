@@ -25,3 +25,18 @@
 .inputfile + label * {
 	pointer-events: none;
 }
+
+.numberCircle {
+    border-radius: 50%;
+
+    width: 10px;
+    height: 10px;
+    padding: 4px;
+    
+    background: blue;
+    border: 2px solid #666;
+    color: white;
+    text-align: center;
+    
+    font: 11px Arial, sans-serif;
+}

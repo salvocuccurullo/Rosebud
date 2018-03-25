@@ -434,30 +434,34 @@
 		
 		$.each(tvshows, function( index, value ) {
 			
+			var comment_count = 0;
 			jsonTvShows[value.id] = value;
 			
 			var content = '<li style="white-space:normal;">';
 			//content += '<a data-transition="slide" href="javascript:setPopupData(' + value.id + ')">';
 			
-			if (value.avg_vote == 0)
-				content += '<b>' + value.title + '</b> <span style="color:#C60419; float:right"> [ N/A ]';
-			else
-				content += '<b>' + value.title + '</b> <span style="color:#C60419; float:right"> [ ' + value.avg_vote + ' ]';
-				
-			if (value.poster != ""){
-				content += '<button class="ui-btn ui-icon-camera ui-btn-icon-notext ui-corner-all ui-mini ui-btn-inline" id="btn_show_poster" onclick="poster(\''+value.poster+'\')"></button>'		
+			if (value.avg_vote == 0){
+				content += '<b>' + value.title + '</b> <span style="color:#C60419; float:right"> [ N/A ]</span>';
+				//content += '<b>' + value.title + '</b>';
+			}
+			else{
+				content += '<b>' + value.title + '</b> <span style="color:#C60419; float:right"> [ ' + value.avg_vote + ' ]</span>';
+				//content += '<b>' + value.title + '</b>';
 			}
 			
-			content += '<button class="ui-btn ui-icon-edit ui-btn-icon-notext ui-mini ui-corner-all ui-btn-inline" id="btn_show_poster" onclick="setPopupData(\''+value.id+'\')"></button>'	
-			content += '</span><br/>';
-				
+
+/*			
+			// COMMENT ICON
+
 			content += '<span style="text-align:right; font-size:10px;">Added on ' + value.datetime + ' by </span>';
 			content += '<span style="color:#000099; font-style:italic; font-size:10px;">' +  value.username + '</span>';
 			if (sort_type=="media")
 				content += '<br/><span style="color:#000099; font-style:italic; font-size:10px;">' +  value.media + '</span>';
 			//content += '</a>';
 			content += '</li>';
+*/
 
+			// NW SECTION
 			var content_nw = '<li style="white-space:normal;">';
 			content_nw += '<a data-transition="slide" href="javascript:setPopupData(' + value.id + ')">';
 			content_nw += '<b>' + value.title + '</b> <br/>';
@@ -466,6 +470,12 @@
 			at_least_one_nw = false;
 			users_votes_keys = Object.keys(value.u_v_dict);
 			$.each(users_votes_keys, function( index1, value1 ) {
+
+				comment = value.u_v_dict[value1]['comment'];
+				console.log(">>>>>>>> COMMENT by >>>>>>>" + comment + " --- " + value1);
+				if (comment != "")
+					comment_count += 1;
+
 				if (value.u_v_dict[value1]['now_watching']){
 					at_least_one_nw = true;
 					name = value.u_v_dict[value1]['us_name'];
@@ -477,7 +487,37 @@
 			content_nw += '</span>';
 			content_nw += '</a>';
 			content_nw += '</li>';
-						
+			// END NW SECTION
+			
+			content += '<br/><span style="text-align:right; font-size:10px;">Added on ' + value.datetime + ' by </span>';
+			content += '<span style="color:#000099; font-style:italic; font-size:10px;">' +  value.username + '</span>';
+			
+			if (sort_type=="media")
+				content += '<br/><span style="color:#000099; font-style:italic; font-size:10px;">' +  value.media + '</span>';
+
+			// ICONS BLOCK -------------------------
+			content += '<span style="color:#C60419; float:right">';
+			
+			// PICTURE ICON
+			if (value.poster != ""){
+				content += '<button class="ui-btn ui-icon-camera ui-btn-icon-notext ui-corner-all ui-mini ui-btn-inline" id="btn_show_poster" onclick="poster(\''+value.poster+'\')"></button>';
+			}
+			
+			// EDIT ICON
+			content += '<button class="ui-btn ui-icon-edit ui-btn-icon-notext ui-mini ui-corner-all ui-btn-inline" id="btn_show_poster" onclick="setPopupData(\''+value.id+'\')"></button>';
+			
+			// COMMENT ICON
+			if (comment_count > 0){
+				//content += '<div class="numberCircle">' + comment_count + '</div>';
+				content += '<button class="ui-btn  ui-mini ui-corner-all ui-btn-inline" data-theme="e">' + comment_count + '</button>';
+			}
+			
+			content += '</span><br/>';
+			// END ICONS BLOCK ---------------------------
+			
+			content += '</li>';
+
+			
 			if (at_least_one_nw) {
 				$('#movies-list_nw').append(content_nw);
 			};
@@ -742,7 +782,7 @@
 		}
 		
 		if (title == "" || title == undefined || title == null || media == "" || media == undefined || media == null || type == "" || type == undefined || type == null){
-			alert("Title, media and type cannot be blank!! Title: " + title + " - Media: " + media);
+			alert("Title, media and type cannot be blank!!\nTitle: " + title + "\nMedia: " + media + "\nType: " + type);
 			return false;
 		}
 		
@@ -916,20 +956,28 @@
 			$("#send_movie_btn").addClass("ui-btn ui-state-disabled");
 			$("#delete_movie_btn").addClass("ui-btn ui-state-disabled");
 		}
-	
-		console.log("ICARUSI USER: " + icarusi_user);
-		console.log("MOVIE USERNAME: " + item.username);
-		
+
+		var collapse_vote = $("#the_votes_d").collapsible( "option", "collapsed");
+		if ( collapse_vote == false)
+			$("#the_votes_d").collapsible( "option", "collapsed", "true" );
+
+		var additional_info = $("#additional_info").collapsible( "option", "collapsed");
+		if ( additional_info == false)
+			$("#additional_info").collapsible( "option", "collapsed", "true" );
+
 		if (icarusi_user != item.username){
 			console.log("DISABLING SOME INPUT...");
-			/*
-			$("#title").textinput('disable');
-			$("#link").textinput('disable');
-			*/ 
-			$('#media').selectmenu('disable');
-			$('#type').selectmenu('disable'); 
+
 			$("#title").prop('readonly',true);
 			$("#link").prop('readonly',true);
+			$("#title").textinput( "option", "clearBtn", false );
+			$("#link").textinput( "option", "clearBtn", false );
+			$("#title").textinput("refresh");
+			$("#link").textinput("refresh");
+
+
+			$('#media').selectmenu('disable');
+			$('#type').selectmenu('disable'); 
 			$('#media').prop('readonly',true);
 			$('#type').prop('readonly',true);
 			$("#send_movie_btn").text("Vote...");
@@ -970,8 +1018,10 @@
 
 	function resetPopupElements(){
 		currentId = 0;
-		$("#title").prop('readonly',true);
-		$("#link").prop('readonly',true);
+		$("#title").prop('readonly',false);
+		$("#link").prop('readonly',false);
+		$("#title").textinput( "option", "clearBtn", true );
+		$("#link").textinput( "option", "clearBtn", true );
 		$('#media').selectmenu('enable');
 		$('#type').selectmenu('enable');
 		$('#giveup').checkboxradio('disable');
@@ -982,7 +1032,6 @@
 		$('#media').selectmenu('refresh',true);
 		$('#type').val("").attr('selected', true).siblings('option').removeAttr('selected')
 		$('#type').selectmenu('refresh',true);
-		$("#the_voters_d").collapsible("collapse");
 		$("#the_votes_d").hide();
 		$("#vote").val(5).slider("refresh");
 		$("#send_movie_btn").text("Send...");
