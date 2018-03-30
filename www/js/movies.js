@@ -465,7 +465,7 @@
 			var content_nw = '<li style="white-space:normal;">';
 			content_nw += '<a data-transition="slide" href="javascript:setPopupData(' + value.id + ',\'nw\')">';
 			content_nw += '<b>' + value.title + '</b> <br/>';
-			content_nw += '<span style="color:#000099; font-style:italic; font-size:11px;">'
+			content_nw += '<span style="color:#000099; font-style:italic; font-size:11px;">';
 			
 			at_least_one_nw = false;
 			users_votes_keys = Object.keys(value.u_v_dict);

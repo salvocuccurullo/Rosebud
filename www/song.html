@@ -34,22 +34,37 @@
 				</div>	
 			</div>
 			<div id="connection" style="font-size:11px; font-style:italic; text-align:center; background-color:#C60419; color:white;"></div>
+			<div id="cache_info" style="font-size:11px; text-align:center; background-color:#000099; color:white;"></div>
 			
 			<div role="main" class="ui-content" style="text-align:center;">
 				
-				<!-- <a href="#" id="refresh_btn" data-role="button" data-icon="refresh" data-iconpos="right">Refresh...</a> -->
-				
-				<div id="song_content" style="text-align:center">
-					<!-- <span id="title" style="font-weigth:bold; color:red"></span>&nbsp;&ndash;&nbsp;<span id="author" style="font-weigth:bold;"></span> -->
-					<ul data-role="listview" data-theme="a" data-inset="true" data-filter="false" id="lyrics-list" ></ul>
+				<div data-role="popup" id="popupPhotoPortrait" class="photopopup" data-overlay-theme="a" data-corners="false" data-tolerance="30,15" data-position-to="origin">
+					<a href="#" data-rel="back" class="ui-btn ui-corner-all ui-shadow ui-btn-a ui-icon-delete ui-btn-icon-notext ui-btn-right">Close</a>
+					<img src="images/loading.gif" alt="Photo portrait" id="poster_pic" name="poster_pic" onload="loading(false,'')" />
 				</div>
 				
+				<!-- <a href="#" id="refresh_btn" data-role="button" data-icon="refresh" data-iconpos="right">Refresh...</a> -->
+				<div data-role="tabs" id="music_tabs" name="music_tabs">
+					<div data-role="navbar">
+						<ul>
+							<li><a href="#song_content" class="ui-btn-active ui-state-persist" id="#random_song_link">Random Song</a></li>
+							<li><a href="#cover_list" id="#cover_list_link">Cover List</a></li>
+						</ul>
+					</div>
+					
+					<div id="song_content" style="text-align:center">
+						<ul data-role="listview" data-theme="a" data-inset="true" data-filter="false" id="lyrics-list" ></ul>
+					</div>
+					
+					<div id="cover_list" style="text-align:center">
+						<ul data-role="listview" data-theme="a" data-inset="true" data-filter="false" id="covers-list" ></ul>
+					</div>				
+				</div>
 			</div>
 			
 			<div data-role="footer" id="footer">
 				<div id="sabba_info"></div>
 			</div>
-
 		</div>
 	</body>
 

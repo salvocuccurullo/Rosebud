@@ -265,7 +265,8 @@
 
 	function listDir(path){
 		
-		$("#cover_img").attr("src", "images/homer_bass_01.gif");
+		//$("#cover_img").attr("src", "images/homer_bass_01.gif");
+		$("#cover_img").attr("src", "images/loading.gif");
 		old_ts  = new Number(storage.getItem("covers_count_ts"));
 		new_ts = new Date().getTime();
 		diff = new_ts - old_ts;
