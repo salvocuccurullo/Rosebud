@@ -14,6 +14,25 @@
 		console.log("========> iCarusi started. Running on Android " + device.version);
 
 		/*
+		window.FirebasePlugin.getToken(function(token) {
+			// save this server-side and use it to push notifications to this device
+			// console.log("==========> FIREBASE TOKEN ========> " + token);
+		}, function(error) {
+			console.error("==========> FIREBASE ERROR ========> " + error);
+		});
+		*/ 
+		
+		enable_notif = storage.getItem("enable-notifications");
+		if (enable_notif != "" && enable_notif != undefined && eval(enable_notif)){
+			if (DEBUG) console.log("iCarusi App============> Enabling Push notification : " + enable_notif);
+			window.FirebasePlugin.subscribe("iCarusiNotifications");
+		}
+		else{
+			if (DEBUG) console.log("iCarusi App============> Disabling Push notification : " + enable_notif);
+			window.FirebasePlugin.unsubscribe("iCarusiNotifications");
+		}
+
+		/*
 		 * 	BINDINGS
 		 */ 
 		
@@ -34,6 +53,20 @@
 			if (DEBUG) console.log("iCarusi App============> Flip Downloaded images : " + val);
 			storage.setItem("show-extra-info",val);
 		});
+
+		$('#enable-notifications').on('change', function() {
+			val = $('#enable-notifications').prop("checked");
+			if (DEBUG) console.log("iCarusi App============> Flip Enable Notifications : " + val);
+			if (val)
+				window.FirebasePlugin.subscribe("iCarusiNotifications");
+			else
+				window.FirebasePlugin.unsubscribe("iCarusiNotifications");
+			
+			if (DEBUG) console.log("iCarusi App============> Push notification Status: " + val);
+			
+			storage.setItem("enable-notifications",val);
+		});
+
 
 		$(document).on("click", "#login_button", function(){
 			encryptText2( $("#password").val(), "submit" );
@@ -60,10 +93,12 @@
 		save_imgs = storage.getItem("flip-save-images");
 		dld_imgs = storage.getItem("flip-dld-images");
 		extra_info = storage.getItem("show-extra-info");
+		enable_notif = storage.getItem("enable-notifications");
 		
 		if (DEBUG) console.log("iCarusi App============> Downloaded images switch STORAGE : " + dld_imgs);
 		if (DEBUG) console.log("iCarusi App============> Save Downloaded images switch STORAGE : " + save_imgs);
 		if (DEBUG) console.log("iCarusi App============> Show Extra info switch STORAGE : " + extra_info);
+		if (DEBUG) console.log("iCarusi App============> Enable Push Notification STORAGE : " + enable_notif);
 		
 		if (save_imgs != "" && save_imgs != null)
 			$('#flip-save-images').prop("checked", eval(save_imgs));
@@ -79,7 +114,11 @@
 			$('#show-extra-info').prop("checked", eval(extra_info));
 		else
 			storage.setItem("show-extra-info", false);
-			
+
+		if (enable_notif != "" && enable_notif != null)
+			$('#enable-notifications').prop("checked", eval(enable_notif));
+		else
+			storage.setItem("enable-notifications", false);			
 		
 		icarusi_user = storage.getItem("icarusi_user");
 
@@ -200,9 +239,11 @@
 			if (covers.length==0)
 				if (DEBUG) console.log("iCarusi App============> No covers found on remote server.");
 
+			/*
 			$.each(covers, function( index, value ) {
 				if (DEBUG) console.log("iCarusi App============> " + value.fileName + " -> " + value.name);
 			});
+			*/ 
 			
 			$("#remote_covers").html(covers.length);
 			if (covers.length > 0)

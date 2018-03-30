@@ -5,7 +5,7 @@
 	var jsonTvShows = [];
 	var currentId = 0;
 	var kanazzi;
-	var DEBUG = true;
+	var DEBUG = false;
 	var top_movies_count = 10;
 	var sort_type = "datetime_sec";
 	var sort_order = 1;
@@ -463,7 +463,7 @@
 
 			// NW SECTION
 			var content_nw = '<li style="white-space:normal;">';
-			content_nw += '<a data-transition="slide" href="javascript:setPopupData(' + value.id + ')">';
+			content_nw += '<a data-transition="slide" href="javascript:setPopupData(' + value.id + ',\'nw\')">';
 			content_nw += '<b>' + value.title + '</b> <br/>';
 			content_nw += '<span style="color:#000099; font-style:italic; font-size:11px;">'
 			
@@ -472,7 +472,6 @@
 			$.each(users_votes_keys, function( index1, value1 ) {
 
 				comment = value.u_v_dict[value1]['comment'];
-				console.log(">>>>>>>> COMMENT by >>>>>>>" + comment + " --- " + value1);
 				if (comment != "")
 					comment_count += 1;
 
@@ -504,11 +503,12 @@
 			}
 			
 			// EDIT ICON
-			content += '<button class="ui-btn ui-icon-edit ui-btn-icon-notext ui-mini ui-corner-all ui-btn-inline" id="btn_show_poster" onclick="setPopupData(\''+value.id+'\')"></button>';
+			content += '<button class="ui-btn ui-icon-edit ui-btn-icon-notext ui-mini ui-corner-all ui-btn-inline" id="btn_show_poster" onclick="setPopupData(\''+value.id+'\',\'a\')"></button>';
 			
 			// COMMENT ICON
 			if (comment_count > 0){
 				//content += '<div class="numberCircle">' + comment_count + '</div>';
+				//content += '<button class="ui-btn  ui-mini ui-corner-all ui-btn-inline" data-theme="e" onclick="setPopupData(\''+value.id+'\',\'c\')">' + comment_count + '</button>';
 				content += '<button class="ui-btn  ui-mini ui-corner-all ui-btn-inline" data-theme="e">' + comment_count + '</button>';
 			}
 			
@@ -767,14 +767,9 @@
 		$('#media').selectmenu('enable');
 		$('#type').selectmenu('enable');
 		// END TRICK
-		console.log("----------> TITLE: " + title);
-		console.log("----------> Media: " + media);
-		console.log("----------> Type: " + type);
-		
+
 		var the_form = $("#movie_form");
 		var formData = new FormData( the_form[0] );
-		
-		console.log("----------> Form: " + formData);
 
 		if (username == "" || username == undefined || username == null){
 			alert("You must be logged in for saving or updating Movies/Serie");
@@ -839,8 +834,10 @@
 	***/
 
 	$(document).on("click", "#delete_movie_btn", function(){
-		var d = getX();
-		encryptText2( d, "deleteMovie" );
+		if (confirm("Are you sure?")) {
+			var d = getX();
+			encryptText2( d, "deleteMovie" );
+		}
 	});
 
 	function deleteMovie(){
@@ -906,7 +903,7 @@
 	 SET POPUP DATA
 	***/
 
-	function setPopupData(id){
+	function setPopupData(id, src){
 		//OLD
 		//$("#popupMovie").popup("open");
 		
@@ -914,7 +911,7 @@
 		$(':mobile-pagecontainer').pagecontainer('change', '#detail_page');
 		resetPopupElements();
 		//END NEW
-		
+				
 		$("#nw").prop("checked",false).checkboxradio("refresh");
 		$('#giveup').checkboxradio('enable');
 
@@ -966,7 +963,6 @@
 			$("#additional_info").collapsible( "option", "collapsed", "true" );
 
 		if (icarusi_user != item.username){
-			console.log("DISABLING SOME INPUT...");
 
 			$("#title").prop('readonly',true);
 			$("#link").prop('readonly',true);
@@ -1004,12 +1000,23 @@
 				content += '<b>' + value.us_username + '</b> <span style="color:red; float:right">now watching...</span>';
 			else{
 				content += '<b>' + value.us_username + '</b> <span style="color:red; float:right">' + value.us_vote + '</span>';
-				content += '<br/><i>' + value.comment+ '</i>';
+				content += '<br/><p style="white-space:normal; font-style:italic">' + value.comment+ '</p>';
 			}
 			content += '</li>';
 			$('#users_votes').append(content);
 		});
 		$('#users_votes').listview('refresh');
+		
+		/*
+		var offset = $.mobile.activePage.find('#the_votes_d').offset();
+		console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ " + JSON.stringify(offset));
+		if (src == "c"){
+			$("#the_votes_d").collapsible( "option", "collapsed", "false" );
+			$.mobile.silentScroll($("#the_votes_d").offset().top);
+		}
+		else
+			$("#the_votes_d").collapsible( "option", "collapsed", "true" );
+		*/
 	}
 
 	/***

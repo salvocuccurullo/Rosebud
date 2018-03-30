@@ -68,22 +68,12 @@
 		</div>
 		
 		<div data-role="page" id="settings_page">
-			<a href="#home_page" class="ui-btn ui-corner-all ui-shadow ui-btn-inline ui-icon-home ui-btn-icon-center ui-btn-a" data-direction="reverse" data-transition="slide" style="float:center">Back</a>
+			<a href="#home_page" class="ui-btn ui-corner-all ui-shadow ui-btn-inline ui-icon-home ui-btn-icon-arrow-l ui-btn-a" data-mini="true">Back</a>
+			<!--
+			<a href="#home_page" data-rel="back" data-role="button" data-theme="a" data-icon="arrow-l" data-mini="true" data-iconpos="notext" data-direction="reverse" data-transition="slide" class="ui-btn-left">Close</a>
+			-->
 			<div class="ui-corner-all custom-corners">
-				<div class="ui-bar ui-bar-a">
-					<h3>Info</h3>
-				 </div>
-				 <div class="ui-body ui-body-a" id="info-page">
-					<div style="margin-top:10px"><span style="font-weight:bold">App version</span><span style="color:#C60419; float:right" id="info_version">&ndash;</span></div>
-					<div style="margin-top:10px"><span style="font-weight:bold">Username</span><span style="color:#C60419; float:right" id="info_user">Not logged in</span></div>
-					<div style="margin-top:10px"><span style="font-weight:bold">Network</span><span style="color:#C60419; float:right" id="info_network">Unknown</span></div>
-					<div style="margin-top:10px"><span style="font-weight:bold">Installed images</span><span style="color:#C60419; float:right" id="hardcoded_images">&ndash;</span></div>
-					<div style="margin-top:10px"><span style="font-weight:bold">Downloaded images</span><span style="color:#C60419; float:right" id="dld_images">&ndash;</span></div>
-					<div style="margin-top:10px"><span style="font-weight:bold">Remote covers</span><span style="color:#C60419; float:right" id="remote_covers">&ndash;</span></div>
-				 </div>
-			</div>
-			
-			<div class="ui-corner-all custom-corners">
+				
 				<div class="ui-bar ui-bar-a">
 					<h3>Cover upload</h3>
 				 </div>
@@ -101,22 +91,36 @@
 				 </div>
 			</div>
 			
-			
 			<div class="ui-corner-all custom-corners">
 				<div class="ui-bar ui-bar-a">
 					<h3>Settings</h3>
 				 </div>
 				 <div class="ui-body ui-body-a" id="switch-page">
-					
+						<label for="enable-notifications">Enable Push Notifications</label>
+						<input type="checkbox" data-role="flipswitch" data-mini="true" name="enable-notifications" id="enable-notifications" data-theme="b"/>
 						<label for="flip-dld-images">Download new covers from network</label>
 						<input type="checkbox" data-role="flipswitch" data-mini="true" name="flip-dld-images" id="flip-dld-images" data-theme="b"/>
 						<label for="flip-save-images">Save downloaded covers on phone</label>
 						<input type="checkbox" data-role="flipswitch" data-mini="true" name="flip-save-images" id="flip-save-images" data-theme="b" disabled="disabled"/>
 						<label for="show-extra-info">Show extra info</label>
 						<input type="checkbox" data-role="flipswitch" data-mini="true" name="show-extra-info" id="show-extra-info" data-theme="b"/>	
-					
 				 </div>
 			</div>
+			
+			<div class="ui-corner-all custom-corners">
+				<div class="ui-bar ui-bar-a">
+					<h3>Info</h3>
+				 </div>
+				 <div class="ui-body ui-body-a" id="info-page">
+					<div style="margin-top:10px"><span style="font-weight:bold">App version</span><span style="color:#C60419; float:right" id="info_version">&ndash;</span></div>
+					<div style="margin-top:10px"><span style="font-weight:bold">Username</span><span style="color:#C60419; float:right" id="info_user">Not logged in</span></div>
+					<div style="margin-top:10px"><span style="font-weight:bold">Network</span><span style="color:#C60419; float:right" id="info_network">Unknown</span></div>
+					<div style="margin-top:10px"><span style="font-weight:bold">Installed images</span><span style="color:#C60419; float:right" id="hardcoded_images">&ndash;</span></div>
+					<div style="margin-top:10px"><span style="font-weight:bold">Downloaded images</span><span style="color:#C60419; float:right" id="dld_images">&ndash;</span></div>
+					<div style="margin-top:10px"><span style="font-weight:bold">Remote covers</span><span style="color:#C60419; float:right" id="remote_covers">&ndash;</span></div>
+				 </div>
+			</div>
+			
 		</div>		
 		
 	</body>
