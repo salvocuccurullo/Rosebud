@@ -17,6 +17,8 @@
 	var tv_shows_storage;
 	var tv_shows_storage_ts;
 	
+	var curr_file_size = 0;
+	
 	document.addEventListener('deviceready', this.onDeviceReady.bind(this), false);		//CORDOVA
 	
 	function onDeviceReady() {		// CORDOVA
@@ -72,24 +74,15 @@
 	/*
 	 *	BINDINGS
 	 */
-		/*
-		$(document).on("change", "#media", function(){
+		$('#pic').bind('change', function() {
+			var size = this.files[0].size;
+			curr_file_size = size;
+			var sizekb = this.files[0].size/1024;
+			if (size <= 512000)
+				$("#upload_result").html('<span style="color:green">File size (' +  sizekb.toFixed(2) + " KB) OK !</span>");
+			else
+				$("#upload_result").html('<span style="color:red">File size (' +  sizekb.toFixed(2) + " KB) not OK! Max 500 KB! </span>");
 		});
-		*/
-		
-		/*
-		$( "#popupMovie" ).bind(
-			{
-			popupafteropen: function(event, ui) { 
-					if (DEBUG) console.log("iCarusi App============> Opening Popup -> Resetting popup elements...");
-					resetPopupElements();
-			},
-			popupafterclose: function(event, ui) { 
-					if (DEBUG) console.log("iCarusi App============> Closing Popup -> Resetting popup elements...");
-					resetPopupElements();
-			}				
-		});
-		*/
 
 		$( "#popupPhotoPortrait" ).bind(
 			{
@@ -776,9 +769,20 @@
 			return false;
 		}
 		
+		if (curr_file_size > 512000){
+			alert("File size exceeded! Max 500KB");
+			return false;
+		}
+		
 		if (title == "" || title == undefined || title == null || media == "" || media == undefined || media == null || type == "" || type == undefined || type == null){
 			alert("Title, media and type cannot be blank!!\nTitle: " + title + "\nMedia: " + media + "\nType: " + type);
 			return false;
+		}
+
+		if ($("#curr_pic").val() != ""){
+			if (!confirm("Warning! The image you're going to upload will replace the existing one.\n\nAre you sure?")) {
+				return false;
+			}
 		}
 		
 		$.mobile.loading("show", {
@@ -977,7 +981,7 @@
 			$('#media').prop('readonly',true);
 			$('#type').prop('readonly',true);
 			$("#send_movie_btn").text("Vote...");
-			$("#pic").addClass("ui-btn ui-state-disabled");
+			//$("#pic").addClass("ui-btn ui-state-disabled");		// new feature to allow not movier owner to upload the poster
 			$("#delete_movie_btn").addClass("ui-btn ui-state-disabled");
 		}
 		else{
@@ -1050,6 +1054,7 @@
 		$("#season").val('');
 		$("#episode").val('');
 		$("#comment").val('');
+		$("#upload_result").html('');
 		$("#pic").val(null);
 		$('#users_votes').empty();
 		$("#top_title").html('Add a new movie/serie...');
