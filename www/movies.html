@@ -141,94 +141,111 @@
 					<div id="top_title" style="margin-left:50px; margin-top:10px"></div>
 				 </div>
 				 <div class="ui-body ui-body-a" id="movie-page">
-							<div style="padding:10px 20px;">
-								<form id="movie_form" method="POST" enctype="multipart/form-data">
-									<input type="text" name="title" id="title" data-mini="true" placeholder="Set movie title (required)" data-clear-btn="true"/>
+					<div style="padding:10px 20px;">
+						<form id="movie_form" method="POST" enctype="multipart/form-data">
+							<input type="text" name="title" id="title" data-mini="true" placeholder="Set movie title (required)" data-clear-btn="true"/>
+					
+							<input type="file" name="pic" id="pic" accept="image/*" data-mini="true">
+							<div id="upload_result"></div>
+							<input type="hidden" name="username" id="username"/>
+							<input type="hidden" name="kanazzi" id="kanazzi"/>
+							<input type="hidden" name="id" id="id"/>
+							<input type="hidden" name="year" id="year" value="0"/>
+							<input type="hidden" name="director" id="director" value=""/>
 							
-									<input type="file" name="pic" id="pic" accept="image/*" data-mini="true">
-									<div id="upload_result"></div>
-									<input type="hidden" name="username" id="username"/>
-									<input type="hidden" name="kanazzi" id="kanazzi"/>
-									<input type="hidden" name="id" id="id"/>
-									<input type="hidden" name="year" id="year" value="0"/>
-									<input type="hidden" name="director" id="director" value=""/>
-									
-									<input type="hidden" name="curr_pic" id="curr_pic" value=""/>
+							<input type="hidden" name="curr_pic" id="curr_pic" value=""/>
 
-									<div class="ui-field-contain">
-										<label for="media">Media Type *</label>
-										<select id="media" name="media" data-type="horizontal" data-mini="true">
-											<option value="">&mdash;</option>
-											<option value="netflix">Netflix</option>
-											<option value="camillina">Camillina</option>
-											<option value="sky">Sky</option>
-											<option value="tv">TV</option>
-											<option value="amazon">Amazon Video</option>
-											<option value="cinema">Cinema</option>
-											<option value="edicola">Edicola</option>
-											<option value="other">Other</option>
-										</select>
-									</div>
-
-									<div class="ui-field-contain">
-										<label for="media">Movie Type *</label>
-										<select id="type" name="type" data-type="horizontal" data-mini="true">
-											<option value="">&mdash;</option>
-											<option value="brand_new">Brand New</option>
-											<option value="r4">I Bellissimi</option>
-										</select>
-									</div>
-									
-									<div data-role="collapsible" id="the_votes_d" data-theme="a" data-content-theme="a" data-collapsed="true">
-											<h4>How iCarusi voted...</h4>
-											<ul data-role="listview" data-theme="a" data-inset="true" data-filter="false" id="users_votes" ></ul>
-									</div>
-
-									<div class="ui-field-contain">
-										<label for="vote">Vote</label>
-										<input type="range" name="vote" id="vote" value="5" min="0" max="10" step="0.5" data-highlight="true" />
-									</div>
-									
-									<div data-role="collapsible" id="additional_info">
-										<h4>Additional info...</h4>
-										<label for="nw">#NowWatching (Vote suspended)</label>
-										<input type="checkbox" name="nw" id="nw" data-mini="true" class="ui-btn-inline">
-
-										<label for="giveup">Give Up (Clear your Vote)</label>
-										<input type="checkbox" name="giveup" id="giveup" data-mini="true" class="ui-btn-inline">
-
-										<div class="ui-grid-b">
-											<div class="ui-block-a">
-												<div class="ui-bar ui-bar-a">
-													Season<input type="number" pattern="[0-9]*" name="season" id="season" data-mini="true" />
-												</div>
-											</div>
-											<div class="ui-block-b">
-												<div class="ui-bar ui-bar-a">
-													Episode<input type="number" pattern="[0-9]*" name="episode" id="episode" data-mini="true" />
-												</div>
-											</div>
-										</div>
-										
-										<label for="comment">Comment:</label>
-										<textarea name="comment" id="comment" data-mini="true" maxlength="280" rows="4" placeholder="Comment (280 chars)"></textarea>
-										
-									</div>
-
-									<div class="ui-field-contain">
-										<input type="text" name="link" id="link" data-mini="true" placeholder="link (optional)" data-clear-btn="true"/>
-									</div>
-								</form>
-								
-								<div style="text-align: center">
-									<a href="#" id="send_movie_btn" data-role="button" data-icon="check" data-inline="true" data-iconpos="right" data-mini="true">Send...</a>
-									<a href="#" id="delete_movie_btn" data-role="button" data-icon="forbidden" data-inline="true" data-iconpos="right" data-mini="true">Delete...</a>
-								</div>
+							<div class="ui-field-contain">
+								<label for="media">Media Type *</label>
+								<select id="media" name="media" data-type="horizontal" data-mini="true">
+									<option value="">&mdash;</option>
+									<option value="netflix">Netflix</option>
+									<option value="camillina">Camillina</option>
+									<option value="sky">Sky</option>
+									<option value="tv">TV</option>
+									<option value="amazon">Amazon Video</option>
+									<option value="cinema">Cinema</option>
+									<option value="edicola">Edicola</option>
+									<option value="other">Other</option>
+								</select>
 							</div>
 
+							<div class="ui-field-contain">
+								<label for="media">Movie Type *</label>
+								<select id="type" name="type" data-type="horizontal" data-mini="true">
+									<option value="">&mdash;</option>
+									<option value="brand_new">Brand New</option>
+									<option value="r4">I Bellissimi</option>
+								</select>
+							</div>
+							
+							<div data-role="collapsible" id="the_votes_d" data-theme="a" data-content-theme="a" data-collapsed="true">
+									<h4>How iCarusi voted...</h4>
+									<ul data-role="listview" data-theme="a" data-inset="true" data-filter="false" id="users_votes" ></ul>
+							</div>
+
+							<div class="ui-field-contain">
+								<label for="vote">Vote</label>
+								<input type="range" name="vote" id="vote" value="5" min="0" max="10" step="0.5" data-highlight="true" />
+							</div>
+							
+							<div data-role="collapsible" id="additional_info">
+								<h4>Additional info...</h4>
+								<label for="nw">#NowWatching (Vote suspended)</label>
+								<input type="checkbox" name="nw" id="nw" data-mini="true" class="ui-btn-inline">
+
+								<label for="later">I'll watch it (no vote)</label>
+								<input type="checkbox" name="later" id="later" data-mini="true" class="ui-btn-inline">
+
+								<label for="giveup">Give Up (Clear your Vote)</label>
+								<input type="checkbox" name="giveup" id="giveup" data-mini="true" class="ui-btn-inline">
+
+								<div class="ui-grid-b">
+									<div class="ui-block-a">
+										<div class="ui-bar ui-bar-a">
+											Season<input type="number" pattern="[0-9]*" name="season" id="season" data-mini="true" />
+										</div>
+									</div>
+									<div class="ui-block-b">
+										<div class="ui-bar ui-bar-a">
+											Episode<input type="number" pattern="[0-9]*" name="episode" id="episode" data-mini="true" />
+										</div>
+									</div>
+								</div>
+								
+								<label for="comment">Comment:</label>
+								<textarea name="comment" id="comment" data-mini="true" maxlength="280" rows="4" placeholder="Comment (280 chars)"></textarea>
+								
+							</div>
+
+							<div class="ui-field-contain">
+								<button class="ui-btn ui-icon-forward ui-mini ui-corner-all ui-btn-inline" data-theme="a" id="btn_link"></button>
+								<input type="url" name="link" id="link" data-mini="true" placeholder="link (optional)" data-clear-btn="true"/>
+							</div>
+						</form>
+						
+						<div style="text-align: center">
+							<a href="#" id="send_movie_btn" data-role="button" data-icon="check" data-inline="true" data-iconpos="right" data-mini="true">Send...</a>
+							<a href="#" id="delete_movie_btn" data-role="button" data-icon="forbidden" data-inline="true" data-iconpos="right" data-mini="true">Delete...</a>
+						</div>
+					</div>
 				 </div>
 			</div>
-		</div>
+		</div> <!-- END DETAIL PAGE -->
+		
+		<div data-role="page" id="comments_page">
+			<div class="ui-corner-all custom-corners">
+				<div class="ui-bar ui-bar-a" style="height:60px">
+					<a href="#" data-role="button" data-theme="a" data-icon="arrow-l" data-mini="true" data-iconpos="notext" class="ui-btn-left">Close</a>
+					<div id="top_title_comments" style="margin-left:50px; margin-top:10px; margin-bottom:10px; text-align:justify"></div>
+					<button class="ui-btn ui-icon-forward ui-mini ui-corner-all ui-btn-inline" data-theme="a" id="btn_link"></button>
+				 </div>
+				<div id="div_comments" style="text-align:center; margin-top:15px">
+					<ul data-role="listview" data-theme="a" data-inset="true" data-filter="false" id="movie_comments" ></ul>
+				</div>
+				 
+			</div>
+		</div> <!-- END COMMENTS PAGE -->
 		
 	</body>
 </html>

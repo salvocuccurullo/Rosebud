@@ -37,6 +37,18 @@
 		if (icarusi_user == "salvo")
 			$("#sabba_info").html(BE_URL);
 
+		/*
+		console.log("===============================================");
+		var location = window.location;
+		console.log("RECEIVED LOCATION " + location);
+		
+		if (location != ""){
+			q = parseQuery(location);
+			console.log(JSON.stringify(q));
+		}
+		console.log("===============================================");
+		*/
+		
 	/*
 	 * OFFLINE MODE CHECKER
 	 */ 
@@ -136,7 +148,7 @@
 		
 		$("#movies_page").on( "tabsactivate", function(event,ui){
 			console.log(JSON.stringify(ui.oldPanel.selector));
-			console.log(JSON.stringify(ui.newPanel.selector));
+			console.log(JSON.stringify(ui.newPanesavel.selector));
 			
 			if (ui.newPanel.selector == "#tab_movies"){
 				$("#movie_type_tabs").tabs( "option", "active", 0 );
@@ -500,9 +512,7 @@
 			
 			// COMMENT ICON
 			if (comment_count > 0){
-				//content += '<div class="numberCircle">' + comment_count + '</div>';
-				//content += '<button class="ui-btn  ui-mini ui-corner-all ui-btn-inline" data-theme="e" onclick="setPopupData(\''+value.id+'\',\'c\')">' + comment_count + '</button>';
-				content += '<button class="ui-btn  ui-mini ui-corner-all ui-btn-inline" data-theme="e">' + comment_count + '</button>';
+				content += '<button class="ui-btn  ui-mini ui-corner-all ui-btn-inline" data-theme="e" onclick="setComments(\''+value.id+'\',\'c\')">' + comment_count + '</button>';
 			}
 			
 			content += '</span><br/>';
@@ -759,6 +769,7 @@
 		// TRICK
 		$('#media').selectmenu('enable');
 		$('#type').selectmenu('enable');
+		$('#later').selectmenu('enable');
 		// END TRICK
 
 		var the_form = $("#movie_form");
@@ -904,7 +915,7 @@
 	}
 
 	/***
-	 SET POPUP DATA
+	 SET DETAILS PAGE
 	***/
 
 	function setPopupData(id, src){
@@ -952,6 +963,7 @@
 		$("#episode").val(episode);
 		$("#season").val(season);
 		$("#comment").val(comment);
+		$("#btn_link").attr("onclick","javascript:window.location('" + item.link + "')");
 
 		if (icarusi_user == "" || icarusi_user == undefined || icarusi_user == null){
 			$("#send_movie_btn").addClass("ui-btn ui-state-disabled");
@@ -1024,6 +1036,49 @@
 	}
 
 	/***
+	 SET COMMENTS PAGE
+	***/
+
+	function setComments(id, src){
+
+		// NEW
+		$(':mobile-pagecontainer').pagecontainer('change', '#comments_page');
+		//END NEW
+
+		var item = jsonTvShows[id];
+		if (DEBUG) console.log("iCarusi App============> " + item.title + " ** " + item.media + " ** " + item.username + " ** " + item.avg_vote);
+		currentId = id;
+		
+		$("#top_title_comments").html("iCarusi's reviews <br/><i>" + item.title + "</i>");
+		
+		if (DEBUG) console.log("iCarusi App============> " + JSON.stringify(item.u_v_dict));
+
+		$('#movie_comments').empty();
+
+		var comments_count = 0;
+		$.each(item.u_v_dict, function( index, value ) {
+			var content = '<li style="white-space:normal;">';
+			if (value.comment != "")
+				comments_count += 1;
+			if (value.now_watching == true)
+				content += '<b>' + value.us_username + '</b> <span style="color:red; float:right">now watching...</span>';
+			else{
+				content += '<b>' + value.us_username + '</b> <span style="color:red; float:right">' + value.us_vote + '</span>';
+				content += '<br/><p style="white-space:normal; font-style:italic; font-size:12px">' + value.comment+ '</p>';
+			}
+			content += '</li>';
+			$('#movie_comments').append(content);
+		});
+		
+		header_content = '<li data-role="list-divider" data-theme="b" style="text-align:center">';
+		header_content += '<span style="color:yellow">' + comments_count + ' comments...</span></li>';
+		$('#movie_comments').prepend(header_content);
+		
+		$('#movie_comments').listview('refresh');
+		
+	}
+
+	/***
 	 RESET POPUP DATA
 	***/
 
@@ -1051,6 +1106,7 @@
 		$("#pic").removeClass("ui-btn ui-state-disabled");
 		$("#nw").prop("checked",false).checkboxradio("refresh");
 		$("#giveup").prop("checked",false).checkboxradio("refresh");
+		$("#later").prop("checked",false).checkboxradio("refresh");
 		$("#season").val('');
 		$("#episode").val('');
 		$("#comment").val('');

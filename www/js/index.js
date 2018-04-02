@@ -16,11 +16,12 @@
 		/*
 		window.FirebasePlugin.getToken(function(token) {
 			// save this server-side and use it to push notifications to this device
-			// console.log("==========> FIREBASE TOKEN ========> " + token);
+			console.log("==========> FIREBASE TOKEN ========> " + token);
 		}, function(error) {
 			console.error("==========> FIREBASE ERROR ========> " + error);
 		});
 		*/ 
+		 
 		
 		enable_notif = storage.getItem("enable-notifications");
 		if (enable_notif != "" && enable_notif != undefined && eval(enable_notif)){
@@ -31,6 +32,16 @@
 			if (DEBUG) console.log("iCarusi App============> Disabling Push notification : " + enable_notif);
 			window.FirebasePlugin.unsubscribe("iCarusiNotifications");
 		}
+
+		/*
+		window.FirebasePlugin.onNotificationOpen(function(notification) {
+			console.log("======= FCM NOTIFICATION ======> " + JSON.stringify(notification));
+			window.location="movies.html#comments_page?id=10";
+		}, function(error) {
+			console.error("======= FCM NOTIFICATION ERROR ======> " + error);
+		});
+		*/ 
+
 
 		/*
 		 * 	BINDINGS
