@@ -145,7 +145,7 @@
 		/*
 		 * TABS MANAGEMENT
 		 */
-		
+		/*
 		$("#movies_page").on( "tabsactivate", function(event,ui){
 			console.log(JSON.stringify(ui.oldPanel.selector));
 			console.log(JSON.stringify(ui.newPanesavel.selector));
@@ -164,7 +164,7 @@
 				$("#movie_search_div").show();
 			}
 		});
-		
+		*/
 		/*
 		 * CT SEARCH
 		 */
@@ -769,7 +769,6 @@
 		// TRICK
 		$('#media').selectmenu('enable');
 		$('#type').selectmenu('enable');
-		$('#later').selectmenu('enable');
 		// END TRICK
 
 		var the_form = $("#movie_form");
@@ -963,7 +962,10 @@
 		$("#episode").val(episode);
 		$("#season").val(season);
 		$("#comment").val(comment);
-		$("#btn_link").attr("onclick","javascript:window.location('" + item.link + "')");
+		$("#curr_link").val(item.link);
+		
+		if (item.link == "")
+			$("#btn_link").hide();
 
 		if (icarusi_user == "" || icarusi_user == undefined || icarusi_user == null){
 			$("#send_movie_btn").addClass("ui-btn ui-state-disabled");
@@ -1110,10 +1112,16 @@
 		$("#season").val('');
 		$("#episode").val('');
 		$("#comment").val('');
+		$("#curr_link").val('');
 		$("#upload_result").html('');
 		$("#pic").val(null);
 		$('#users_votes').empty();
 		$("#top_title").html('Add a new movie/serie...');
+		$("#btn_link").show();
 	}
 
-
+	function open_link(){
+		link = $("#curr_link").val();
+		if (link != "")
+			cordova.InAppBrowser.open(link,'_blank','location=no');
+	}

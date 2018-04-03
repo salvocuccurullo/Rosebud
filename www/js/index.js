@@ -13,14 +13,15 @@
 		
 		console.log("========> iCarusi started. Running on Android " + device.version);
 
-		/*
+		
 		window.FirebasePlugin.getToken(function(token) {
 			// save this server-side and use it to push notifications to this device
-			console.log("==========> FIREBASE TOKEN ========> " + token);
+			if (DEBUG) console.log("==========> FIREBASE TOKEN ========> " + token);
+			storag.setItem("firebase_token",token);
 		}, function(error) {
 			console.error("==========> FIREBASE ERROR ========> " + error);
 		});
-		*/ 
+		 
 		 
 		
 		enable_notif = storage.getItem("enable-notifications");

@@ -154,6 +154,7 @@
 							<input type="hidden" name="director" id="director" value=""/>
 							
 							<input type="hidden" name="curr_pic" id="curr_pic" value=""/>
+							<input type="hidden" name="curr_link" id="curr_link" value=""/>
 
 							<div class="ui-field-contain">
 								<label for="media">Media Type *</label>
@@ -219,8 +220,8 @@
 							</div>
 
 							<div class="ui-field-contain">
-								<button class="ui-btn ui-icon-forward ui-mini ui-corner-all ui-btn-inline" data-theme="a" id="btn_link"></button>
-								<input type="url" name="link" id="link" data-mini="true" placeholder="link (optional)" data-clear-btn="true"/>
+								<input type="url" name="link" id="link" data-mini="true" placeholder="link (optional) only wikipedia" data-clear-btn="true"/>
+								<button class="ui-btn ui-btn-icon-notext ui-icon-forward ui-mini ui-corner-all ui-btn-inline" style="float:right" data-theme="a" id="btn_link" onclick="javascript:open_link()"></button>
 							</div>
 						</form>
 						
@@ -233,10 +234,10 @@
 			</div>
 		</div> <!-- END DETAIL PAGE -->
 		
-		<div data-role="page" id="comments_page">
+		<div data-role="page" id="comments_page"> <!-- COMMENTS PAGE -->
 			<div class="ui-corner-all custom-corners">
 				<div class="ui-bar ui-bar-a" style="height:60px">
-					<a href="#" data-role="button" data-theme="a" data-icon="arrow-l" data-mini="true" data-iconpos="notext" class="ui-btn-left">Close</a>
+					<a href="#" data-rel="back" data-role="button" data-theme="a" data-icon="arrow-l" data-mini="true" data-iconpos="notext" class="ui-btn-left">Close</a>
 					<div id="top_title_comments" style="margin-left:50px; margin-top:10px; margin-bottom:10px; text-align:justify"></div>
 					<button class="ui-btn ui-icon-forward ui-mini ui-corner-all ui-btn-inline" data-theme="a" id="btn_link"></button>
 				 </div>
