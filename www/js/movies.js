@@ -429,6 +429,23 @@
 		var bnc=0;
 		var r4c=0;
 
+		if (sort_type=="avg_vote")
+		tvshows.sort(function(a,b){
+			if (parseFloat(a[sort_type]) > parseFloat(b[sort_type]))
+				return (sort_order * -1);
+			if (parseFloat(a[sort_type]) < parseFloat(b[sort_type]))
+				return sort_order;
+			return 0;
+		});
+		else
+			tvshows.sort(function(a,b){
+				if (a[sort_type] > b[sort_type])
+					return (sort_order * -1);
+				if (a[sort_type] < b[sort_type])
+					return sort_order;
+				return 0;
+		});
+/*
 		tvshows.sort(function(a,b){
 			if (a[sort_type] > b[sort_type])
 				return (sort_order * -1);
@@ -436,35 +453,20 @@
 				return sort_order;
 			return 0;
 		});
-		
+*/		
 		$.each(tvshows, function( index, value ) {
 			
 			var comment_count = 0;
 			jsonTvShows[value.id] = value;
 			
 			var content = '<li style="white-space:normal;">';
-			//content += '<a data-transition="slide" href="javascript:setPopupData(' + value.id + ')">';
 			
 			if (value.avg_vote == 0){
 				content += '<b>' + value.title + '</b> <span style="color:#C60419; float:right"> [ N/A ]</span>';
-				//content += '<b>' + value.title + '</b>';
 			}
 			else{
 				content += '<b>' + value.title + '</b> <span style="color:#C60419; float:right"> [ ' + value.avg_vote + ' ]</span>';
-				//content += '<b>' + value.title + '</b>';
 			}
-			
-
-/*			
-			// COMMENT ICON
-
-			content += '<span style="text-align:right; font-size:10px;">Added on ' + value.datetime + ' by </span>';
-			content += '<span style="color:#000099; font-style:italic; font-size:10px;">' +  value.username + '</span>';
-			if (sort_type=="media")
-				content += '<br/><span style="color:#000099; font-style:italic; font-size:10px;">' +  value.media + '</span>';
-			//content += '</a>';
-			content += '</li>';
-*/
 
 			// NW SECTION
 			var content_nw = '<li style="white-space:normal;">';
@@ -510,6 +512,11 @@
 			// EDIT ICON
 			content += '<button class="ui-btn ui-icon-edit ui-btn-icon-notext ui-mini ui-corner-all ui-btn-inline" id="btn_show_poster" onclick="setPopupData(\''+value.id+'\',\'a\')"></button>';
 			
+			// LINK ICON
+			if (value.link!=""){
+				content += '<button class="ui-btn ui-btn-icon-notext ui-icon-forward ui-mini ui-corner-all ui-btn-inline" data-theme="a" id="btn_link" onclick="javascript:open_link(\'' + value.link +'\')"></button>';
+			}
+
 			// COMMENT ICON
 			if (comment_count > 0){
 				content += '<button class="ui-btn  ui-mini ui-corner-all ui-btn-inline" data-theme="e" onclick="setComments(\''+value.id+'\',\'c\')">' + comment_count + '</button>';
@@ -549,10 +556,11 @@
 		header_content += '<span style="color:yellow">Currently ongoing...</span></li>';
 		$('#movies-list_nw').prepend(header_content);
 
+		// For the top chart force sorting by avg_vote
 		tvshows.sort(function(a,b){
-			if (a.avg_vote > b.avg_vote)
+			if (parseFloat(a.avg_vote) > parseFloat(b.avg_vote))
 				return -1;
-			if (a.avg_vote < b.avg_vote)
+			if (parseFloat(a.avg_vote) < parseFloat(b.avg_vote))
 				return 1;
 			return 0;
 		});
@@ -766,6 +774,8 @@
 		var media = $("#media :selected").val();
 		var type = $("#type :selected").val();
 		
+		new_pic = $("#pic").val();
+
 		// TRICK
 		$('#media').selectmenu('enable');
 		$('#type').selectmenu('enable');
@@ -789,7 +799,7 @@
 			return false;
 		}
 
-		if ($("#curr_pic").val() != ""){
+		if ($("#curr_pic").val() != "" && new_pic != ""){
 			if (!confirm("Warning! The image you're going to upload will replace the existing one.\n\nAre you sure?")) {
 				return false;
 			}
@@ -1004,13 +1014,6 @@
 			$("#delete_movie_btn").removeClass("ui-state-disabled");
 		}
 		
-		/*
-		
-		header_content = '<li data-role="list-divider" data-theme="b" style="text-align:center">';
-		header_content += '<span style="color:yellow"> ' + item.title + ' </span></li>';
-		$('#users_votes').prepend(header_content);
-		*/
-		
 		$('#users_votes').empty();
 		$.each(item.u_v_dict, function( index, value ) {
 			var content = '<li style="white-space:normal;">';
@@ -1025,16 +1028,6 @@
 		});
 		$('#users_votes').listview('refresh');
 		
-		/*
-		var offset = $.mobile.activePage.find('#the_votes_d').offset();
-		console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ " + JSON.stringify(offset));
-		if (src == "c"){
-			$("#the_votes_d").collapsible( "option", "collapsed", "false" );
-			$.mobile.silentScroll($("#the_votes_d").offset().top);
-		}
-		else
-			$("#the_votes_d").collapsible( "option", "collapsed", "true" );
-		*/
 	}
 
 	/***
@@ -1120,8 +1113,8 @@
 		$("#btn_link").show();
 	}
 
-	function open_link(){
-		link = $("#curr_link").val();
+	function open_link(link){
+		//link = $("#curr_link").val();
 		if (link != "")
-			cordova.InAppBrowser.open(link,'_blank','location=no');
+			cordova.InAppBrowser.open(link,'_self','location=no');
 	}
