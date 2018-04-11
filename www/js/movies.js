@@ -993,7 +993,7 @@
 		if (icarusi_user != item.username){
 
 			$("#title").prop('readonly',true);
-			$("#link").prop('readonly',true);
+			//$("#link").prop('readonly',true);		// Allow not owner to set a new link
 			$("#title").textinput( "option", "clearBtn", false );
 			$("#link").textinput( "option", "clearBtn", false );
 			$("#title").textinput("refresh");
