@@ -353,12 +353,7 @@
 
 	function getTvShowsGo(){
 		
-		$.mobile.loading("show", {
-			text:'Loading movies...',
-			textVisible:true,
-			theme: 'e',
-			html: '',
-		});
+		loading(true, 'Loading movies...');
 		
 		$("#movies-list").empty();
 		$("#movies-list_r4").empty();
@@ -405,7 +400,7 @@
 			$("#movies_content").html('<br/><span style="color:red; text-align:center">Error during song loading...<br/>Tiricci Pippo !!</span>');
 		  })
 		  .always(function() {
-			$.mobile.loading("hide");
+			loading(false, '');
 			//if (DEBUG) console.log("iCarusi App============> ajax call completed");
 		  });			
 	}
@@ -648,35 +643,23 @@
 
 	function getMoviesCT(){
 		
-		/*
-		$.mobile.loading("show", {
-			text:'Loading movies...',
-			textVisible:true,
-			theme: 'e',
-			html: '',
-		});
-		*/
-
 		$.ajax(
 		{
-		  url: BE_URL + "/moviesct",
-		  method: "GET",
-		  dataType: "json"
+			url: BE_URL + "/moviesct",
+			method: "GET",
+			dataType: "json"
 		})
-		  .done(function(data) {
-
+		.done(function(data) {
 			xyz = eval(data);
 			storage.setItem("baracca", JSON.stringify(xyz.payload));
 			ct_movies = xyz.payload;			// IT'S ME
 			setCtMovies(xyz.payload, false, false);
-		  })
-		  .fail(function() {
-			console.log( "error" );
-		  })
-		  .always(function() {
-			//$.mobile.loading("hide");
-		  });
-	
+		})
+		.fail(function() {
+			alert( "Server Error" );
+		})
+		.always(function() {
+		});
 	}
 
 	function setCtMovies(data, cached, by_search){
@@ -759,7 +742,6 @@
 
 	$(document).on("click", "#send_movie_btn", function(){
 		var d = getX();
-		//encryptText2( d, "saveMovie" );
 		encryptText2( d, "saveMovieNew" );
 	});
 
@@ -804,13 +786,8 @@
 				return false;
 			}
 		}
-		
-		$.mobile.loading("show", {
-			text:'Submitting movie...',
-			textVisible:true,
-			theme: 'e',
-			html: '',
-			});
+
+		loading(true, 'Submitting movie...');
 
 		$.ajax(
 		{
@@ -849,7 +826,7 @@
 			//if (DEBUG) console.log("iCarusi App============> ========> iCarusi : username " + storage.getItem("icarusi_user"));
 		  })
 		  .always(function() {
-			$.mobile.loading("hide");
+			loading("false","");
 		  });
 	};
 
@@ -871,12 +848,7 @@
 			return false;
 		}
 
-		$.mobile.loading("show", {
-			text:'Submitting movie...',
-			textVisible:true,
-			theme: 'e',
-			html: '',
-			});
+		loading(true, 'Submitting movie...');
 
 		$.ajax(
 		{
@@ -888,7 +860,7 @@
 			kanazzi: kanazzi,
 		  },
 		})
-		  .done(function(data) {
+		.done(function(data) {
 			response = eval(data);
 			if (DEBUG) console.log("iCarusi App============> ========> " + response.result);
 			if (DEBUG) console.log("iCarusi App============> ========> " + response.message);
@@ -902,20 +874,19 @@
 			getTvShows(false);
 			currentId = 0;
 			
-			//$("#popupMovie").popup("close");		//OLD
 			$.mobile.back();						//NEW
 
-		  })
-		  .fail(function(err) {
+		})
+		.fail(function(err) {
 			 alert("Server error!");
 			//var msg = eval(err.responseJSON);
 			//alert(msg.message);
 			//if (DEBUG) console.log("iCarusi App============> ========> iCarusi : failed to delete tv show");
 			//if (DEBUG) console.log("iCarusi App============> ========> iCarusi : username " + storage.getItem("icarusi_user"));
-		  })
-		  .always(function() {
-			$.mobile.loading("hide");
-		  });
+		})
+		.always(function() {
+			loading(false, '');
+		});
 	};
 
 	function newMoviePage(){
@@ -993,7 +964,7 @@
 		if (icarusi_user != item.username){
 
 			$("#title").prop('readonly',true);
-			$("#link").prop('readonly',true);
+			//$("#link").prop('readonly',true);				// new feature to allow not owner to edit the link
 			$("#title").textinput( "option", "clearBtn", false );
 			$("#link").textinput( "option", "clearBtn", false );
 			$("#title").textinput("refresh");

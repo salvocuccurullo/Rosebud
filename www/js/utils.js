@@ -1,4 +1,20 @@
 
+	function loading(show, message){
+		if (show){
+			//$("body").block({ "message": null });
+			$.mobile.loading("show", {
+				text: message,
+				textVisible:true,
+				theme: 'b',
+				html: '',
+			});
+		}
+		else{
+			$.mobile.loading("hide");
+			//$("body").unblock();
+		}
+	}
+
 
 	function parseQuery(queryString) {
 		var query = {};

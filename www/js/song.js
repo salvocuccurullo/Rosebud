@@ -239,14 +239,3 @@
 		}
 	}
 	
-	function loading(show, message){
-		if (show)
-			$.mobile.loading("show", {
-				text: message,
-				textVisible:true,
-				theme: 'b',
-				html: '',
-			});
-		else
-			$.mobile.loading("hide");
-	}
