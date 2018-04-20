@@ -57,6 +57,13 @@
 					</div>
 					
 					<div id="cover_list" style="text-align:center">
+						<br/>
+						<button class="ui-btn ui-icon-tag ui-btn-icon-notext ui-corner-all ui-mini ui-btn-inline ui-btn-b" style="float:left" onclick="sort_covers('name')"></button>
+						<button class="ui-btn ui-icon-user ui-btn-icon-notext ui-corner-all ui-mini ui-btn-inline ui-btn-b" style="float:left" onclick="sort_covers('author')"></button>
+						<button class="ui-btn ui-icon-clock ui-btn-icon-notext ui-corner-all ui-mini ui-btn-inline ui-btn-b" style="float:left" onclick="sort_covers('year')"></button>
+						<button class="ui-btn ui-icon-refresh ui-btn-icon-notext ui-corner-all ui-mini ui-btn-inline ui-btn-b" style="float:right" onclick="get_covers()"></button>
+						<br/><br/>
+						<input type="text" data-type="search" name="cover_search" id="cover_search" value="" data-mini="true" placeholder="search (min 4 chars)"></input>
 						<ul data-role="listview" data-theme="a" data-inset="true" data-filter="false" id="covers-list" ></ul>
 					</div>				
 				</div>

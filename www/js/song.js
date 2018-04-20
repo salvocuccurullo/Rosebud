@@ -6,6 +6,9 @@
 		var swipe_right_target = "carusi.html";
 		var DEBUG = false;
 		var device_app_path = "";
+		var sort_type = "author";
+		var sort_order = 1;
+		var current_covers = "";
 		
 		document.addEventListener('deviceready', this.onDeviceReady.bind(this), false);
 		
@@ -37,7 +40,9 @@
 						
 				if (diff_sec < 86400 && covers_storage != "" && covers_storage != undefined && covers_storage != null){
 					console.log("iCarusi App============> Cached TVShows loading");
-					setCovers(covers_storage); // load covers on startup from cache if there is cache and last update time is greater than 1 day
+					//current_covers = JSON.parse(covers_storage);
+					//setCovers(covers_storage); // load covers on startup from cache if there is cache and last update time is greater than 1 day
+					sort_covers("name");
 				}
 				else
 					get_covers();
@@ -60,7 +65,40 @@
 			  $( "#song_page" ).on( "swipeleft", swipeleftHandler );
 			  $( "#song_page" ).on( "swiperight", swipeRightHandler );  
 			// FINE SWIPE RUDIMENTALE
-			
+
+			$('#cover_search').on('change', function() {
+				var search = $( "#cover_search" ).val();
+				if ( search.length == 0){
+					sort_covers(sort_type);
+					return false;
+				}
+			});
+
+			$( "#cover_search" ).bind( "input", function() {
+				var search = $( "#cover_search" ).val();
+				var result = current_covers;
+
+				if ( search.length == 0){
+					//setCovers(current_covers);
+					sort_order = -1;
+					sort_covers(sort_type);
+					return false
+				}
+				
+				if ( search.length < 4 ){
+					return false;
+				}
+				
+				result = $.grep(result, function(element, index) {
+					return ( 
+						( element.year.toString() === search) || 
+						( element.name.toUpperCase().indexOf(search.toUpperCase()) >= 0 ) || 
+						( element.author.toUpperCase().indexOf(search.toUpperCase()) >= 0 )
+						);
+				});
+				setCovers(result);
+			});
+
 			
 			$( "#popupPhotoPortrait" ).bind(
 			{
@@ -152,7 +190,8 @@
 		
 		$.ajax(
 		{
-		  url: COVER_BE_URL + "/getRemoteCovers",
+		  //url: COVER_BE_URL + "/getRemoteCovers",
+		  url: COVER_BE_URL + "/getAllCovers",
 		  method: "GET",
 			beforeSend: function (xhr) {
 				xhr.setRequestHeader('Authorization', make_base_auth(cover_username, cover_password));
@@ -166,7 +205,10 @@
 			storage.setItem("covers_storage", JSON.stringify(covers));		// SAVE ON LOCALSTORAGE
 			storage.setItem("covers_ts", new Date().getTime());
 			setCacheInfo();
-			setCovers(covers);
+			current_covers = covers; //JSON.parse(covers);
+			sort_type="";
+			sort_covers("name");
+			//setCovers(covers);
 			
 		  })
 		  .fail(function(err) {
@@ -176,6 +218,37 @@
 		  .always(function() {
 			  loading(false, "");
 		  });
+	}
+
+	function sort_covers(s_type){
+		if (sort_type != s_type)
+			sort_order = -1
+		else
+			sort_order = sort_order * -1;
+		sort_type=s_type;
+		$( "#cover_search" ).val("");
+		covers = storage.getItem("covers_storage");		// GET FROM LOCALSTORAGE
+		if (covers != "" && covers != undefined && covers != null){
+			covers = JSON.parse(covers);
+			if (sort_type=="avg_vote")
+			covers.sort(function(a,b){
+				if (parseFloat(a[sort_type]) > parseFloat(b[sort_type]))
+					return (sort_order * -1);
+				if (parseFloat(a[sort_type]) < parseFloat(b[sort_type]))
+					return sort_order;
+				return 0;
+			});
+			else
+				covers.sort(function(a,b){
+					if (a[sort_type] > b[sort_type])
+						return (sort_order * -1);
+					if (a[sort_type] < b[sort_type])
+						return sort_order;
+					return 0;
+			});
+			
+			setCovers(covers);
+		}		
 	}
 
 	function setCovers(covers){
@@ -188,8 +261,7 @@
 			if (DEBUG) console.log("iCarusi App============> No covers found on remote server.");
 
 		covers_header = '<li data-role="list-divider" data-theme="b" style="text-align:center">';
-		covers_header += '<button class="ui-btn ui-icon-refresh ui-btn-icon-notext ui-corner-all ui-mini ui-btn-inline ui-btn-b" style="float:right" onclick="get_covers()"></button>';
-		covers_header += '<div style="margin-top:10px">Found <span style="color:yellow">' + covers.length + '</span> covers</div>';
+		covers_header += 'Found <span style="color:yellow">' + covers.length + '</span> covers';
 		covers_header += '</li>';
 		$('#covers-list').append(covers_header);
 		
@@ -197,9 +269,14 @@
 			$('#covers-list').append('<li style="white-space:normal;">No covers available</li>');
 		
 		$.each(covers, function( index, value ) {
-			//console.log(JSON.stringify(value));
 			var cover_content = '<li style="white-space:normal">';
-			cover_content += '<button class="ui-btn ui-icon-camera ui-btn-icon-notext ui-corner-all ui-mini ui-btn-inline" id="btn_show_poster" style="float:right" onclick="poster(\''+value.location+'\')"></button>';
+			
+			if (value.type == undefined || value.type == "local")
+				cover_location = cordova.file.applicationDirectory + "www/images/covers/" + value.location;
+			else
+				cover_location = value.location;
+			
+			cover_content += '<button class="ui-btn ui-icon-camera ui-btn-icon-notext ui-corner-all ui-mini ui-btn-inline" id="btn_show_poster" style="float:right" onclick="poster(\''+cover_location+'\')"></button>';
 			cover_content += value.name + '<br/>';
 			if (value.year != 0 && value.year != "")
 				cover_content += '<span style="color:#000099; font-style:italic; font-size:11px;">' + value.author + ' (' + value.year + ')</span>';
