@@ -1,7 +1,7 @@
 		
 		var storage = window.localStorage;
 		var icarusi_user = "";
-		var kanazzi = "";
+		var kanazzi;
 		var swipe_left_target = "index.html";
 		var swipe_right_target = "carusi.html";
 		var DEBUG = false;
@@ -38,17 +38,15 @@
 				diff = new_ts - old_ts;
 				diff_sec = diff / 1000;
 						
-				if (diff_sec < 86400 && covers_storage != "" && covers_storage != undefined && covers_storage != null){
+				if (icarusi_user != "" && diff_sec < 86400 && covers_storage != "" && covers_storage != undefined && covers_storage != null){
 					console.log("iCarusi App============> Cached TVShows loading");
-					//current_covers = JSON.parse(covers_storage);
-					//setCovers(covers_storage); // load covers on startup from cache if there is cache and last update time is greater than 1 day
 					sort_covers("name");
 				}
 				else
-					get_covers();
+					encryptText2(getX(), "get_covers");
 			}
 			else
-				get_covers();
+				encryptText2(getX(), "get_covers");
 
 			/*
 			PullToRefresh.init({
@@ -184,21 +182,27 @@
 		return 'Basic ' + hash;
 	}
 
+
 	function get_covers(){
-		
+
+		if (icarusi_user == undefined || icarusi_user == "" || icarusi_user == null){
+			alert("You must be logged in for accessing covers!!");
+			return false;
+		}
+
 		loading(true, "Loading covers...");
 		
 		$.ajax(
 		{
-		  //url: COVER_BE_URL + "/getRemoteCovers",
-		  url: COVER_BE_URL + "/getAllCovers",
-		  method: "GET",
-			beforeSend: function (xhr) {
-				xhr.setRequestHeader('Authorization', make_base_auth(cover_username, cover_password));
-			},			  
-		  dataType: "json"
+		url: BE_URL + "/getcovers",
+		method: "POST",
+		data: { 
+			username : icarusi_user,
+			kanazzi : kanazzi
+		},
+		dataType: "json"
 		})
-		  .done(function(data) {
+		.done(function(data) {
 
 			covers = eval(data);
 
@@ -219,6 +223,7 @@
 			  loading(false, "");
 		  });
 	}
+
 
 	function sort_covers(s_type){
 		if (sort_type != s_type)

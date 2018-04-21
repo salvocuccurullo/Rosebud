@@ -184,17 +184,12 @@
 		 */ 
 
 		listDir(cordova.file.applicationDirectory + "www/images/covers/");
-		//get_remote_random_cover_2();		// GET REMOTE RANDOM COVER
-		get_covers();					// GET REMOTE RANDOM COVER
+		encryptText2( getX(), 'get_remote_covers');					// GET REMOTE RANDOM COVER
 		
 	
 	};	// CORDOVA
 
-	function make_base_auth(user, password) {
-		var tok = user + ':' + password;
-		var hash = btoa(tok);
-		return 'Basic ' + hash;
-	}
+
 
 	/*
 	 * 		COVERS FUNCTIONS
@@ -204,17 +199,18 @@
 
 		$.ajax(
 		{
-			url: COVER_BE_URL + "/getRandomCover",
-			method: "GET",
-			beforeSend: function (xhr) {
-				xhr.setRequestHeader('Authorization', make_base_auth(cover_username, cover_password));
-			},			  
-		  dataType: "json"
+			url: BE_URL + "/getrandomcover",
+			method: "POST",
+			data: { 
+				username : icarusi_user,
+				kanazzi : kanazzi
+			},
+			dataType: "json"
 		})
 		  .done(function(data) {
 
-			console.log(data);
-			cover = eval(data);
+			if (DEBUG) console.log(data);
+			cover=JSON.parse(data);
 			
 			if (cover != undefined){
 				if (DEBUG) console.log("iCarusi App============> Fetched remote random cover data: " + cover.name);
@@ -232,21 +228,22 @@
 	}
 
 
-	function get_covers(){
+	function get_remote_covers(){
 
 		$.ajax(
 		{
-		  url: COVER_BE_URL + "/getRemoteCovers",
-		  method: "GET",
-			beforeSend: function (xhr) {
-				xhr.setRequestHeader('Authorization', make_base_auth(cover_username, cover_password));
-			},			  
-		  dataType: "json"
+			url: BE_URL + "/getremotecovers",
+			method: "POST",
+			data: { 
+				username : icarusi_user,
+				kanazzi : kanazzi
+			},
+			dataType: "json"
 		})
 		  .done(function(data) {
 
-			//console.log(data);
-			covers = eval(data);
+			if (DEBUG) console.log(data);
+			covers = JSON.parse(data);
 
 			if (covers.length==0)
 				if (DEBUG) console.log("iCarusi App============> No covers found on remote server.");
@@ -367,7 +364,7 @@
 			
 		if (id_img>24){
 			$("#cover_img").attr("images/covers/loading_spinner.gif");
-			get_remote_random_cover_2();
+			encryptText2( getX(), 'get_remote_random_cover_2');
 			return false;
 		}
 		else
@@ -519,7 +516,7 @@
 			
 			
 			if (DEBUG) console.log("Reloading covers...");
-			get_covers();
+			encryptText2( getX(), 'get_remote_covers');
 
 			
 			$("#title").val("");
