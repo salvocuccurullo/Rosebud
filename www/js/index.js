@@ -184,7 +184,7 @@
 		 */ 
 
 		listDir(cordova.file.applicationDirectory + "www/images/covers/");
-		encryptText2( getX(), 'get_remote_covers');					// GET REMOTE RANDOM COVER
+		encryptText2( getX(), 'get_remote_covers_stats');					// GET REMOTE RANDOM COVER
 		
 	
 	};	// CORDOVA
@@ -228,11 +228,11 @@
 	}
 
 
-	function get_remote_covers(){
+	function get_remote_covers_stats(){
 
 		$.ajax(
 		{
-			url: BE_URL + "/getremotecovers",
+			url: BE_URL + "/getcoversstats",
 			method: "POST",
 			data: { 
 				username : icarusi_user,
@@ -242,11 +242,12 @@
 		})
 		  .done(function(data) {
 
-			if (DEBUG) console.log(data);
+			if (DEBUG) console.log( JSON.stringify(data));
 			covers = JSON.parse(data);
 
-			if (covers.length==0)
-				if (DEBUG) console.log("iCarusi App============> No covers found on remote server.");
+
+			if (covers.payload.remote_covers==0)
+				if (DEBUG) console.log("iCarusi App============> No remote covers found on server.");
 
 			/*
 			$.each(covers, function( index, value ) {
@@ -254,9 +255,10 @@
 			});
 			*/ 
 			
-			$("#remote_covers").html(covers.length);
-			if (covers.length > 0)
-				storage.setItem("remote_covers_count", covers.length);
+			$("#remote_covers").html(covers.payload.remote_covers);
+			if (covers.payload.remote_covers > 0)
+				storage.setItem("remote_covers_count", covers.payload.remote_covers);
+			
 			
 		  })
 		  .fail(function(err) {
@@ -516,7 +518,7 @@
 			
 			
 			if (DEBUG) console.log("Reloading covers...");
-			encryptText2( getX(), 'get_remote_covers');
+			encryptText2( getX(), 'get_remote_covers_stats');
 
 			
 			$("#title").val("");

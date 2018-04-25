@@ -299,10 +299,10 @@
 			else
 				cover_content += '<span style="color:#000099; font-style:italic; font-size:11px;">' + value.author + '</span>';
 			
-			/*
-			if (value.created != undefined)	
-				cover_content += '<br/><span style="color:#000099; font-style:italic; font-size:11px;">' + value.created + '</span>';
-			*/
+			
+			if (value.created != undefined && sort_type == "created")	
+				cover_content += '<br/><span style="color:#C60419; font-style:italic; font-size:10px;">' + value.created + '</span>';
+			
 			
 			cover_content +='</li>';
 			$('#covers-list').append(cover_content);
