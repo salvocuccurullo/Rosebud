@@ -4,11 +4,13 @@
 		var kanazzi;
 		var swipe_left_target = "index.html";
 		var swipe_right_target = "carusi.html";
-		var DEBUG = false;
+		var DEBUG = true;
 		var device_app_path = "";
-		var sort_type = "author";
+		var sort_type = "created";
 		var sort_order = 1;
 		var current_covers = "";
+		var curr_file_size = 0;
+		var curr_cover_id = "";
 		
 		document.addEventListener('deviceready', this.onDeviceReady.bind(this), false);
 		
@@ -40,7 +42,7 @@
 						
 				if (icarusi_user != "" && diff_sec < 86400 && covers_storage != "" && covers_storage != undefined && covers_storage != null){
 					console.log("iCarusi App============> Cached TVShows loading");
-					sort_covers("name");
+					sort_covers("created");
 				}
 				else
 					encryptText2(getX(), "get_covers");
@@ -112,6 +114,11 @@
 				}
 			});
 			
+		$(document).on("click", "#send_album_btn", function(){
+			encryptText2( getX(), "uploadCover" );
+		});
+			
+			
 		}
 			
 	function get_song(){
@@ -144,12 +151,7 @@
 			}
 			console.log(data);
 			song = eval(data.message);
-			
-			/*
-			$('#title').html(song.title);
-			$('#author').html(song.author);
-			*/
-			
+
 			song_header = '<li data-role="list-divider" data-theme="b" style="text-align:center">';
 			song_header += '<button class="ui-btn ui-icon-refresh ui-btn-icon-notext ui-corner-all ui-mini ui-btn-inline ui-btn-b" style="float:right" onclick="get_song()"></button>';
 			song_header += '<span style="color:yellow">' + song.title + '</span><br/>' + song.author + '</li>';
@@ -175,12 +177,6 @@
 			//console.log("ajax call completed");
 		  });			
 	}			
-
-	function make_base_auth(user, password) {
-		var tok = user + ':' + password;
-		var hash = btoa(tok);
-		return 'Basic ' + hash;
-	}
 
 
 	function get_covers(){
@@ -209,9 +205,9 @@
 			storage.setItem("covers_storage", JSON.stringify(covers));		// SAVE ON LOCALSTORAGE
 			storage.setItem("covers_ts", new Date().getTime());
 			setCacheInfo();
-			current_covers = covers; //JSON.parse(covers);
+			current_covers = covers;
 			sort_type="";
-			sort_covers("name");
+			sort_covers("created");
 			//setCovers(covers);
 			
 		  })
@@ -258,6 +254,8 @@
 
 	function setCovers(covers){
 		
+		loading(true,"Loading covers...");
+		
 		$('#covers-list').empty();
 		
 		setCacheInfo();
@@ -274,6 +272,7 @@
 			$('#covers-list').append('<li style="white-space:normal;">No covers available</li>');
 		
 		$.each(covers, function( index, value ) {
+
 			var cover_content = '<li style="white-space:normal">';
 			
 			if (value.type == undefined || value.type == "local")
@@ -281,16 +280,46 @@
 			else
 				cover_location = value.location;
 			
-			cover_content += '<button class="ui-btn ui-icon-camera ui-btn-icon-notext ui-corner-all ui-mini ui-btn-inline" id="btn_show_poster" style="float:right" onclick="poster(\''+cover_location+'\')"></button>';
+			if (value.type == "remote" && value.id != undefined && value.id != "")
+				cover_content += '<button class="ui-btn ui-icon-edit ui-btn-icon-notext ui-corner-all ui-mini ui-btn-inline" id="btn_edit_cover" style="float:right" onclick="edit_cover(\''+value.id+'\')"></button>';
+				
+			cover_content += '<button class="ui-btn ui-icon-camera ui-btn-icon-notext ui-corner-all ui-mini ui-btn-inline" id="btn_show_cover" style="float:right" onclick="poster(\''+cover_location+'\')"></button>';
 			cover_content += value.name + '<br/>';
 			if (value.year != 0 && value.year != "")
 				cover_content += '<span style="color:#000099; font-style:italic; font-size:11px;">' + value.author + ' (' + value.year + ')</span>';
 			else
 				cover_content += '<span style="color:#000099; font-style:italic; font-size:11px;">' + value.author + '</span>';
+			
+			/*
+			if (value.created != undefined)	
+				cover_content += '<br/><span style="color:#000099; font-style:italic; font-size:11px;">' + value.created + '</span>';
+			*/
+			
 			cover_content +='</li>';
 			$('#covers-list').append(cover_content);
 		});
 		$('#covers-list').listview('refresh');
+		
+		loading(false,"");
+	}
+
+	function edit_cover(id){
+		$(':mobile-pagecontainer').pagecontainer('change', '#cover_page');
+		
+		var result = $.grep(current_covers, function(element, index) {
+			return (element.id === id);
+		});
+		
+		if (DEBUG) console.log("==========================");
+		if (DEBUG) console.log(JSON.stringify(result));
+		if (DEBUG) console.log("==========================");
+		
+		result = result[0];
+		$("#id").val(result.id);
+		$("#title").val(result.name);
+		$("#author").val(result.author);
+		$("#year").val(result.year);
+		curr_cover_id = result.id;
 	}
 
 	function poster(img_name){
@@ -321,3 +350,105 @@
 		}
 	}
 	
+	
+	/*
+	 * 	UPLOAD COVER
+	 */ 
+	
+	function uploadCover(){
+
+		console.log("UPLOAD COVER CALLED...");
+
+		var username = icarusi_user;
+
+		$("#username2").val(icarusi_user);
+		$("#kanazzi").val(kanazzi);
+		var title = $("#title").val();
+		var author = $("#author").val();
+		var year = $("#year").val();
+		
+		var the_form = $("#cover_form");
+		var formData = new FormData( the_form[0] );
+		
+
+		if (username == "" || username == undefined || username == null){
+			alert("You must be logged in for saving a cover");
+			return false;
+		}
+		
+		if (title == "" || title == undefined || title == null || author == "" || author == undefined || author == null){
+			alert("Title and author cannot be blank!! Title: " + title + " - Author: " + author);
+			return false;
+		}
+		
+		if (curr_file_size!=undefined && curr_file_size > 512000){
+			alert("File size exceeded! Max 500KB");
+			return false;
+		}
+
+
+		if ($("#pic").val() == "" && curr_cover_id == ""){
+			alert("File cannot be empty!");
+			return false;
+		}
+	
+		if ( year != "" && (isNaN(parseInt(year)) || parseInt(year)<0) ){
+			alert("Year value not valid: " + year);
+			return false;
+		}
+		
+		loading(true,"Submitting album cover...");
+		
+		$.ajax(
+		{
+			url: BE_URL + "/uploadcover",
+			method: "POST",
+			data: formData,
+			cache: false,
+			contentType: false,
+			processData: false
+		})
+		  .done(function(data) {
+			 
+			response = data;
+			
+			try {
+				res = JSON.parse(response);
+				if (DEBUG) console.log("Upload Cover -> Result: " + res.result);
+				if (DEBUG) console.log("Upload Cover -> Message: " + res.message);
+				
+				if (res.result == "failure"){
+					alert("Error" + res.message);
+					return false;
+				}
+			}
+			catch(err) {
+				console.log("JSON parsing of upload cover response failed.");
+				if (DEBUG) console.log(JSON.stringify(response));
+			}
+			
+			
+			if (DEBUG) console.log("Reloading covers...");
+			encryptText2( getX(), 'get_covers');
+
+			
+			$("#title").val("");
+			$("#author").val("");
+			$("#year").val("");
+			$("#pic").val("");
+
+			$("#upload_result").html('<span style="font-weight:bold; color:green">Success: </span>');
+			//' + res.message+ '
+
+		  })
+		  .fail(function(err) {
+				alert("Server error!");
+			//var msg = eval(err.responseJSON);
+			//alert(msg.message);
+			//if (DEBUG) console.log("iCarusi App============> ========> iCarusi : failed to save tv show");
+			//if (DEBUG) console.log("iCarusi App============> ========> iCarusi : username " + storage.getItem("icarusi_user"));
+		  })
+		  .always(function() {
+			loading(false,"");
+		  });
+	};
