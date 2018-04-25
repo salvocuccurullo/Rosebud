@@ -76,20 +76,19 @@
 		</div>
 		
 		<div data-role="page" id="cover_page">		<!-- COVER PAGE -->
-			<a href="#song_page" class="ui-btn ui-corner-all ui-shadow ui-btn-inline ui-icon-home ui-btn-icon-arrow-l ui-btn-a" data-mini="true">Back</a>
-			<div class="ui-corner-all custom-corners">
-				<div class="ui-bar ui-bar-a">
-					<h3>Cover upload</h3>
-				 </div>
+			<a href="#song_page" class="ui-btn ui-corner-all ui-shadow ui-btn-inline ui-icon-home ui-btn-icon-arrow-l ui-btn-a" data-mini="true" style="margin-left:15px">Back</a>
+			Cover editing
+			<div class="ui-corner-all custom-corners" style="min-height:600px; text-align:center">
 				 <div class="ui-body ui-body-a" id="switch-page">
+						<img src="" style="margin-top:10px; width:85%; float:center" id="cover_img" name="cover_img"/><br/>
 						<form id="cover_form" method="POST" enctype="multipart/form-data">
 							<input type="hidden" name="username2" id="username2"/>
 							<input type="hidden" name="kanazzi" id="kanazzi"/>
-							<input type="file" name="pic" id="pic" accept="image/*" data-mini="true">
 							<input type="hidden" name="id" id="id" />
 							<input type="text" name="title" id="title" data-mini="true" placeholder="Set album title (required)" data-clear-btn="true"/>
 							<input type="text" name="author" id="author" data-mini="true" placeholder="Set album author (required)" data-clear-btn="true"/>
 							<input type="number" pattern="[0-9]*" name="year" id="year" data-mini="true" placeholder="Set album release year (optional)" data-clear-btn="true"/>
+							<input type="file" name="pic" id="pic" accept="image/*" data-mini="true">
 							<a href="#" id="send_album_btn" data-role="button" data-icon="check" data-inline="true" data-iconpos="right" data-mini="true">Send...</a>
 							<div id="upload_result"></div>
 						</form>

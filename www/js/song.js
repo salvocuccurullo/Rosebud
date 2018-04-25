@@ -118,7 +118,16 @@
 			encryptText2( getX(), "uploadCover" );
 		});
 			
-			
+		$('#pic').bind('change', function() {
+			var size = this.files[0].size;
+			curr_file_size = size;
+			var sizekb = this.files[0].size/1024;
+			if (size <= 512000)
+				$("#upload_result").html('<span style="color:green">File size (' +  sizekb.toFixed(2) + " KB) OK !</span>");
+			else
+				$("#upload_result").html('<span style="color:red">File size (' +  sizekb.toFixed(2) + " KB) not OK! Max 500 KB! </span>");
+		});
+
 		}
 			
 	function get_song(){
@@ -306,6 +315,13 @@
 	function edit_cover(id){
 		$(':mobile-pagecontainer').pagecontainer('change', '#cover_page');
 		
+		$("#cover_img").attr("src","");
+		$("#title").val("");
+		$("#author").val("");
+		$("#year").val("");
+		$("#pic").val("");
+		$("#upload_result").html("");
+		
 		var result = $.grep(current_covers, function(element, index) {
 			return (element.id === id);
 		});
@@ -319,6 +335,9 @@
 		$("#title").val(result.name);
 		$("#author").val(result.author);
 		$("#year").val(result.year);
+		if (result.location != "")
+			$("#cover_img").attr("src", result.location);
+		if (DEBUG) console.log("cover img src: " + $("#cover_img").attr("src"));
 		curr_cover_id = result.id;
 	}
 

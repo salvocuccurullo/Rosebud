@@ -408,6 +408,8 @@
 
 	function setTvShows(tvshows, votes_user){
 		
+		loading(true, 'Rendering movies...');
+		
 		if (DEBUG) console.log("iCarusi App============> SetTvShows called");
 		
 		$("#movies-list").empty();
@@ -598,6 +600,8 @@
 		$('#top-list-voters').listview('refresh');
 		$('#top-list-movies').listview('refresh');
 		checkMoviesCT();
+		
+		loading(false, '');
 	}
 
 	function setCacheInfo(){
