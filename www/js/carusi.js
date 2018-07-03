@@ -10,6 +10,7 @@
 	function onDeviceReady() {			// CORDOVA
 	//$( document ).ready(function() {	// LOCAL DEVELOP
 		
+		var positions = [];
 		icarusi_user = storage.getItem("icarusi_user");
 		var networkState = navigator.connection.type;
 		$("#connection").html("");
@@ -24,6 +25,72 @@
 			loadPeople(false, false);
 		}
 		
+		var div = document.getElementById("map_canvas");
+		// Create a Google Maps native view under the map_canvas div.
+		var map = plugin.google.maps.Map.getMap(div);
+		map.setOptions({
+			'backgroundColor': 'white',
+			'mapType': plugin.google.maps.MapTypeId.ROADMAP,
+			'controls': {
+			'compass': true,
+			'myLocationButton': true,
+			'indoorPicker': true,
+			'zoom': true // Only for Android
+			},
+		});
+		
+		
+		var onSuccessLocation = function(position) {
+			/*
+			$("#geoinfo").html('Latitude:<b>'          + position.coords.latitude    + '<br/>' +
+			'Longitude:<b>'         + position.coords.longitude         + '</b><br/>' +
+			'Altitude:<b>'          + position.coords.altitude          + '</b><br/>' +
+			'Accuracy:<b>'          + position.coords.accuracy          + '</b><br/>' +
+			'Altitude Accuracy:<b>' + position.coords.altitudeAccuracy  + '</b><br/>' +
+			'Heading:<b>'           + position.coords.heading           + '</b><br/>' +
+			'Speed:<b>'             + position.coords.speed             + '</b><br/>' +
+			'Timestamp:<b>'         + position.timestamp                + '</b><br/>');
+			*/
+			
+			positions.push({"user":icarusi_user, "gps":{"lat": position.coords.latitude, "lng": position.coords.longitude}});
+			
+			setMarkers(positions);
+		};
+
+		// onError Callback receives a PositionError object
+		//
+		function onErrorLocation(error) {
+			alert('code: '    + error.code    + '\n' +'message: ' + error.message + '\n');
+		}
+
+		function setMarkers(positions){
+			
+			var caruso_pos ={};
+
+			$.each( positions, function(index, value){
+				// Add a maker
+				var marker = map.addMarker({
+					position: value.gps,
+					title: "iCarusi nel mondo",
+					snippet: value.user + " is here!",
+					animation: plugin.google.maps.Animation.BOUNCE
+				});
+				
+				if (value.user == icarusi_user)
+					caruso_pos = value;
+				
+				// Show the info window
+				marker.showInfoWindow();
+			});
+
+			// Zoom to mypos
+			map.setCameraTarget(caruso_pos.gps);
+			map.setCameraZoom(10);
+		}
+
+		navigator.geolocation.getCurrentPosition(onSuccessLocation, onErrorLocation);
+
+		/*
 		setCacheInfo();
 		
 		$(document).on("click", "#send_minchiata_btn", function(){
@@ -34,7 +101,6 @@
 			}				
 			encryptText2( getX(), "saveMinchiata" );
 		});
-		
 		
 		$(document).on("change", "#type", function(){
 			console.log("iCarusi App============> XXXXXXX " + $("#type").val() + " XXXXXXXXXX");
@@ -56,8 +122,7 @@
 				$("#name").val('');
 				$("#desc").val('');					
 			}
-			
-			//Keyboard.hide();
+
 		});			
 		
 		PullToRefresh.init({
@@ -72,7 +137,7 @@
 			instructionsReleaseToRefresh: "Manadittu!",
 			distThreshold : 20,
 		});
-
+		*/
 		// SWIPE RUDIMENTALE
 		
 		  $( "#carusi_page" ).on( "swipeleft", swipeleftHandler );
