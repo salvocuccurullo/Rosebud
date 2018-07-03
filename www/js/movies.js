@@ -663,6 +663,7 @@
 			alert( "Server Error" );
 		})
 		.always(function() {
+			loading(false, '');
 		});
 	}
 
@@ -830,7 +831,7 @@
 			//if (DEBUG) console.log("iCarusi App============> ========> iCarusi : username " + storage.getItem("icarusi_user"));
 		  })
 		  .always(function() {
-			loading("false","");
+			loading(false,"");
 		  });
 	};
 

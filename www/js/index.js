@@ -13,7 +13,6 @@
 		
 		console.log("========> iCarusi started. Running on Android " + device.version);
 
-		
 		window.FirebasePlugin.getToken(function(token) {
 			// save this server-side and use it to push notifications to this device
 			if (DEBUG) console.log("==========> FIREBASE TOKEN ========> " + token);
@@ -22,8 +21,6 @@
 			console.error("==========> FIREBASE ERROR ========> " + error);
 		});
 		 
-		 
-		
 		enable_notif = storage.getItem("enable-notifications");
 		if (enable_notif != "" && enable_notif != undefined && eval(enable_notif)){
 			if (DEBUG) console.log("iCarusi App============> Enabling Push notification : " + enable_notif);
@@ -96,6 +93,10 @@
 				$("#upload_result").html('<span style="color:green">File size (' +  sizekb.toFixed(2) + " KB) OK !</span>");
 			else
 				$("#upload_result").html('<span style="color:red">File size (' +  sizekb.toFixed(2) + " KB) not OK! Max 500 KB! </span>");
+		});
+		
+		$( "#settings_page" ).on( "pagecontainerload", function( event, ui ) {
+			reset_cover_upload();
 		});
 		
 		/*
@@ -341,12 +342,13 @@
 		dld_imgs = storage.getItem("flip-dld-images");
 		remote_url = storage.getItem("remote_cover_url");
 		remote_covers_count = storage.getItem("remote_covers_count");
+		var networkState = navigator.connection.type;
 		
 		if (DEBUG) console.log("iCarusi App============> Remote covers count: " + remote_covers_count);
 		
 		var id_img = 0;
-		
-		if (remote_url != "" && dld_imgs != "" && eval(dld_imgs) && remote_covers_count != undefined && remote_covers_count > 0 ){
+
+		if (networkState != Connection.NONE && remote_url != "" && dld_imgs != "" && eval(dld_imgs) && remote_covers_count != undefined && remote_covers_count > 0 ){
 			if (DEBUG) console.log("iCarusi App============> Considering remote images...");
 			id_img = Math.floor((Math.random() * (parseInt(tot_imgs) + parseInt(remote_covers_count)) ) + 1);		// Consider also the remote images
 		}
@@ -481,12 +483,7 @@
 			return false;
 		}
 		
-		$.mobile.loading("show", {
-			text:'Submitting album cover...',
-			textVisible:true,
-			theme: 'e',
-			html: '',
-			});
+		loading(false,"Submitting album cover...");
 
 		$.ajax(
 		{
@@ -520,11 +517,7 @@
 			if (DEBUG) console.log("Reloading covers...");
 			encryptText2( getX(), 'get_remote_covers_stats');
 
-			
-			$("#title").val("");
-			$("#author").val("");
-			$("#year").val("");
-			$("#pic").val("");
+			reset_cover_upload();
 
 			$("#upload_result").html('<span style="font-weight:bold; color:green">Success</span>');
 
@@ -537,7 +530,13 @@
 			//if (DEBUG) console.log("iCarusi App============> ========> iCarusi : username " + storage.getItem("icarusi_user"));
 		  })
 		  .always(function() {
-			$.mobile.loading("hide");
+			loading(false,"");
 		  });
 	};
 
+	function reset_cover_upload(){
+		$("#title").val("");
+		$("#author").val("");
+		$("#year").val("");
+		$("#pic").val("");
+	}

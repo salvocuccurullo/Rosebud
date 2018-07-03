@@ -4,7 +4,7 @@
 		var kanazzi;
 		var swipe_left_target = "index.html";
 		var swipe_right_target = "carusi.html";
-		var DEBUG = true;
+		var DEBUG = false;
 		var device_app_path = "";
 		var sort_type = "created";
 		var sort_order = 1;
@@ -17,12 +17,13 @@
 		function onDeviceReady() {
 			
 			icarusi_user = storage.getItem("icarusi_user");
-			covers_storage = storage.getItem("storage_covers");
+			covers_storage = storage.getItem("covers_storage");
 			device_app_path = cordova.file.applicationDirectory;
 			$("#poster_pic").attr("src", "images/loading.gif");
 
 			var networkState = navigator.connection.type;
 			$("#connection").html("");
+			$("#random_song_message").html("");
 			
 			if (networkState === Connection.NONE) {
 				$("#connection").html("No network... Pantalica mode...");
@@ -30,26 +31,40 @@
 			
 			if (icarusi_user == "salvo")
 				$("#sabba_info").html(BE_URL);
-			
-			encryptText2(getX(), "get_song");
-			
-			old_ts  = new Number(storage.getItem("covers_ts"));
-			if (old_ts != "" && old_ts != null && old_ts != undefined){
 
-				new_ts = new Date().getTime();
-				diff = new_ts - old_ts;
-				diff_sec = diff / 1000;
-						
-				if (icarusi_user != "" && diff_sec < 86400 && covers_storage != "" && covers_storage != undefined && covers_storage != null){
-					console.log("iCarusi App============> Cached TVShows loading");
+			if (networkState === Connection.NONE) {
+				$("#connection").html("No network... Pantalica mode...");
+				
+				$("#random_song_message").html("No Random Song available<br/>on Pantalica mode! ;)");
+				
+				if (icarusi_user != "" && covers_storage != "" && covers_storage != undefined && covers_storage != null){
+					console.log("iCarusi App============> Cached Covers loading");
 					sort_covers("created");
+				}
+
+			}
+			else {
+			
+				encryptText2(getX(), "get_song");
+				
+				old_ts  = new Number(storage.getItem("covers_ts"));
+				if (old_ts != "" && old_ts != null && old_ts != undefined){
+
+					new_ts = new Date().getTime();
+					diff = new_ts - old_ts;
+					diff_sec = diff / 1000;
+							
+					if (icarusi_user != "" && diff_sec < 86400 && covers_storage != "" && covers_storage != undefined && covers_storage != null){
+						console.log("iCarusi App============> Cached Covers loading");
+						sort_covers("created");
+					}
+					else
+						encryptText2(getX(), "get_covers");
 				}
 				else
 					encryptText2(getX(), "get_covers");
 			}
-			else
-				encryptText2(getX(), "get_covers");
-
+			
 			/*
 			PullToRefresh.init({
 				mainElement: '#lyrics-list',
@@ -133,11 +148,8 @@
 	function get_song(){
 
 		$("#lyrics-list").empty();
-		$("#lyrics-list").show();
 
 		loading(true,"Loading random song...");
-
-		$("#song_content").hide();
 		
 		$.ajax(
 		{
@@ -150,15 +162,12 @@
 		  dataType: "json"
 		})
 		  .done(function(data) {
-			
-			$("#logo_content").hide();
-			$("#song_content").show();
-					
+
 			if  (data.message=="song not found" || data.message=="not valid id"){
 				$('#lyrics-list').append('<li style="white-space:normal;">Song not found ;(</li>');
 				return;
 			}
-			console.log(data);
+			if (DEBUG) console.log(data);
 			song = eval(data.message);
 
 			song_header = '<li data-role="list-divider" data-theme="b" style="text-align:center">';
@@ -182,7 +191,6 @@
 		  })
 		  .always(function() {
 			loading(false,"");
-			$("#song_content").show();
 			//console.log("ajax call completed");
 		  });			
 	}			
@@ -240,6 +248,7 @@
 		covers = storage.getItem("covers_storage");		// GET FROM LOCALSTORAGE
 		if (covers != "" && covers != undefined && covers != null){
 			covers = JSON.parse(covers);
+			current_covers = covers;
 			if (sort_type=="avg_vote")
 			covers.sort(function(a,b){
 				if (parseFloat(a[sort_type]) > parseFloat(b[sort_type]))
@@ -312,33 +321,45 @@
 		loading(false,"");
 	}
 
+	function new_cover(){
+		edit_cover(0);
+	}
+
 	function edit_cover(id){
 		$(':mobile-pagecontainer').pagecontainer('change', '#cover_page');
 		
+		$("#cover_img").show();
 		$("#cover_img").attr("src","");
+		if (id==0)
+			$("#cover_img").hide();
 		$("#title").val("");
 		$("#author").val("");
 		$("#year").val("");
 		$("#pic").val("");
 		$("#upload_result").html("");
 		
-		var result = $.grep(current_covers, function(element, index) {
-			return (element.id === id);
-		});
-		
-		if (DEBUG) console.log("==========================");
-		if (DEBUG) console.log(JSON.stringify(result));
-		if (DEBUG) console.log("==========================");
-		
-		result = result[0];
-		$("#id").val(result.id);
-		$("#title").val(result.name);
-		$("#author").val(result.author);
-		$("#year").val(result.year);
-		if (result.location != "")
-			$("#cover_img").attr("src", result.location);
-		if (DEBUG) console.log("cover img src: " + $("#cover_img").attr("src"));
-		curr_cover_id = result.id;
+		if (id != 0){
+			var result = $.grep(current_covers, function(element, index) {
+				return (element.id === id);
+			});
+			
+			if (DEBUG) console.log("==========================");
+			if (DEBUG) console.log(JSON.stringify(result));
+			if (DEBUG) console.log("==========================");
+			
+			result = result[0];
+			$("#id").val(result.id);
+			$("#title").val(result.name);
+			$("#author").val(result.author);
+			$("#year").val(result.year);
+			if (result.location != "")
+				$("#cover_img").attr("src", result.location);
+			if (DEBUG) console.log("cover img src: " + $("#cover_img").attr("src"));
+			curr_cover_id = result.id;
+		}
+		else{
+			$("#id").val("");
+		}
 	}
 
 	function poster(img_name){
@@ -471,3 +492,7 @@
 			loading(false,"");
 		  });
 	};
+
+	function no_image(){
+		$("#cover_img").attr("src", cordova.file.applicationDirectory + "www/images/no-image-available.jpg");
+	}
