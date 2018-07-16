@@ -37,67 +37,8 @@
 			<div id="cache_info" style="font-size:11px; font-style:italic; text-align:center; background-color:#000099; color:white;"></div>
 						
 			<div role="main" class="ui-content" style="text-align:center;">
-				<!--
-				<a href="#popupMinchiata" id="new_minchiata_btn" data-rel="popup" data-position-to="origin" class="ui-btn ui-corner-all ui-shadow ui-btn-inline ui-icon-plus ui-btn-icon-left ui-btn-a" data-transition="flow">Add carusata...</a>
-				<div data-role="popup" id="popupMinchiata" data-theme="a" class="ui-corner-all">
-					<div style="padding:10px 20px;">
-	
-						<div style="text-align: right">
-							<a href="#" data-rel="back" data-role="button" data-theme="a" data-icon="delete" data-iconpos="notext" class="ui-btn-right">Close</a>
-						</div>
-						<br/><br/>
-
-						<label for="type">Type of carusata:</label>
-						<select id="type" name="type" data-type="horizontal">
-							<option value="">-</option>
-							<option value="dogma">Dogma</option>
-							<option value="people">Personaggio male</option>
-						</select>
-
-						<div id="d_name" style="display:none">
-							<label for="name">Personaggio name:</label>
-							<input type="text" name="name" id="name" data-mini="true"/>
-						</div>
-
-						<div id="d_desc" style="display:none">
-							<label for="desc">Personaggio description:</label>
-							<textarea name="desc" id="desc"></textarea>
-						</div>
-						
-						<div id="d_dogma" style="display:none">
-							<label for="dogma">Dogma description:</label>
-							<textarea name="dogma" id="dogma"></textarea>						
-						</div>
-						
-						<div style="text-align: center">
-							<a href="#" id="send_minchiata_btn" data-role="button" data-icon="check" data-inline="true" data-iconpos="right">Send...</a>
-						</div>
-					</div>
-				</div>
-				<br/>
-				-->			
-				<div data-role="tabs">
-				  <div data-role="navbar">
-					<ul>
-						<li><a href="#map_content" class="ui-btn-active">iCarusi Map</a></li>
-						<!--
-						<li><a href="#dogma_content">The Dogma</a></li>
-						<li><a href="#people_content">Laggente</a></li>
-						-->
-					</ul>
-				  </div>
-					<div id="map_content" style="display:none; text-align:left;">
-						<div id="geoinfo" name="geoinfo"></div>
-						<div id="map_canvas" name="map_canvas"></div>
-					</div>
-					<div id="dogma_content" style="display:none; text-align:left;">
-						<ol data-role="listview" data-theme="a" data-inset="true" data-filter="false" id="dogma-list" ></ol>
-					</div>
-					<div id="people_content" style="display:none; text-align:left;">
-						<ol data-role="listview" data-theme="a" data-inset="true" data-filter="false" id="people-list" ></ol>
-					</div>
-				</div>				
-				
+				<a href="#" id="get_locations" data-role="button" data-icon="check" data-inline="true" data-iconpos="right" data-mini="true">Locate iCarusi...</a>
+				<div id="map_canvas" name="map_canvas"></div>
 			</div>
 			
 			<div data-role="footer" id="footer">

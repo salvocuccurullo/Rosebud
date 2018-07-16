@@ -42,7 +42,7 @@
 }
 
 #map_canvas { /* Must bigger size than 100x100 pixels */
-	margin-top: 5px;
+	margin-top: 10px;
 	width: 100%;
 	height: 500px;
 }
