@@ -80,6 +80,15 @@
 			encryptText2( getX(), "geoLocation" );
 		});
 
+		$(document).on("click", "#zoom_to", function(){
+			zoomTo("salvo", curr_positions);
+		});
+
+		//$("#test").bind('change', function(event, ui) {
+		$(document).on("change", "#carusi_loc_buttons", function(){
+		  zoomTo(this.value);
+		});
+
 		// SWIPE RUDIMENTALE
 		  $( "#carusi_page" ).on( "swipeleft", swipeleftHandler );
 		  $( "#carusi_page" ).on( "swiperight", swipeRightHandler );
@@ -87,6 +96,24 @@
 
 	};										// CORDOVA
 	
+
+	function zoomTo(username){
+		/*
+		console.log("______________________________________");
+		console.log(username);
+		console.log(JSON.stringify(positions));
+		console.log("______________________________________");
+		*/
+		
+		//TO BE CHANGED
+		$.each( curr_positions, function(index, value){
+			if (value.name == username){
+				map.setCameraTarget({"lat": value.latitude, "lng": value.longitude});
+				map.setCameraZoom(14);
+				return false
+			}
+		});
+	}
 
 	function setMarkers(positions){
 		
@@ -148,7 +175,8 @@
 			if (curr_action == "GET"){
 				curr_positions = response.body;
 				map.clear();
-				setMarkers(curr_positions)
+				setMarkers(curr_positions);
+				setButtons(curr_positions);
 			}
 
 		  })
@@ -160,4 +188,16 @@
 			loading(false,"GeoLocation...");
 		  });
 
+	}
+	
+	function setButtons(positions){
+		$('#carusi_loc_buttons').empty();
+		$('#carusi_loc_buttons').append('<option value="' + icarusi_user + '">' + icarusi_user + '</option>');
+		$.each( positions, function(index, value){
+			if (value.name != icarusi_user){
+				content = '<option value="' + value.name + '">' + value.name + '</option>';
+				$('#carusi_loc_buttons').append(content);
+			}
+		});
+		$('#carusi_loc_buttons').selectmenu('refresh');
 	}

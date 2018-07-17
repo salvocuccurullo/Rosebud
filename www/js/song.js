@@ -7,7 +7,7 @@
 		var DEBUG = false;
 		var device_app_path = "";
 		var sort_type = "created";
-		var sort_order = 1;
+		var sort_order = -1;
 		var current_covers = "";
 		var curr_file_size = 0;
 		var curr_cover_id = "";
