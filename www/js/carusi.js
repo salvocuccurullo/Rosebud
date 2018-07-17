@@ -110,6 +110,17 @@
 			if (value.name == username){
 				map.setCameraTarget({"lat": value.latitude, "lng": value.longitude});
 				map.setCameraZoom(14);
+
+				var marker = map.addMarker({
+					position: {"lat": value.latitude, "lng": value.longitude},
+					title: "iCarusi nel mondo",
+					snippet: username + " is here!",
+					animation: plugin.google.maps.Animation.BOUNCE
+				});
+
+				// Show the info window
+				marker.showInfoWindow();
+			
 				return false
 			}
 		});
@@ -147,6 +158,11 @@
 	}
 
 	function geoLocation(){
+		console.log("====================>"+icarusi_user);
+		if (icarusi_user=="" || icarusi_user == undefined || icarusi_user == null){
+			alert("Please login for share your location and getting info on iCarusi location");
+			return false
+		}
 
 		loading(true,"GeoLocation...");
 		
