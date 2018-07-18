@@ -1,5 +1,5 @@
 
-	var DEBUG = false;
+	var DEBUG = true;
 
 	var storage = window.localStorage;
 	var kanazzi;
@@ -62,6 +62,12 @@
 			storage.setItem("show-extra-info",val);
 		});
 
+		$('#enable-geoloc').on('change', function() {
+			val = $('#enable-geoloc').prop("checked");
+			if (DEBUG) console.log("iCarusi App============> Flip enable geolocation : " + val);
+			storage.setItem("enable-geoloc",val);
+		});
+
 		$('#enable-notifications').on('change', function() {
 			val = $('#enable-notifications').prop("checked");
 			if (DEBUG) console.log("iCarusi App============> Flip Enable Notifications : " + val);
@@ -106,11 +112,13 @@
 		dld_imgs = storage.getItem("flip-dld-images");
 		extra_info = storage.getItem("show-extra-info");
 		enable_notif = storage.getItem("enable-notifications");
+		enable_geoloc = storage.getItem("enable-geoloc");
 		
 		if (DEBUG) console.log("iCarusi App============> Downloaded images switch STORAGE : " + dld_imgs);
 		if (DEBUG) console.log("iCarusi App============> Save Downloaded images switch STORAGE : " + save_imgs);
 		if (DEBUG) console.log("iCarusi App============> Show Extra info switch STORAGE : " + extra_info);
 		if (DEBUG) console.log("iCarusi App============> Enable Push Notification STORAGE : " + enable_notif);
+		if (DEBUG) console.log("iCarusi App============> Enable Geo Location : " + enable_geoloc);
 		
 		if (save_imgs != "" && save_imgs != null)
 			$('#flip-save-images').prop("checked", eval(save_imgs));
@@ -130,7 +138,12 @@
 		if (enable_notif != "" && enable_notif != null)
 			$('#enable-notifications').prop("checked", eval(enable_notif));
 		else
-			storage.setItem("enable-notifications", false);			
+			storage.setItem("enable-notifications", false);
+
+		if (enable_geoloc != "" && enable_geoloc != null)
+			$('#enable-geoloc').prop("checked", eval(enable_geoloc));
+		else
+			storage.setItem("enable-geoloc", false);
 		
 		icarusi_user = storage.getItem("icarusi_user");
 

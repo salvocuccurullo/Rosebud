@@ -43,7 +43,14 @@
 
 #map_canvas { /* Must bigger size than 100x100 pixels */
 	margin-top: 15px;
+	margin: auto;
 	width: 95%;
 	height: 500px;
 	float:center;
 }
+
+/*
+#carusi_loc_buttons {
+    width: 100px !important;
+}
+*/

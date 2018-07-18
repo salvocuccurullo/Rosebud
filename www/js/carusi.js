@@ -1,5 +1,5 @@
 	var storage = window.localStorage;
-	var DEBUG = false;
+	var DEBUG = true;
 	var icarusi_user = "";
 	var kanazzi;
 	var swipe_left_target = "song.html";
@@ -9,7 +9,9 @@
 	var curr_latitude = "";
 	var curr_longitude = "";
 	var curr_positions = {};
+	var curr_caruso_pos = {};
 	var map;
+	var enable_geoloc = false;
 	
 	document.addEventListener('deviceready', this.onDeviceReady.bind(this), false);		//CORDOVA
 	
@@ -17,9 +19,14 @@
 
 		var positions = [];
 		icarusi_user = storage.getItem("icarusi_user");
+		enable_geoloc = storage.getItem("enable-geoloc");
+		if (enable_geoloc == "" || enable_geoloc == null)
+			enable_geoloc = false;
+		else
+			enable_geoloc = eval(enable_geoloc);
+		
 		var networkState = navigator.connection.type;
 		$("#connection").html("");
-
 		if (networkState === Connection.NONE) {
 			$("#connection").html("No network... Pantalica mode...");
 		}
@@ -54,15 +61,22 @@
 			*/
 
 			positions = [];
-			positions.push({"name":icarusi_user, "latitude": position.coords.latitude, "longitude": position.coords.longitude});
+			if (icarusi_user == "" || icarusi_user == null)
+				positions.push({"name":"Not logged Caruso", "latitude": position.coords.latitude, "longitude": position.coords.longitude});
+			else{
+				curr_caruso_pos = {"name":icarusi_user, "latitude": position.coords.latitude, "longitude": position.coords.longitude};
+				positions.push(curr_caruso_pos);
+			}
 			console.log("CURRENT...");
 			console.log(JSON.stringify(positions));
 			setMarkers(positions);
 			
-			curr_action = "SET";
-			curr_latitude = position.coords.latitude;
-			curr_longitude = position.coords.longitude;
-			encryptText2( getX(), 'geoLocation');
+			if (enable_geoloc==true){
+				curr_action = "SET";
+				curr_latitude = position.coords.latitude;
+				curr_longitude = position.coords.longitude;
+				encryptText2( getX(), 'geoLocation');
+			}
 			
 		};
 
@@ -98,18 +112,30 @@
 	
 
 	function zoomTo(username){
-		/*
-		console.log("______________________________________");
-		console.log(username);
-		console.log(JSON.stringify(positions));
-		console.log("______________________________________");
-		*/
 		
-		//TO BE CHANGED
+		//TO BE CHANGED USING A DICTIONARY WITH USERNAME AS KEY
+		
+		
+		if (enable_geoloc==false){
+			curr_positions.push(curr_caruso_pos);
+		}
+		
+		
 		$.each( curr_positions, function(index, value){
 			if (value.name == username){
-				map.setCameraTarget({"lat": value.latitude, "lng": value.longitude});
-				map.setCameraZoom(14);
+				
+				map.animateCamera({
+				  target: {lat: value.latitude, lng: value.longitude},
+				  zoom: 14,
+				  tilt: 60,
+				  bearing: 0,
+				  duration: 5000
+				}, function() {
+				  //alert("Camera target has been changed");
+				});
+				
+				//map.setCameraTarget({"lat": value.latitude, "lng": value.longitude});
+				//map.setCameraZoom(14);
 
 				var marker = map.addMarker({
 					position: {"lat": value.latitude, "lng": value.longitude},
@@ -126,10 +152,14 @@
 		});
 	}
 
+	/*
+	 * SET SELECT FOR ZOOMING I CARUSI
+	 */ 
+
 	function setMarkers(positions){
 		
 		var caruso_pos ={};
-		console.log("Locations array size: " + positions.length);
+		if (DEBUG) console.log("Locations array size: " + positions.length);
 		
 		$.each( positions, function(index, value){
 
@@ -156,7 +186,27 @@
 			map.setCameraZoom(5);
 		}
 	}
+	
+	/*
+	 * SET SELECT FOR ZOOMING I CARUSI
+	 */ 
+	
+	function setButtons(positions){
+		$('#carusi_loc_buttons').empty();
+		$('#carusi_loc_buttons').append('<option value="' + icarusi_user + '">' + icarusi_user + '</option>');
+		$.each( positions, function(index, value){
+			if (value.name != icarusi_user){
+				content = '<option value="' + value.name + '">' + value.name + '</option>';
+				$('#carusi_loc_buttons').append(content);
+			}
+		});
+		$('#carusi_loc_buttons').selectmenu('refresh');
+	}
 
+	/*
+	 * GET/SET REMOTE DATA
+	 */
+	
 	function geoLocation(){
 		console.log("====================>"+icarusi_user);
 		if (icarusi_user=="" || icarusi_user == undefined || icarusi_user == null){
@@ -165,6 +215,8 @@
 		}
 
 		loading(true,"GeoLocation...");
+		
+		if(DEBUG) console.log("GeoLocation remote action: " + curr_action + " for user: " + icarusi_user); 
 		
 		$.ajax(
 		{
@@ -181,7 +233,7 @@
 		  .done(function(data) {
 			 
 			response = eval(data);
-			console.log(JSON.stringify(response));
+			if (DEBUG) console.log("Response from server =====> " + JSON.stringify(response));
 			
 			if (response.result == "failure"){
 				alert(response.message);
@@ -204,16 +256,4 @@
 			loading(false,"GeoLocation...");
 		  });
 
-	}
-	
-	function setButtons(positions){
-		$('#carusi_loc_buttons').empty();
-		$('#carusi_loc_buttons').append('<option value="' + icarusi_user + '">' + icarusi_user + '</option>');
-		$.each( positions, function(index, value){
-			if (value.name != icarusi_user){
-				content = '<option value="' + value.name + '">' + value.name + '</option>';
-				$('#carusi_loc_buttons').append(content);
-			}
-		});
-		$('#carusi_loc_buttons').selectmenu('refresh');
 	}
