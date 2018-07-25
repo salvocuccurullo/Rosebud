@@ -1,5 +1,5 @@
 	var storage = window.localStorage;
-	var DEBUG = true;
+	var DEBUG = false;
 	var icarusi_user = "";
 	var kanazzi;
 	var swipe_left_target = "song.html";
@@ -71,11 +71,18 @@
 			console.log(JSON.stringify(positions));
 			setMarkers(positions);
 			
+			if (icarusi_user == "" || icarusi_user == null)
+			 return false
+			
 			if (enable_geoloc==true){
 				curr_action = "SET";
 				curr_latitude = position.coords.latitude;
 				curr_longitude = position.coords.longitude;
 				encryptText2( getX(), 'geoLocation');
+			}
+			else{
+				curr_action = "DELETE";
+				encryptText2( getX(), 'geoLocation');				
 			}
 			
 		};
@@ -201,6 +208,7 @@
 			}
 		});
 		$('#carusi_loc_buttons').selectmenu('refresh');
+		$('#select_zoom_div').show();
 	}
 
 	/*
