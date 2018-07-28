@@ -49,8 +49,20 @@
 	float:center;
 }
 
-/*
-#carusi_loc_buttons {
-    width: 100px !important;
+#custom-grid .ui-block-a {
+    width: 80% !important;
 }
-*/
+
+#custom-grid .ui-block-b {
+    width: 20% !important;    
+}
+
+#custom-grid-movies .ui-block-a {
+    width: 20% !important;
+    vertical-align: middle;
+}
+
+#custom-grid-movies .ui-block-b {
+    width: 80% !important;
+    vertical-align: middle;   
+}

@@ -82,7 +82,7 @@
 			}
 			else{
 				curr_action = "DELETE";
-				encryptText2( getX(), 'geoLocation');				
+				encryptText2( getX(), 'geoLocation');
 			}
 			
 		};

@@ -12,6 +12,7 @@
 		<script type="text/javascript" src="js/index.js" ></script>
 		<script type="text/javascript" src="js/pulltorefresh.min.js" ></script>
 		<script type="text/javascript" src="js/utils.js" ></script>
+		<script type="text/javascript" src="js/geoloc_utils.js" ></script>
 	</head>
 	
 	<body>
@@ -72,6 +73,7 @@
 			<!--
 			<a href="#home_page" data-rel="back" data-role="button" data-theme="a" data-icon="arrow-l" data-mini="true" data-iconpos="notext" data-direction="reverse" data-transition="slide" class="ui-btn-left">Close</a>
 			-->
+			<!--
 			<div class="ui-corner-all custom-corners">
 				
 				<div class="ui-bar ui-bar-a">
@@ -90,22 +92,57 @@
 						</form>
 				 </div>
 			</div>
-			
+			-->
 			<div class="ui-corner-all custom-corners">
 				<div class="ui-bar ui-bar-a">
 					<h3>Settings</h3>
 				 </div>
 				 <div class="ui-body ui-body-a" id="switch-page">
-						<label for="enable-geoloc">Share your location with iCarusi</label>
-						<input type="checkbox" data-role="flipswitch" data-mini="true" name="enable-geoloc" id="enable-geoloc" data-theme="b"/>
-						<label for="enable-notifications">Enable Push Notifications</label>
-						<input type="checkbox" data-role="flipswitch" data-mini="true" name="enable-notifications" id="enable-notifications" data-theme="b"/>
-						<label for="flip-dld-images">Download new covers from network</label>
-						<input type="checkbox" data-role="flipswitch" data-mini="true" name="flip-dld-images" id="flip-dld-images" data-theme="b"/>
-						<label for="flip-save-images">Save downloaded covers on phone</label>
-						<input type="checkbox" data-role="flipswitch" data-mini="true" name="flip-save-images" id="flip-save-images" data-theme="b" disabled="disabled"/>
-						<label for="show-extra-info">Show extra info</label>
-						<input type="checkbox" data-role="flipswitch" data-mini="true" name="show-extra-info" id="show-extra-info" data-theme="b"/>	
+					 
+						<div class="ui-grid-a" id="custom-grid">
+							<div class="ui-block-a">
+								<label for="enable-geoloc">Share your location with iCarusi</label>
+							</div>
+							<div class="ui-block-b">
+								<input type="checkbox" data-role="flipswitch" data-mini="true" name="enable-geoloc" id="enable-geoloc" data-theme="b"/>
+							</div>
+						</div>
+						
+						<div class="ui-grid-a" id="custom-grid">
+							<div class="ui-block-a">
+								<label for="enable-notifications">Enable Push Notifications</label>
+							</div>
+							<div class="ui-block-b">
+								<input type="checkbox" data-role="flipswitch" data-mini="true" name="enable-notifications" id="enable-notifications" data-theme="b"/>
+							</div>
+						</div>
+
+						<div class="ui-grid-a" id="custom-grid">
+							<div class="ui-block-a">
+								<label for="flip-dld-images">Download new covers from network</label>
+							</div>
+							<div class="ui-block-b">
+								<input type="checkbox" data-role="flipswitch" data-mini="true" name="flip-dld-images" id="flip-dld-images" data-theme="b"/>
+							</div>
+						</div>
+
+						<div class="ui-grid-a" id="custom-grid">
+							<div class="ui-block-a">
+								<label for="flip-save-images">Save downloaded covers on phone</label>
+							</div>
+							<div class="ui-block-b">
+								<input type="checkbox" data-role="flipswitch" data-mini="true" name="flip-save-images" id="flip-save-images" data-theme="b" disabled="disabled"/>
+							</div>
+						</div>
+						
+						<div class="ui-grid-a" id="custom-grid">
+							<div class="ui-block-a">
+								<label for="show-extra-info">Show extra info</label>
+							</div>
+							<div class="ui-block-b">
+								<input type="checkbox" data-role="flipswitch" data-mini="true" name="show-extra-info" id="show-extra-info" data-theme="b"/>	
+							</div>
+						</div>
 				 </div>
 			</div>
 			

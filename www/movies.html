@@ -143,10 +143,26 @@
 				 <div class="ui-body ui-body-a" id="movie-page">
 					<div style="padding:10px 20px;">
 						<form id="movie_form" method="POST" enctype="multipart/form-data">
-							<input type="text" name="title" id="title" data-mini="true" placeholder="Set movie title (required)" data-clear-btn="true"/>
-					
-							<input type="file" name="pic" id="pic" accept="image/*" data-mini="true">
-							<div id="upload_result"></div>
+
+							<div class="ui-grid-a" id="custom-grid-movies">
+								<div class="ui-block-a">
+									<label for="pic">Title</label>
+								</div>
+								<div class="ui-block-b">
+									<input type="text" name="title" id="title" data-mini="true" placeholder="Set movie title (required)" data-clear-btn="true"/>
+								</div>
+							</div>
+
+							<div class="ui-grid-a" id="custom-grid-movies">
+								<div class="ui-block-a">
+									<label for="pic">Poster</label>
+								</div>
+								<div class="ui-block-b">
+									<input type="file" name="pic" id="pic" accept="image/*" data-mini="true">
+									<div id="upload_result"></div>
+								</div>
+							</div>
+
 							<input type="hidden" name="username" id="username"/>
 							<input type="hidden" name="kanazzi" id="kanazzi"/>
 							<input type="hidden" name="id" id="id"/>
@@ -156,30 +172,38 @@
 							<input type="hidden" name="curr_pic" id="curr_pic" value=""/>
 							<input type="hidden" name="curr_link" id="curr_link" value=""/>
 
-							<div class="ui-field-contain">
-								<label for="media">Media Type *</label>
-								<select id="media" name="media" data-type="horizontal" data-mini="true">
-									<option value="">&mdash;</option>
-									<option value="netflix">Netflix</option>
-									<option value="camillina">Camillina</option>
-									<option value="sky">Sky</option>
-									<option value="tv">TV</option>
-									<option value="amazon">Amazon Video</option>
-									<option value="cinema">Cinema</option>
-									<option value="edicola">Edicola</option>
-									<option value="other">Other</option>
-								</select>
+							<div class="ui-grid-a" id="custom-grid-movies">
+								<div class="ui-block-a">
+									<label for="media">Media</label>
+								</div>
+								<div class="ui-block-b">
+									<select id="media" name="media" data-type="horizontal" data-mini="true">
+										<option value="">&mdash;</option>
+										<option value="netflix">Netflix</option>
+										<option value="camillina">Camillina</option>
+										<option value="sky">Sky</option>
+										<option value="tv">TV</option>
+										<option value="amazon">Amazon Video</option>
+										<option value="cinema">Cinema</option>
+										<option value="edicola">Edicola</option>
+										<option value="other">Other</option>
+									</select>
+								</div>
 							</div>
 
-							<div class="ui-field-contain">
-								<label for="media">Movie Type *</label>
-								<select id="type" name="type" data-type="horizontal" data-mini="true">
-									<option value="">&mdash;</option>
-									<option value="brand_new">Brand New</option>
-									<option value="r4">I Bellissimi</option>
-								</select>
+							<div class="ui-grid-a" id="custom-grid-movies">
+								<div class="ui-block-a">
+									<label for="media">Type</label>
+								</div>
+								<div class="ui-block-b">
+									<select id="type" name="type" data-type="horizontal" data-mini="true">
+										<option value="">&mdash;</option>
+										<option value="brand_new">Brand New</option>
+										<option value="r4">I Bellissimi</option>
+									</select>
+								</div>
 							</div>
-							
+
 							<div data-role="collapsible" id="the_votes_d" data-theme="a" data-content-theme="a" data-collapsed="true">
 									<h4>How iCarusi voted...</h4>
 									<ul data-role="listview" data-theme="a" data-inset="true" data-filter="false" id="users_votes" ></ul>
@@ -219,8 +243,13 @@
 								
 							</div>
 
-							<div class="ui-field-contain">
-								<input type="url" name="link" id="link" data-mini="true" placeholder="link (optional) only wikipedia" data-clear-btn="true"/>
+							<div class="ui-grid-a" id="custom-grid-movies">
+								<div class="ui-block-a">
+									<!--<label for="link" style="vertical-align:middle">Link</label>-->Link
+								</div>
+								<div class="ui-block-b">
+									<input type="url" name="link" id="link" data-mini="true" placeholder="link (optional) only wikipedia" data-clear-btn="true"/>
+								</div>
 							</div>
 						</form>
 						

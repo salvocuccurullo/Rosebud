@@ -5,5 +5,5 @@
         <item name="android:windowDisablePreview">true</item>
     </style>
     <drawable name="notification_big">@mipmap/icon</drawable>
-    <drawable name="notification_icon">@drawable/ic_stat_video_call</drawable>
+    <drawable name="notification_icon">@drawable/ic_stat_run</drawable>
 </resources>

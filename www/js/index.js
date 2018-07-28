@@ -1,11 +1,18 @@
 
-	var DEBUG = false;
+	var DEBUG = true;
 
 	var storage = window.localStorage;
 	var kanazzi;
 	var swipe_left_target = "movies.html";
 	var swipe_right_target = "song.html";
 	var curr_file_size = 0;
+	
+	//THESE GLOBAL VARIABLES ARE THE EVIL
+	//AND THEY SHOULD NOT USED EVER :D
+	var curr_action = "SET";
+	var curr_latitude = "";
+	var curr_longitude = "";
+	var enable_geoloc = false;
 	 
 	document.addEventListener('deviceready', this.onDeviceReady.bind(this), false);
 	
@@ -31,14 +38,18 @@
 			window.FirebasePlugin.unsubscribe("iCarusiNotifications");
 		}
 
-		/*
+		
 		window.FirebasePlugin.onNotificationOpen(function(notification) {
 			console.log("======= FCM NOTIFICATION ======> " + JSON.stringify(notification));
-			window.location="movies.html#comments_page?id=10";
+			if (DEBUG) console.log("Data notification received! - ENABLE GEOLOC switch values: " + enable_geoloc);
+			enable_geoloc = storage.getItem("enable-geoloc");
+			if (enable_geoloc!=null && enable_geoloc!=undefined && enable_geoloc!="")
+				enable_geoloc = eval(enable_geoloc);
+			navigator.geolocation.getCurrentPosition(onSuccessLocation, onErrorLocation);
 		}, function(error) {
 			console.error("======= FCM NOTIFICATION ERROR ======> " + error);
 		});
-		*/ 
+		 
 
 		/*
 		 * 	BINDINGS
