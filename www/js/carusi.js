@@ -71,19 +71,21 @@
 			console.log(JSON.stringify(positions));
 			setMarkers(positions);
 			
-			if (icarusi_user == "" || icarusi_user == null)
-			 return false
+			if (icarusi_user == "" || icarusi_user == null || icarusi_user == undefined)
+				return false
+			else
+				zoomTo(icarusi_user);
 			
 			if (enable_geoloc==true){
 				curr_action = "SET";
 				curr_latitude = position.coords.latitude;
 				curr_longitude = position.coords.longitude;
-				encryptText2( getX(), 'geoLocation');
 			}
 			else{
 				curr_action = "DELETE";
-				encryptText2( getX(), 'geoLocation');
 			}
+			
+			encryptText2( getX(), 'geoLocation');
 			
 		};
 
@@ -99,10 +101,6 @@
 		$(document).on("click", "#get_locations", function(){
 			curr_action = "GET";
 			encryptText2( getX(), "geoLocation" );
-		});
-
-		$(document).on("click", "#zoom_to", function(){
-			zoomTo("salvo", curr_positions);
 		});
 
 		//$("#test").bind('change', function(event, ui) {

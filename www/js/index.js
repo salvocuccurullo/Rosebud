@@ -1,5 +1,5 @@
 
-	var DEBUG = true;
+	var DEBUG = false;
 
 	var storage = window.localStorage;
 	var kanazzi;
@@ -41,11 +41,13 @@
 		
 		window.FirebasePlugin.onNotificationOpen(function(notification) {
 			console.log("======= FCM NOTIFICATION ======> " + JSON.stringify(notification));
+			/*
 			if (DEBUG) console.log("Data notification received! - ENABLE GEOLOC switch values: " + enable_geoloc);
 			enable_geoloc = storage.getItem("enable-geoloc");
 			if (enable_geoloc!=null && enable_geoloc!=undefined && enable_geoloc!="")
 				enable_geoloc = eval(enable_geoloc);
 			navigator.geolocation.getCurrentPosition(onSuccessLocation, onErrorLocation);
+			*/ 
 		}, function(error) {
 			console.error("======= FCM NOTIFICATION ERROR ======> " + error);
 		});
