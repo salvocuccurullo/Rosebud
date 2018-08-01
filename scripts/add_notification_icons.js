@@ -24,6 +24,10 @@ var filestocopy = [
     {
         "res/native/android/res/drawable-xxxhdpi/ic_stat_carusi_run.png":
         "platforms/android/app/src/main/res/drawable-xxxhdpi/ic_stat_carusi_run.png"
+    },
+    {
+	"google-services.json":
+	"platforms/android/app/google-services.json"
     }
 ];
 

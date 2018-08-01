@@ -1,5 +1,5 @@
 
-	var DEBUG = false;
+	var DEBUG = true;
 
 	var storage = window.localStorage;
 	var kanazzi;
@@ -19,14 +19,68 @@
 	function onDeviceReady() {			// CORDOVA
 		
 		console.log("========> iCarusi started. Running on Android " + device.version);
+		
+		if (DEBUG) console.log("Localstorage status START ===============");
+		if (DEBUG) console.log(JSON.stringify( storage_keys ));
+		if (DEBUG) console.log(JSON.stringify( get_ls("show-extra-info") ));
+		if (DEBUG) console.log("Localstorage status END ===============");
 
+		/*
+		 * FIREBASE MESSAGING
+		 */
+		
 		window.FirebasePlugin.getToken(function(token) {
 			// save this server-side and use it to push notifications to this device
 			if (DEBUG) console.log("==========> FIREBASE TOKEN ========> " + token);
 			storage.setItem("firebase_token",token);
+			
+			if ( icarusi_user!= "") {
+				data = {"username":icarusi_user, "token":token};
+				generic_json_request("/setFBToken", "POST", data);
+			}
+			
 		}, function(error) {
 			console.error("==========> FIREBASE ERROR ========> " + error);
 		});
+
+		window.FirebasePlugin.onNotificationOpen(function(notification) {
+			console.log("======= FCM NOTIFICATION ======> " + JSON.stringify(notification));
+		}, function(error) {
+			console.error("======= FCM NOTIFICATION ERROR ======> " + error);
+		});
+		
+		/*
+		 * FIREBASE AUTHENTICATION
+		 */
+		
+		cordova.plugins.firebase.auth.getIdToken().then(function(idToken) {
+			// send token to server
+			console.log("_______________________________");
+			console.log(idToken);
+			console.log("_______________________________");
+			if ( icarusi_user!= "") {
+				data = {"username":icarusi_user, "id_token":idToken};
+				generic_json_request("/setFBToken", "POST", data);
+			}
+		});
+
+		$(document).on("click", "#login_button_fireb", function(){
+			loading(true,"Logging in with Google Firebase...");
+			try {
+				cordova.plugins.firebase.auth.signInWithEmailAndPassword( $("#username_fireb").val(), $("#password_fireb").val() ).then(function(userInfo) {
+					console.log( JSON.stringify(userInfo) );
+					storage.setItem("firebase_uid",userInfo.uid);
+					loading(false,"");
+					alert("Login Successful!");
+					$("#popupLoginFireBase").popup("close");
+				});
+			}
+			catch(err){
+				loading(false,"");
+				alert("Login failed! " + err);
+			}
+		});
+		
 		 
 		enable_notif = storage.getItem("enable-notifications");
 		if (enable_notif != "" && enable_notif != undefined && eval(enable_notif)){
@@ -37,20 +91,6 @@
 			if (DEBUG) console.log("iCarusi App============> Disabling Push notification : " + enable_notif);
 			window.FirebasePlugin.unsubscribe("iCarusiNotifications");
 		}
-
-		
-		window.FirebasePlugin.onNotificationOpen(function(notification) {
-			console.log("======= FCM NOTIFICATION ======> " + JSON.stringify(notification));
-			/*
-			if (DEBUG) console.log("Data notification received! - ENABLE GEOLOC switch values: " + enable_geoloc);
-			enable_geoloc = storage.getItem("enable-geoloc");
-			if (enable_geoloc!=null && enable_geoloc!=undefined && enable_geoloc!="")
-				enable_geoloc = eval(enable_geoloc);
-			navigator.geolocation.getCurrentPosition(onSuccessLocation, onErrorLocation);
-			*/ 
-		}, function(error) {
-			console.error("======= FCM NOTIFICATION ERROR ======> " + error);
-		});
 		 
 
 		/*
@@ -215,6 +255,41 @@
 	
 	};	// CORDOVA
 
+
+	function generic_json_request(url, method, data){
+
+		$.ajax(
+		{
+			url: BE_URL + url,
+			method: method,
+			data: JSON.stringify(data),
+			contentType: "application/json",
+			dataType: "json"
+		})
+		  .done(function(data) {
+
+			if (DEBUG) console.log( "Request to " + url + " completed"  );
+			if (DEBUG) console.log( "Payload received " + JSON.stringify(data) );
+			try {
+				if (DEBUG) console.log( "Status response: " + data["result"] );
+				if (data.result == "failure"){
+					//alert("Error" + res.message);
+					return false;
+				}
+			}
+			catch(err) {
+				console.log("Failed to parse JSON.");
+				if (DEBUG) console.log( err );
+			}
+
+		  })
+		  .fail(function(err) {
+			if (DEBUG) console.log("iCarusi App============> Error during generic request to " + url);
+			if (DEBUG) console.log("iCarusi App============> " + err.responseText);
+		  })
+		  .always(function() {
+		  });
+	}
 
 
 	/*
@@ -559,9 +634,3 @@
 		  });
 	};
 
-	function reset_cover_upload(){
-		$("#title").val("");
-		$("#author").val("");
-		$("#year").val("");
-		$("#pic").val("");
-	}
