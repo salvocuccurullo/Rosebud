@@ -9,9 +9,9 @@
 		<script type="text/javascript" src="cordova.js"></script>
 		<script type="text/javascript" src="cordova_plugins.js"></script>
 		<script type="text/javascript" src="js/shared.js" ></script>
+		<script type="text/javascript" src="js/utils.js" ></script>
 		<script type="text/javascript" src="js/carusi.js" ></script>
 		<script type="text/javascript" src="js/pulltorefresh.min.js" ></script>
-		<script type="text/javascript" src="js/utils.js" ></script>
 	</head>
 	
 	<body>
@@ -35,13 +35,17 @@
 			</div>
 			<div id="connection" style="font-size:11px; font-style:italic; text-align:center; background-color:#C60419; color:white;"></div>
 			<div id="cache_info" style="font-size:11px; font-style:italic; text-align:center; background-color:#000099; color:white;"></div>
+			<div id="geoloc_info" style="font-size:11px; font-style:italic; text-align:center; background-color:#C60419; color:white;"></div>
 						
 			<div role="main" class="ui-content" style="text-align:center;">
-				<div class="ui-grid-a">
-					<div class="ui-block-a">
-						<a href="#" id="get_locations" data-role="button" data-icon="location" data-inline="true" data-iconpos="right" data-mini="true">Locate iCarusi</a>
+				<div class="ui-grid-b">
+					<div class="ui-block-a" style="width:33%">
+						<a href="#" id="locate_me" data-role="button" data-icon="location" data-inline="true" data-iconpos="right" data-mini="true">Me</a>
 					</div>
-					<div class="ui-block-b">
+					<div class="ui-block-b" style="width:33%">
+						<a href="#" id="get_locations" data-role="button" data-icon="location" data-inline="true" data-iconpos="right" data-mini="true">iCarusi</a>
+					</div>
+					<div class="ui-block-c" style="width:33%">
 						<select id="carusi_loc_buttons" name="carusi_loc_buttons" data-type="horizontal" data-mini="true" data-icon="user"></select>
 					</div>
 				</div>

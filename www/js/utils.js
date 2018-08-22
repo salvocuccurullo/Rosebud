@@ -84,6 +84,50 @@
 	}
 	
 	
+	function generic_json_request(url, method, data, successCB, failureCB){
+		
+		loading(true, "Loading...");
+
+		$.ajax(
+		{
+			url: BE_URL + url,
+			method: method,
+			data: JSON.stringify(data),
+			contentType: "application/json",
+			dataType: "json"
+		})
+		  .done(function(data) {
+
+			loading(false, "Loading...");
+
+			if (DEBUG) console.log( "Request to " + url + " completed"  );
+			if (DEBUG) console.log( "Payload received " + JSON.stringify(data) );
+			
+			try {
+				if (DEBUG) console.log( "Status response: " + data["result"] );
+				if (data.result == "failure"){
+					if (failureCB) failureCB(err);
+				}
+			}
+			catch(err) {
+				if (DEBUG) console.log( err );
+				if (failureCB) failureCB(err);
+			}
+			
+			if (successCB)
+				successCB(data);
+
+		  })
+		  .fail(function(err) {
+			loading(false, "Loading...");
+			if (DEBUG) console.log("iCarusi App============> Error during generic request to " + url);
+			if (DEBUG) console.log("iCarusi App============> " + err.responseText);
+			if (failureCB) failureCB(err);
+		  })
+		  .always(function() {
+			  loading(false, "Loading...");
+		  });
+	}
 
 	
 	

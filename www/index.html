@@ -9,10 +9,16 @@
 		<script type="text/javascript" src="cordova.js"></script>
 		<script type="text/javascript" src="cordova_plugins.js"></script>
 		<script type="text/javascript" src="js/shared.js" ></script>
+		
+		<!-- Firebase App is always required and must be first -->
+		<script src="js/firebase/firebase-app.js"></script>
+		<!-- Add additional services that you want to use -->
+		<script src="js/firebase/firebase-auth.js"></script>
+		
+		<script type="text/javascript" src="js/config.js" ></script>
+		<script type="text/javascript" src="js/utils.js" ></script>
 		<script type="text/javascript" src="js/index.js" ></script>
 		<script type="text/javascript" src="js/pulltorefresh.min.js" ></script>
-		<script type="text/javascript" src="js/utils.js" ></script>
-		<script type="text/javascript" src="js/geoloc_utils.js" ></script>
 	</head>
 	
 	<body>
@@ -42,21 +48,40 @@
 					<img src="images/loading.gif"/ style="width:85%" id="cover_img" onerror="set_fallback_image()"><br/><br/>
 					<span id="version"></span>
 				</div>
-							
+
 				<a href="#popupLogin" data-rel="popup" data-position-to="window" class="ui-btn ui-corner-all ui-shadow ui-btn-inline ui-icon-user ui-btn-icon-left ui-btn-a" data-transition="flow">Sign in</a>
 				<div data-role="popup" id="popupLogin" data-theme="a" class="ui-corner-all">
 					<div style="padding:10px 20px;">
 						<label for="username">Username</label>
-						<input type="text" name="username" id="username" value="">
+						<input type="text" name="username" id="username"  data-clear-btn="true" value="">
 						<label for="password">Password:</label>
 						<input type="password" data-clear-btn="false" name="password" id="password" value="" autocomplete="off" data-clear-btn="true"/>
 						<a href="#" data-role="button" data-icon="check" data-iconpos="right" id="login_button">Login</a>
 					</div>
 				</div>
+				<!--
+				<a href="#popupLoginFireBase" data-rel="popup" data-position-to="window" class="ui-btn ui-corner-all ui-shadow ui-btn-inline ui-icon-cloud ui-btn-icon-left ui-btn-a" data-transition="flow">Email Login</a>
+				<div data-role="popup" id="popupLoginFireBase" data-theme="a" class="ui-corner-all">
+						<div style="padding:10px 20px;">
+								<label for="username_fireb">Email</label>
+								<input type="email" name="username_fireb" id="username_fireb"  data-clear-btn="true" value="">
+								<label for="password_fireb">Password:</label>
+								<input type="password" name="password_fireb" id="password_fireb" value="" autocomplete="off" data-clear-btn="true"/>
+								<div class="ui-grid-a">
+									<div class="ui-block-a">
+										<a href="#" class="ui-btn-inline" data-role="button" data-icon="user" data-iconpos="right" name="login_button_fireb" id="login_button_fireb" data-mini="true">Login</a>
+									</div>
+									<div class="ui-block-b">
+										<a href="#" class="ui-btn-inline" data-role="button" data-icon="check" data-iconpos="right" name="register_button_fireb" id="register_button_fireb" data-mini="true">Register</a>
+									</div>
+								</div>
+						</div>
+				</div>
+				-->
+				<a id="loginGoogle" data-rel="popup" data-position-to="window" class="ui-btn ui-corner-all ui-shadow ui-btn-inline ui-icon-cloud ui-btn-icon-left ui-btn-a" data-transition="flow">Google Login</a>
 
 				<div data-role="popup" id="popupLoginResult" data-theme="a" class="ui-corner-all">
 					<div style="padding:10px 20px;" id="login_message"></div>
-					<a href="#" data-role="button" data-icon="delete" data-iconpos="right" id="login_result_btn"></a>
 				</div>
 
 				<div id="logged">Not logged in</div>
@@ -70,29 +95,6 @@
 		
 		<div data-role="page" id="settings_page">
 			<a href="#home_page" class="ui-btn ui-corner-all ui-shadow ui-btn-inline ui-icon-home ui-btn-icon-arrow-l ui-btn-a" data-mini="true">Back</a>
-			<!--
-			<a href="#home_page" data-rel="back" data-role="button" data-theme="a" data-icon="arrow-l" data-mini="true" data-iconpos="notext" data-direction="reverse" data-transition="slide" class="ui-btn-left">Close</a>
-			-->
-			<!--
-			<div class="ui-corner-all custom-corners">
-				
-				<div class="ui-bar ui-bar-a">
-					<h3>Cover upload</h3>
-				 </div>
-				 <div class="ui-body ui-body-a" id="switch-page">
-						<form id="cover_form" method="POST" enctype="multipart/form-data">
-							<input type="hidden" name="username2" id="username2"/>
-							<input type="hidden" name="kanazzi" id="kanazzi"/>
-							<input type="file" name="pic" id="pic" accept="image/*" data-mini="true">
-							<input type="text" name="title" id="title" data-mini="true" placeholder="Set album title (required)" data-clear-btn="true"/>
-							<input type="text" name="author" id="author" data-mini="true" placeholder="Set album author (required)" data-clear-btn="true"/>
-							<input type="number" pattern="[0-9]*" name="year" id="year" data-mini="true" placeholder="Set album release year (optional)" data-clear-btn="true"/>
-							<a href="#" id="send_album_btn" data-role="button" data-icon="check" data-inline="true" data-iconpos="right" data-mini="true">Send...</a>
-							<div id="upload_result"></div>
-						</form>
-				 </div>
-			</div>
-			-->
 			<div class="ui-corner-all custom-corners">
 				<div class="ui-bar ui-bar-a">
 					<h3>Settings</h3>

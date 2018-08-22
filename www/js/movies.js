@@ -6,7 +6,7 @@
 	var currentId = 0;
 	var kanazzi;
 	var DEBUG = false;
-	var top_movies_count = 10;
+	var top_movies_count = 20;
 	var sort_type = "datetime_sec";
 	var sort_order = 1;
 	var swipe_left_target = "carusi.html";

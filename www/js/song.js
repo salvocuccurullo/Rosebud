@@ -4,7 +4,7 @@
 		var kanazzi;
 		var swipe_left_target = "index.html";
 		var swipe_right_target = "carusi.html";
-		var DEBUG = false;
+		var DEBUG = true;
 		var device_app_path = "";
 		var sort_type = "created";
 		var sort_order = -1;
@@ -149,7 +149,7 @@
 
 		$("#lyrics-list").empty();
 
-		loading(true,"Loading random song...");
+		//loading(true,"Loading random song...");
 		
 		$.ajax(
 		{
@@ -167,7 +167,7 @@
 				$('#lyrics-list').append('<li style="white-space:normal;">Song not found ;(</li>');
 				return;
 			}
-			if (DEBUG) console.log(data);
+			if (DEBUG) console.log("Retrieved song data:" + JSON.stringify(data));
 			song = eval(data.message);
 
 			song_header = '<li data-role="list-divider" data-theme="b" style="text-align:center">';
@@ -190,7 +190,7 @@
 			$("#song_content").html("Error during song loading... i Kani Anassiri!!!");
 		  })
 		  .always(function() {
-			loading(false,"");
+			//loading(false,"");
 			//console.log("ajax call completed");
 		  });			
 	}			
@@ -203,6 +203,8 @@
 			return false;
 		}
 
+		if (DEBUG) console.log("iCarusi App============> Starting covers retrieving...");
+		
 		loading(true, "Loading covers...");
 		
 		$.ajax(
@@ -272,8 +274,6 @@
 
 	function setCovers(covers){
 		
-		loading(true,"Loading covers...");
-		
 		$('#covers-list').empty();
 		
 		setCacheInfo();
@@ -294,7 +294,7 @@
 			var cover_content = '<li style="white-space:normal">';
 			
 			if (value.type == undefined || value.type == "local")
-				cover_location = cordova.file.applicationDirectory + "www/images/covers/" + value.location;
+				cover_location = device_app_path + "www/images/covers/" + value.location;
 			else
 				cover_location = value.location;
 			
@@ -317,8 +317,6 @@
 			$('#covers-list').append(cover_content);
 		});
 		$('#covers-list').listview('refresh');
-		
-		loading(false,"");
 	}
 
 	function new_cover(){
@@ -363,8 +361,7 @@
 	}
 
 	function poster(img_name){
-		
-		
+
 		console.log("Show poster called on " + img_name);
 		
 		android_version = device.version.split(".");
@@ -477,7 +474,7 @@
 			$("#year").val("");
 			$("#pic").val("");
 
-			$("#upload_result").html('<span style="font-weight:bold; color:green">Success: </span>');
+			$("#upload_result").html('<span style="font-weight:bold; color:green">Success!</span>');
 			//' + res.message+ '
 
 		  })
@@ -494,5 +491,5 @@
 	};
 
 	function no_image(){
-		$("#cover_img").attr("src", cordova.file.applicationDirectory + "www/images/no-image-available.jpg");
+		$("#cover_img").attr("src", device_app_path + "www/images/no-image-available.jpg");
 	}

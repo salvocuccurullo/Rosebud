@@ -24,64 +24,143 @@
 		if (DEBUG) console.log(JSON.stringify( storage_keys ));
 		if (DEBUG) console.log(JSON.stringify( get_ls("show-extra-info") ));
 		if (DEBUG) console.log("Localstorage status END ===============");
-
+		
+		icarusi_user = storage.getItem("icarusi_user");
+		
 		/*
-		 * FIREBASE MESSAGING
+		 * FIREBASE AUTH WITH GOOGLE
 		 */
-		
-		window.FirebasePlugin.getToken(function(token) {
-			// save this server-side and use it to push notifications to this device
-			if (DEBUG) console.log("==========> FIREBASE TOKEN ========> " + token);
-			storage.setItem("firebase_token",token);
-			
-			if ( icarusi_user!= "") {
-				data = {"username":icarusi_user, "token":token};
-				generic_json_request("/setFBToken", "POST", data);
-			}
-			
-		}, function(error) {
-			console.error("==========> FIREBASE ERROR ========> " + error);
-		});
 
-		window.FirebasePlugin.onNotificationOpen(function(notification) {
-			console.log("======= FCM NOTIFICATION ======> " + JSON.stringify(notification));
-		}, function(error) {
-			console.error("======= FCM NOTIFICATION ERROR ======> " + error);
+		firebase.initializeApp(firebase_config);
+  
+		var provider = new firebase.auth.GoogleAuthProvider();
+
+		$(document).on("click", "#loginGoogle", function(){		
+			firebase.auth().signInWithRedirect(provider).then(function() {
+				return firebase.auth().getRedirectResult();
+				}).then(function(result) {
+					// This gives you a Google Access Token.
+					// You can use it to access the Google API.
+
+					var token = result.credential.accessToken;
+					// The signed-in user info.
+					var user = result.user;
+					
+					console.log("========== GOOGLE LOGIN ===================");
+					console.log(token);
+					console.log(JSON.stringify(user));
+					console.log("===========================================");
+					$("#logged").html('Logged in as <span style="color:green">' + user.displayName + '</span> (Google)');
+					
+				}).catch(function(error) {
+					// Handle Errors here.
+					var errorCode = error.code;
+					var errorMessage = error.message;
+					
+					console.log("========== GOOGLE LOGIN ERROR ===================");
+					console.log(errorCode);
+					console.log(errorMessage);
+					console.log("===========================================");
+				});
 		});
 		
+
 		/*
 		 * FIREBASE AUTHENTICATION
 		 */
-		
-		cordova.plugins.firebase.auth.getIdToken().then(function(idToken) {
-			// send token to server
-			console.log("_______________________________");
-			console.log(idToken);
-			console.log("_______________________________");
-			if ( icarusi_user!= "") {
-				data = {"username":icarusi_user, "id_token":idToken};
-				generic_json_request("/setFBToken", "POST", data);
-			}
-		});
 
+		/*
+		if ( icarusi_user!= "" ) {
+			data = {"username":icarusi_user};
+			loading(true,"Checking Firebase token...");
+			generic_json_request("/checkFBToken", "POST", data, tokenSuccess, tokenFailure);
+		}
+		
+		if (DEBUG) console.log( "Firebase username saved on localstorage: " + storage.getItem("fb_user"));
+		
 		$(document).on("click", "#login_button_fireb", function(){
 			loading(true,"Logging in with Google Firebase...");
-			try {
-				cordova.plugins.firebase.auth.signInWithEmailAndPassword( $("#username_fireb").val(), $("#password_fireb").val() ).then(function(userInfo) {
-					console.log( JSON.stringify(userInfo) );
-					storage.setItem("firebase_uid",userInfo.uid);
-					loading(false,"");
-					alert("Login Successful!");
-					$("#popupLoginFireBase").popup("close");
-				});
-			}
-			catch(err){
+			cordova.plugins.firebase.auth.signInWithEmailAndPassword( $("#username_fireb").val(), $("#password_fireb").val() )
+			.then(function(userInfo) {
+				console.log( JSON.stringify(userInfo) );
+				storage.setItem("firebase_uid",userInfo.uid);
 				loading(false,"");
-				alert("Login failed! " + err);
-			}
+				storage.setItem("fb_user", $("#username_fireb").val());
+				storage.setItem("fb_pass", $("#password_fireb").val());
+				alert("Login Successful!");
+				$("#popupLoginFireBase").popup("close");
+			})
+			.catch(function(error) {
+				loading(false,"");
+				alert("Login failed! " + error);					
+			});
+		});
+		*/
+		
+		$(document).on("click", "#register_button_fireb", function(){
+			loading(true,"Registering a new user\non Google Firebase...");
+			cordova.plugins.firebase.auth.createUserWithEmailAndPassword( $("#username_fireb").val(), $("#password_fireb").val() )
+			.then(function(userInfo) {
+				
+				console.log( JSON.stringify(userInfo) );
+				/*
+				storage.setItem("firebase_uid",userInfo.uid);
+				
+				storage.setItem("fb_user", $("#username_fireb").val());
+				storage.setItem("fb_pass", $("#password_fireb").val());
+				*/
+				loading(false,"");
+				/*
+				cordova.plugins.firebase.auth.sendEmailVerification()
+					.then(function(data) {
+						alert("Email verification succeded! " + data);
+					})
+					.catch(function(error) {
+						alert("Email verification failed! " + error);
+					});
+				*/
+				alert("User creation Successful! Email verification sent...");
+				$("#popupLoginFireBase").popup("close");
+			})
+			.catch(function(error) {
+				loading(false,"");
+				alert("User creation failed! " + error);
+			});
+		});		
+
+		/*
+		 * FIREBASE MESSAGING: ON STARTUP THE FCM TOKEN IS RETRIEVED FROM GOOGLE
+		 * IF SUCCESS: IT WILL BE SAVED ON BOTH LOCALSTORAGE AND SERVER SIDE
+		 */
+		if ( icarusi_user!= "" ) {
+			window.FirebasePlugin.getToken(function(token) {
+				// save this server-side and use it to push notifications to this device
+				if (DEBUG) console.log("==========> FIREBASE MESSAGING TOKEN ========> " + token);
+				storage.setItem("firebase_token",token);
+				
+				data = {"username":icarusi_user, "token":token};
+				generic_json_request("/setFBToken", "POST", data);
+				
+			}, function(error) {
+				console.error("==========> FIREBASE MESSAGING ERROR ========> " + error);
+			});
+		}
+		/*
+		 * FIREBASE MESSAGING ON NOTIFICATION EVENT MANAGEMENT
+		 * CURRENTLY JUST PRINT SOMETHING ON CONSOLE
+		 */
+
+		window.FirebasePlugin.onNotificationOpen(function(notification) {
+			console.log("======= FCM NOTIFICATION OPEN EVENT ======> " + JSON.stringify(notification));
+		}, function(error) {
+			console.error("======= FCM NOTIFICATION OPEN EVENT ERROR ======> " + error);
 		});
 		
-		 
+		
+		/*
+		 * FIREBASE MESSAGING: IF THE "ENABLE PUSH NOTIFICATION" IS ON THEN SUBSCRIBE TO FCM TOPIC "iCarusiNotification" 
+		*/
+		
 		enable_notif = storage.getItem("enable-notifications");
 		if (enable_notif != "" && enable_notif != undefined && eval(enable_notif)){
 			if (DEBUG) console.log("iCarusi App============> Enabling Push notification : " + enable_notif);
@@ -119,6 +198,18 @@
 			val = $('#enable-geoloc').prop("checked");
 			if (DEBUG) console.log("iCarusi App============> Flip enable geolocation : " + val);
 			storage.setItem("enable-geoloc",val);
+			if (icarusi_user != "" && icarusi_user != undefined){
+				if (!val){
+					id_token = storage.getItem("firebase_id_token");
+					if (id_token == undefined)
+						id_token = "";
+					data = {"username":icarusi_user, "action":"DELETE", "firebase_id_token":id_token};
+					generic_json_request("/geolocation2", "POST", data, geolocationSuccess, geolocationFailure);
+				}
+				else{
+					alert("Thanks for sharing your location!\n\nPlease open 'iCarusi' page for sharing your gps coords");
+				}
+			}
 		});
 
 		$('#enable-notifications').on('change', function() {
@@ -198,8 +289,6 @@
 		else
 			storage.setItem("enable-geoloc", false);
 		
-		icarusi_user = storage.getItem("icarusi_user");
-
 		if (icarusi_user == "salvo"){
 			$("#sabba_info").html(BE_URL);
 		}
@@ -215,12 +304,7 @@
 		$("#info_user").html(icarusi_user);
 		$("#info_network").html(networkState);
 		
-		$("#title").val("");
-		$("#author").val("");
-		$("#year").val("");
-		$("#pic").val("");
-		$("#upload_result").html("");
-		
+
 		if (networkState === Connection.NONE) {
 			$("#connection").html("No network... Pantalica mode...");
 		}
@@ -255,41 +339,69 @@
 	
 	};	// CORDOVA
 
+	/*
+	 * 
+	 * CALLBACKS
+	 * 
+	 */ 
 
-	function generic_json_request(url, method, data){
-
-		$.ajax(
-		{
-			url: BE_URL + url,
-			method: method,
-			data: JSON.stringify(data),
-			contentType: "application/json",
-			dataType: "json"
-		})
-		  .done(function(data) {
-
-			if (DEBUG) console.log( "Request to " + url + " completed"  );
-			if (DEBUG) console.log( "Payload received " + JSON.stringify(data) );
-			try {
-				if (DEBUG) console.log( "Status response: " + data["result"] );
-				if (data.result == "failure"){
-					//alert("Error" + res.message);
-					return false;
+		function tokenFailure(data){
+			loading(true,"Token verification error. Refreshing...");
+			cordova.plugins.firebase.auth.getIdToken()
+			.then(function(idToken) {
+				loading(false,"");
+				// send token to server
+				console.log("_______________________________");
+				console.log("Sending new token to server...");
+				console.log(idToken);
+				console.log("_______________________________");
+				if ( icarusi_user!= "") {
+					data = {"username":icarusi_user, "id_token":idToken};
+					storage.setItem("firebase_id_token", idToken);
+					generic_json_request("/setFBToken", "POST", data);
 				}
+			})
+			.catch(function(error){
+				if (DEBUG) console.log( "Firebase idToken failure" + error );
+				loading(true,"Token expired or not valid. Trying automatic login...");
+				cordova.plugins.firebase.auth.signInWithEmailAndPassword( storage.getItem("fb_user"), storage.getItem("fb_pass") )
+				.then(function(userInfo) {
+					loading(false,"");
+					if (DEBUG) console.log( JSON.stringify(userInfo) );
+					storage.setItem("firebase_uid",userInfo.uid);
+				})
+				.catch(function(error) {
+					loading(false,"");
+					alert("Automatic login failed! Please enter your credentials again." + error);
+					$("#popupLoginFireBase").popup("open");
+				});
+				
+			});
+		}
+
+		function tokenSuccess(data){
+			console.log("Firebase token on server is valid. " + JSON.stringify(data));
+			storage.setItem("firebase_id_token", data.payload.firebase_id_token);
+		}
+
+		function geolocationSuccess(data){
+			try{
+				alert("Status: " + data["result"] + "\n\n" + data["message"]);
 			}
 			catch(err) {
-				console.log("Failed to parse JSON.");
-				if (DEBUG) console.log( err );
+				alert("I cagnolini sono stati!");
 			}
+		}
+		
+		function geolocationFailure(error){
+			try{
+				alert("Status: " + data.result + "\n\n" + data.message);
+			}
+			catch(err) {
+				alert("I cagnolini sono stati!");
+			}
+		}
 
-		  })
-		  .fail(function(err) {
-			if (DEBUG) console.log("iCarusi App============> Error during generic request to " + url);
-			if (DEBUG) console.log("iCarusi App============> " + err.responseText);
-		  })
-		  .always(function() {
-		  });
-	}
 
 
 	/*
@@ -343,9 +455,8 @@
 		})
 		  .done(function(data) {
 
-			if (DEBUG) console.log( JSON.stringify(data));
+			if (DEBUG) console.log("Covers statistics: " + data);
 			covers = JSON.parse(data);
-
 
 			if (covers.payload.remote_covers==0)
 				if (DEBUG) console.log("iCarusi App============> No remote covers found on server.");
