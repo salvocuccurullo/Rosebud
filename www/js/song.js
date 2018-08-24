@@ -38,7 +38,7 @@
 				$("#random_song_message").html("No Random Song available<br/>on Pantalica mode! ;)");
 				
 				if (icarusi_user != "" && covers_storage != "" && covers_storage != undefined && covers_storage != null){
-					console.log("iCarusi App============> Cached Covers loading");
+					console.log("iCarusi App============> NO NETWORK -> Cached Covers loading");
 					sort_covers("created");
 				}
 
@@ -55,7 +55,7 @@
 					diff_sec = diff / 1000;
 							
 					if (icarusi_user != "" && diff_sec < 86400 && covers_storage != "" && covers_storage != undefined && covers_storage != null){
-						console.log("iCarusi App============> Cached Covers loading");
+						console.log("iCarusi App============> CACHE AVAILABLE AND NOT EXPIRED -> Cached Covers loading");
 						sort_covers("created");
 					}
 					else
@@ -167,9 +167,11 @@
 				$('#lyrics-list').append('<li style="white-space:normal;">Song not found ;(</li>');
 				return;
 			}
-			if (DEBUG) console.log("Retrieved song data:" + JSON.stringify(data));
+			
+			//if (DEBUG) console.log("Retrieved song data:" + JSON.stringify(data));
 			song = eval(data.message);
-
+			if (DEBUG) console.log("Retrieved song data:" + song.title + " - " + song.author);
+			
 			song_header = '<li data-role="list-divider" data-theme="b" style="text-align:center">';
 			song_header += '<button class="ui-btn ui-icon-refresh ui-btn-icon-notext ui-corner-all ui-mini ui-btn-inline ui-btn-b" style="float:right" onclick="get_song()"></button>';
 			song_header += '<span style="color:yellow">' + song.title + '</span><br/>' + song.author + '</li>';
@@ -186,7 +188,7 @@
 			
 		  })
 		  .fail(function() {
-			console.log( "error" );
+			console.log( "Error while retrieving random song");
 			$("#song_content").html("Error during song loading... i Kani Anassiri!!!");
 		  })
 		  .always(function() {
@@ -241,10 +243,16 @@
 
 
 	function sort_covers(s_type){
+		
+		if (DEBUG) console.log("Sort type current: " + sort_type + " --- Sort type passe: " + s_type);
+		
 		if (sort_type != s_type)
-			sort_order = -1
+			sort_order = 1
 		else
 			sort_order = sort_order * -1;
+			
+		if (DEBUG) console.log("Sort type: " + sort_type + " --- Sort order: " + sort_order);
+			
 		sort_type=s_type;
 		$( "#cover_search" ).val("");
 		covers = storage.getItem("covers_storage");		// GET FROM LOCALSTORAGE
@@ -267,7 +275,6 @@
 						return sort_order;
 					return 0;
 			});
-			
 			setCovers(covers);
 		}		
 	}
@@ -475,6 +482,7 @@
 			$("#pic").val("");
 
 			$("#upload_result").html('<span style="font-weight:bold; color:green">Success!</span>');
+			$(':mobile-pagecontainer').pagecontainer('change', '#song_page');
 			//' + res.message+ '
 
 		  })

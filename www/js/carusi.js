@@ -27,6 +27,13 @@
 			enable_geoloc = false;
 		else
 			enable_geoloc = eval(enable_geoloc);
+			
+		if (icarusi_user == undefined || icarusi_user == "" || icarusi_user == null){
+			$('#get_locations').prop('disabled', true).addClass('ui-state-disabled'); 
+			$('#locate_me').prop('disabled', true).addClass('ui-state-disabled');
+			alert("You must be logged in for accessing iCarusi page!!");
+			return false;
+		}	
 		
 		if (!enable_geoloc)
 			$("#geoloc_info").html("You're not sharing your location with iCarusi. Shame on you! Enable it on settings!");
