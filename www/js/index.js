@@ -35,22 +35,28 @@
   
 		var provider = new firebase.auth.GoogleAuthProvider();
 
-		$(document).on("click", "#loginGoogle", function(){		
+		$(document).on("click", "#loginGoogle", function(){
 			firebase.auth().signInWithRedirect(provider).then(function() {
 				return firebase.auth().getRedirectResult();
 				}).then(function(result) {
 					// This gives you a Google Access Token.
 					// You can use it to access the Google API.
-
-					var token = result.credential.accessToken;
+					var token = result.credential.idToken;
 					// The signed-in user info.
 					var user = result.user;
 					
-					console.log("========== GOOGLE LOGIN ===================");
-					console.log(token);
-					console.log(JSON.stringify(user));
-					console.log("===========================================");
+					if (DEBUG){
+						console.log("========== GOOGLE LOGIN ===================");
+						console.log(" * * CREDENTIALS * * ");
+						console.log(JSON.stringify(result.credential));
+						console.log(" * * USER * * ");
+						console.log(JSON.stringify(user));
+						console.log("===========================================");
+					}
+					
+					storage.setItem("firebase_id_token", token );
 					$("#logged").html('Logged in as <span style="color:green">' + user.displayName + '</span> (Google)');
+					$("#cover_img").attr("src", user.photoURL);
 					
 				}).catch(function(error) {
 					// Handle Errors here.
@@ -138,8 +144,8 @@
 				if (DEBUG) console.log("==========> FIREBASE MESSAGING TOKEN ========> " + token);
 				storage.setItem("firebase_token",token);
 				
-				data = {"username":icarusi_user, "token":token};
-				generic_json_request("/setFBToken", "POST", data);
+				data = {"username":icarusi_user, "token":token, "method":"POST", "url":"/setFBToken"};
+				encrypt_and_execute( getX(), "kanazzi", data, generic_json_request_new);
 				
 			}, function(error) {
 				console.error("==========> FIREBASE MESSAGING ERROR ========> " + error);
@@ -203,12 +209,27 @@
 					id_token = storage.getItem("firebase_id_token");
 					if (id_token == undefined)
 						id_token = "";
+					/*
 					data = {"username":icarusi_user, "action":"DELETE", "firebase_id_token":id_token};
 					generic_json_request("/geolocation2", "POST", data, geolocationSuccess, geolocationFailure);
+					*/ 
+					data = {"username":icarusi_user, "action":"DELETE", "firebase_id_token":id_token, "method":"POST", "url":"/geolocation2"};
+					encrypt_and_execute(getX(), "kanazzi", data, generic_json_request_new);
 				}
 				else{
 					alert("Thanks for sharing your location!\n\nPlease open 'iCarusi' page for sharing your gps coords");
 				}
+			}
+		});
+		
+		
+		$('#check-session').on('change', function() {
+			if (icarusi_user != "" && icarusi_user != undefined){
+				id_token = storage.getItem("firebase_id_token");
+				if (id_token == undefined)
+					id_token = "";
+				data = {"username":icarusi_user, "action":"DELETE", "firebase_id_token":id_token, "method":"POST", "url":"/testSession"};
+				encrypt_and_execute(getX(), "kanazzi", data, generic_json_request_new);
 			}
 		});
 
@@ -291,6 +312,7 @@
 		
 		if (icarusi_user == "salvo"){
 			$("#sabba_info").html(BE_URL);
+			$("#debug_session").show();
 		}
 
 		var networkState = navigator.connection.type;
@@ -356,9 +378,9 @@
 				console.log(idToken);
 				console.log("_______________________________");
 				if ( icarusi_user!= "") {
-					data = {"username":icarusi_user, "id_token":idToken};
 					storage.setItem("firebase_id_token", idToken);
-					generic_json_request("/setFBToken", "POST", data);
+					data = {"username":icarusi_user, "token":token, "method":"POST", "url":"/setFBToken"};
+					encrypt_and_execute( getX(), "kanazzi", data, generic_json_request_new);
 				}
 			})
 			.catch(function(error){

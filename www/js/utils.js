@@ -82,6 +82,19 @@
 				if (DEBUG) console.log("iCarusi App============> onFailure: " + JSON.stringify(err));
 			});
 	}
+
+	function encrypt_and_execute(pText, encKeyName, data, successCB, failureCB) {
+		result = cryptographyAES.doEncryption(pText, 
+			key,
+			function(crypted){
+				data[encKeyName] = crypted;
+				if (successCB) successCB(data);
+			},
+			function(err){
+				if (DEBUG) console.log("iCarusi App============> onFailure: " + JSON.stringify(err));
+				if (failureCB) failureCB(err);
+			});
+	}
 	
 	
 	function generic_json_request(url, method, data, successCB, failureCB){
@@ -129,5 +142,47 @@
 		  });
 	}
 
-	
-	
+	function generic_json_request_new(data, successCB, failureCB){
+		
+		loading(true, "Loading...");
+
+		$.ajax(
+		{
+			url: BE_URL + data.url,
+			method: data.method,
+			data: JSON.stringify(data),
+			contentType: "application/json",
+			dataType: "json"
+		})
+		  .done(function(data) {
+
+			loading(false, "Loading...");
+
+			if (DEBUG) console.log( "Request to " + data.url + " completed"  );
+			if (DEBUG) console.log( "Payload received " + JSON.stringify(data) );
+			
+			try {
+				if (DEBUG) console.log( "Status response: " + data["result"] );
+				if (data.result == "failure"){
+					if (failureCB) failureCB(err);
+				}
+			}
+			catch(err) {
+				if (DEBUG) console.log( err );
+				if (failureCB) failureCB(err);
+			}
+			
+			if (successCB)
+				successCB(data);
+
+		  })
+		  .fail(function(err) {
+			loading(false, "Loading...");
+			if (DEBUG) console.log("iCarusi App============> Error during generic request to " + url);
+			if (DEBUG) console.log("iCarusi App============> " + err.responseText);
+			if (failureCB) failureCB(err);
+		  })
+		  .always(function() {
+			  loading(false, "Loading...");
+		  });
+	}
