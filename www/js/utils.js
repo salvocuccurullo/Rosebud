@@ -83,19 +83,21 @@
 			});
 	}
 
-	function encrypt_and_execute(pText, encKeyName, data, successCB, failureCB) {
+	function encrypt_and_execute(pText, encKeyName, data) {
 		result = cryptographyAES.doEncryption(pText, 
 			key,
 			function(crypted){
 				data[encKeyName] = crypted;
-				if (successCB) successCB(data);
+				if (data.CB && data.successCB && data.failureCB)
+					data.CB(data, data.successCB, data.failureCB);
+				else
+					data.CB(data);
 			},
 			function(err){
 				if (DEBUG) console.log("iCarusi App============> onFailure: " + JSON.stringify(err));
-				if (failureCB) failureCB(err);
+				if (data.failureCB) data.failureCB(err);
 			});
 	}
-	
 	
 	function generic_json_request(url, method, data, successCB, failureCB){
 		

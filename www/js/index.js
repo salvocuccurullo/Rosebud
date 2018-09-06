@@ -1,5 +1,5 @@
 
-	var DEBUG = true;
+	var DEBUG = false;
 
 	var storage = window.localStorage;
 	var kanazzi;
@@ -57,6 +57,7 @@
 					storage.setItem("firebase_id_token", token );
 					$("#logged").html('Logged in as <span style="color:green">' + user.displayName + '</span> (Google)');
 					$("#cover_img").attr("src", user.photoURL);
+					storage.setItem("google_photo_url", user.photoURL );
 					
 				}).catch(function(error) {
 					// Handle Errors here.
@@ -144,8 +145,13 @@
 				if (DEBUG) console.log("==========> FIREBASE MESSAGING TOKEN ========> " + token);
 				storage.setItem("firebase_token",token);
 				
-				data = {"username":icarusi_user, "token":token, "method":"POST", "url":"/setFBToken"};
-				encrypt_and_execute( getX(), "kanazzi", data, generic_json_request_new);
+				data = {"username":icarusi_user,
+						"token":token,
+						"method":"POST",
+						"url":"/setFBToken",
+						"CB":generic_json_request_new
+						};
+				encrypt_and_execute( getX(), "kanazzi", data);
 				
 			}, function(error) {
 				console.error("==========> FIREBASE MESSAGING ERROR ========> " + error);
@@ -213,8 +219,16 @@
 					data = {"username":icarusi_user, "action":"DELETE", "firebase_id_token":id_token};
 					generic_json_request("/geolocation2", "POST", data, geolocationSuccess, geolocationFailure);
 					*/ 
-					data = {"username":icarusi_user, "action":"DELETE", "firebase_id_token":id_token, "method":"POST", "url":"/geolocation2"};
-					encrypt_and_execute(getX(), "kanazzi", data, generic_json_request_new);
+					data = {"username":icarusi_user, 
+							"action":"DELETE", 
+							"firebase_id_token":id_token, 
+							"method":"POST", 
+							"url":"/geolocation2",
+							"CB":generic_json_request_new,
+							"successCB":geolocationSuccess,
+							"failureCB":geolocationFailure
+							};
+					encrypt_and_execute(getX(), "kanazzi", data);
 				}
 				else{
 					alert("Thanks for sharing your location!\n\nPlease open 'iCarusi' page for sharing your gps coords");
@@ -228,8 +242,16 @@
 				id_token = storage.getItem("firebase_id_token");
 				if (id_token == undefined)
 					id_token = "";
-				data = {"username":icarusi_user, "action":"DELETE", "firebase_id_token":id_token, "method":"POST", "url":"/testSession"};
-				encrypt_and_execute(getX(), "kanazzi", data, generic_json_request_new);
+				data = {"username":icarusi_user, 
+						"action":"DELETE",
+						"firebase_id_token":id_token,
+						"method":"POST",
+						"url":"/testSession",
+						"CB":generic_json_request_new,
+						"successCB":geolocationSuccess,
+						"failureCB":geolocationFailure
+				};
+				encrypt_and_execute(getX(), "kanazzi", data);
 			}
 		});
 
@@ -379,8 +401,15 @@
 				console.log("_______________________________");
 				if ( icarusi_user!= "") {
 					storage.setItem("firebase_id_token", idToken);
-					data = {"username":icarusi_user, "token":token, "method":"POST", "url":"/setFBToken"};
-					encrypt_and_execute( getX(), "kanazzi", data, generic_json_request_new);
+					data = {"username":icarusi_user, 
+							"token":token, 
+							"method":"POST", 
+							"url":"/setFBToken",
+							"CB":generic_json_request_new,
+							"successCB":geolocationSuccess,
+							"failureCB":geolocationFailure
+							};
+					encrypt_and_execute( getX(), "kanazzi", data);
 				}
 			})
 			.catch(function(error){

@@ -1,5 +1,5 @@
 	var storage = window.localStorage;
-	var DEBUG = true;
+	var DEBUG = false;
 	var icarusi_user = "";
 	var kanazzi;
 	var swipe_left_target = "song.html";
@@ -10,6 +10,7 @@
 	var curr_longitude = "";
 	var curr_positions = [];
 	var curr_caruso_pos = {};
+	var caruso_photo_url = "";
 	var map;
 	var enable_geoloc = false;
 	var geoloc_state = 0;
@@ -21,6 +22,8 @@
 		var positions = [];
 		icarusi_user = storage.getItem("icarusi_user");
 		enable_geoloc = storage.getItem("enable-geoloc");
+		caruso_photo_url = storage.getItem("google_photo_url");
+		
 		$("#geoloc_info").html("");
 		
 		if (enable_geoloc == "" || enable_geoloc == null)
@@ -117,10 +120,10 @@
 			if (icarusi_user == "" || icarusi_user == null)
 				positions.push({"name":"Not logged Caruso", "latitude": position.coords.latitude, "longitude": position.coords.longitude});
 			else{
-				curr_caruso_pos = {"name":icarusi_user, "latitude": position.coords.latitude, "longitude": position.coords.longitude};
+				curr_caruso_pos = {"name":icarusi_user, "latitude": position.coords.latitude, "longitude": position.coords.longitude, "caruso_photo_url":caruso_photo_url};
 				curr_positions.push(curr_caruso_pos);
 			}
-			console.log("Current positions: " + JSON.stringify(curr_positions));
+			if (DEBUG) console.log("Current positions: " + JSON.stringify(curr_positions));
 			setMarkers(curr_positions);
 			
 			if (icarusi_user == "" || icarusi_user == null || icarusi_user == undefined)
@@ -132,6 +135,7 @@
 				curr_action = "SET";
 				curr_latitude = position.coords.latitude;
 				curr_longitude = position.coords.longitude;
+				curr_picture = caruso_photo_url;
 			}
 			else{
 				curr_action = "DELETE";
@@ -244,16 +248,27 @@
 		if (DEBUG) console.log("Locations array: " + JSON.stringify(positions));
 		
 		$.each( positions, function(index, value){
+			
+			caruso_pic = "";
+			if (value.name == icarusi_user){
+				caruso_pos = value;
+				if (!value.photo)
+					value.photo = caruso_photo_url;
+			}
 
 			var marker = map.addMarker({
 				position: {"lat": value.latitude, "lng": value.longitude},
 				title: "iCarusi nel mondo",
 				snippet: value.name + " is here!",
-				animation: plugin.google.maps.Animation.DROP
+				animation: plugin.google.maps.Animation.DROP,
+				icon: {
+					url : value.photo,
+						size: {
+							width: 40,
+							height: 40
+						}
+				}
 			});
-			
-			if (value.name == icarusi_user)
-				caruso_pos = value;
 			
 			// Show the info window
 			marker.showInfoWindow();
@@ -281,56 +296,43 @@
 			
 			if (enable_geoloc==false){
 				curr_positions.push(curr_caruso_pos);
-				caruso_pos = curr_caruso_pos;
 			}
 			
 			if (DEBUG) console.log("Locations array size: " + curr_positions.length);
 			if (DEBUG) console.log("Locations array: " + JSON.stringify(curr_positions));
-			
-			
-			/*
-			// Show the current camera target position.
-			var target = map.getCameraTarget();
-			alert([
-			  "lat: " + target.lat,
-			  "lng: " + target.lng,
-			  "Map cleared!",
-			]);
-			*/
-			
-			
+
 			$.each( curr_positions, function(index, value){
+
+				caruso_pic = "";
+				if (value.name == icarusi_user){
+					caruso_pos = value;
+					if (!value.photo)
+						value.photo = caruso_photo_url;
+				}
 
 				map.addMarker(
 					{
 						position: {"lat": value.latitude, "lng": value.longitude},
 						title: "iCarusi nel mondo",
 						snippet: value.name + " is here!",
-						animation: plugin.google.maps.Animation.DROP
+						animation: plugin.google.maps.Animation.DROP,
+						icon: {
+							url: value.photo,
+							size: {
+								width: 40,
+								height: 40
+							}
+						}
 					}, 
 					function( marker ){
 						// Show the info window
 						marker.showInfoWindow();
 					}
 				);
-				
-				if (value.name == icarusi_user)
-					caruso_pos = value;
+
 			});
-			
-			
+
 			if (DEBUG) console.log("Locations caruso: " + JSON.stringify(caruso_pos))
-			
-			/*
-			// Zoom to mypos
-			map.setCameraTarget({"lat": caruso_pos.latitude, "lng": caruso_pos.longitude});
-			if (curr_action=="SET"){
-				map.setCameraZoom(12);
-			}
-			else if (curr_action=="GET"){
-				map.setCameraZoom(5);
-			}
-			*/ 
 		});
 	}
 	
@@ -358,7 +360,7 @@
 	 */
 	
 	function geoLocation(){
-		console.log("====================>"+icarusi_user);
+		
 		if (icarusi_user=="" || icarusi_user == undefined || icarusi_user == null){
 			alert("Please login for share your location and/or getting info on iCarusi location");
 			return false
@@ -376,6 +378,7 @@
 			action: curr_action,
 			latitude: curr_latitude,
 			longitude: curr_longitude,
+			photo: caruso_photo_url,
 			username: icarusi_user,
 			kanazzi: kanazzi,
 		  },
@@ -398,7 +401,7 @@
 
 		  })
 		  .fail(function(err) {
-				console.log(error);
+				console.log(err);
 				loading(false,"GeoLocation...");
 				alert("Server error! Die Hunde mussen sein!");
 		  })

@@ -4,7 +4,7 @@
 		var kanazzi;
 		var swipe_left_target = "index.html";
 		var swipe_right_target = "carusi.html";
-		var DEBUG = true;
+		var DEBUG = false;
 		var device_app_path = "";
 		var sort_type = "created";
 		var sort_order = -1;
@@ -55,7 +55,7 @@
 					diff_sec = diff / 1000;
 							
 					if (icarusi_user != "" && diff_sec < 86400 && covers_storage != "" && covers_storage != undefined && covers_storage != null){
-						console.log("iCarusi App============> CACHE AVAILABLE AND NOT EXPIRED -> Cached Covers loading");
+						if (DEBUG) console.log("iCarusi App============> CACHE AVAILABLE AND NOT EXPIRED -> Cached Covers loading");
 						sort_covers("created");
 					}
 					else

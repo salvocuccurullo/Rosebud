@@ -73,7 +73,7 @@
 				diff_sec = diff / 1000;
 						
 				if (diff_sec < 86400 && tv_shows_storage != "" && tv_shows_storage != undefined && tv_shows_storage != null){
-					console.log("iCarusi App============> Cached TVShows loading");
+					if (DEBUG) console.log("iCarusi App============> Cached TVShows loading");
 					getTvShows(true); // load movies on startup from cache if there is cache and last update time is greater than 1 day
 				}
 				else
