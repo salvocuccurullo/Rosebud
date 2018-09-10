@@ -188,3 +188,9 @@
 			  loading(false, "Loading...");
 		  });
 	}
+
+function locale_date(input_date){
+	d = new Date(input_date);
+	moment.locale('it');
+	return moment(d).format("ddd, DD/MM/YYYY HH:mm");
+}

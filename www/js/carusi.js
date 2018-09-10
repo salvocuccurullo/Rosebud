@@ -120,7 +120,7 @@
 			if (icarusi_user == "" || icarusi_user == null)
 				positions.push({"name":"Not logged Caruso", "latitude": position.coords.latitude, "longitude": position.coords.longitude});
 			else{
-				curr_caruso_pos = {"name":icarusi_user, "latitude": position.coords.latitude, "longitude": position.coords.longitude, "caruso_photo_url":caruso_photo_url};
+				curr_caruso_pos = {"name":icarusi_user, "latitude": position.coords.latitude, "longitude": position.coords.longitude, "caruso_photo_url":caruso_photo_url, "last_locate":new Date()};
 				curr_positions.push(curr_caruso_pos);
 			}
 			if (DEBUG) console.log("Current positions: " + JSON.stringify(curr_positions));
@@ -219,7 +219,7 @@
 				var marker = map.addMarker({
 					position: {"lat": value.latitude, "lng": value.longitude},
 					title: "iCarusi nel mondo",
-					snippet: username + " is here!",
+					snippet: value.name + " was here on:\n" + locale_date(value.last_locate),
 					animation: plugin.google.maps.Animation.DROP
 				});
 
@@ -259,7 +259,7 @@
 			var marker = map.addMarker({
 				position: {"lat": value.latitude, "lng": value.longitude},
 				title: "iCarusi nel mondo",
-				snippet: value.name + " is here!",
+				snippet: value.name + " was here on:\n" + locale_date(value.last_locate),
 				animation: plugin.google.maps.Animation.DROP,
 				icon: {
 					url : value.photo,
@@ -286,7 +286,7 @@
 	}
 
 	function setMarkers2(){
-		
+
 		if (curr_positions.length == 0)
 			return false
 
@@ -314,7 +314,7 @@
 					{
 						position: {"lat": value.latitude, "lng": value.longitude},
 						title: "iCarusi nel mondo",
-						snippet: value.name + " is here!",
+						snippet: value.name + " was here on:\n" + locale_date(value.last_locate),
 						animation: plugin.google.maps.Animation.DROP,
 						icon: {
 							url: value.photo,
