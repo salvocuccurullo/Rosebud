@@ -13,6 +13,8 @@
 	var curr_latitude = "";
 	var curr_longitude = "";
 	var enable_geoloc = false;
+	
+	var appVersion;
 	 
 	document.addEventListener('deviceready', this.onDeviceReady.bind(this), false);
 	
@@ -149,6 +151,7 @@
 						"token":token,
 						"method":"POST",
 						"url":"/setFBToken",
+						"app_version":appVersion,
 						"CB":generic_json_request_new
 						};
 				encrypt_and_execute( getX(), "kanazzi", data);
@@ -341,6 +344,7 @@
 		$("#connection").html("");
 		
 		cordova.getAppVersion.getVersionNumber().then(function (version) {
+			appVersion = version;
 			$('#version').html("Release " + version);
 			$("#info_version").html(version);
 		});
