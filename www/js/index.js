@@ -199,13 +199,13 @@
 
 		$('#flip-save-images').on('change', function() {
 			val = $('#flip-save-images').prop("checked");
-			if (DEBUG) console.log("iCarusi App============> Flip Downloaded images : " + val);
+			if (DEBUG) console.log("iCarusi App============> Flip Save images : " + val);
 			storage.setItem("flip-save-images",val);
 		});
 		
 		$('#show-extra-info').on('change', function() {
 			val = $('#show-extra-info').prop("checked");
-			if (DEBUG) console.log("iCarusi App============> Flip Downloaded images : " + val);
+			if (DEBUG) console.log("iCarusi App============> Flip Show extra info : " + val);
 			storage.setItem("show-extra-info",val);
 		});
 
@@ -241,6 +241,7 @@
 		
 		
 		$('#check-session').on('change', function() {
+			if (DEBUG) console.log("iCarusi App============> Flip check session (" + icarusi_user + ")");
 			if (icarusi_user != "" && icarusi_user != undefined){
 				id_token = storage.getItem("firebase_id_token");
 				if (id_token == undefined)
@@ -335,10 +336,6 @@
 		else
 			storage.setItem("enable-geoloc", false);
 		
-		if (icarusi_user == "salvo"){
-			$("#sabba_info").html(BE_URL);
-			$("#debug_session").show();
-		}
 
 		var networkState = navigator.connection.type;
 		$("#connection").html("");
@@ -382,7 +379,7 @@
 		 */ 
 
 		listDir(cordova.file.applicationDirectory + "www/images/covers/");
-		encryptText2( getX(), 'get_remote_covers_stats');					// GET REMOTE RANDOM COVER
+		show_post_login_features();		// User can be already logged in from previous session
 		
 	
 	};	// CORDOVA
@@ -409,6 +406,7 @@
 							"token":token, 
 							"method":"POST", 
 							"url":"/setFBToken",
+							"app_version":appVersion,
 							"CB":generic_json_request_new,
 							"successCB":geolocationSuccess,
 							"failureCB":geolocationFailure
@@ -683,12 +681,14 @@
 				if ( response.result == "success" && response.payload.logged == "yes"){
 					if (DEBUG) console.log("========> iCarusi : Login successful");	
 					if (DEBUG) console.log("========> iCarusi : " + response.payload.username);
-					if (DEBUG) console.log("========> iCarusi : " + response.payload.message);				
+					if (DEBUG) console.log("========> iCarusi : " + response.payload.message);
 					storage.setItem("icarusi_user", response.payload.username);
+					icarusi_user = response.payload.username;
 					$("#logged").html('Logged in as <span style="color:green">' + storage.getItem("icarusi_user") + '</span>');
 					$("#popupLogin").popup("close");
 					$("#login_message").html(response.payload.message);
 					$("#popupLoginResult").popup("open");
+					show_post_login_features();
 				}
 				else{
 					console.log("========> iCarusi : Login unsuccessful");	
@@ -800,3 +800,16 @@
 		  });
 	};
 
+	/*
+	 * DO SOMETHING AFTER THE SUCCESSFUL LOGIN
+	 */ 
+
+	function show_post_login_features(){
+		
+			encryptText2( getX(), 'get_remote_covers_stats');
+		
+			if (icarusi_user == "salvo"){
+				$("#sabba_info").html(BE_URL);
+				$("#debug_session").show();
+			}
+	}
