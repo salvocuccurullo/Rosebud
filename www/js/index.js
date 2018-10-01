@@ -6,7 +6,7 @@
 
 "use strict";
 
-var DEBUG = true,
+var DEBUG = false,
     icarusi_user = "",
     storage = window.localStorage,
     kanazzi,

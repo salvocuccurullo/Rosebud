@@ -6,7 +6,7 @@
 "use strict";
 
 var storage = window.localStorage,
-    DEBUG = true,
+    DEBUG = false,
     icarusi_user = "",
     kanazzi,
 //    swipe_left_target = "song.html",
