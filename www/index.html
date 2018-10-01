@@ -22,7 +22,7 @@
 	</head>
 	
 	<body>
-		<div data-role="page" id="home_page">
+		<div data-role="page" id="home_page" title="iCarusi application home page">
 			
 			<!-- navbar -->
 			<div data-role="header" data-nobackbtn="true" data-theme="b">
@@ -33,10 +33,10 @@
 					
 				<div data-role="navbar" id="navbar" data-theme="a">
 					<ul>
-						<li><a href="index.html" class="ui-btn-active ui-state-persist">Home</a></li>
-						<li><a href="movies.html" data-ajax="false" rel="external" id="mv_btn">Movies</a></li>
-						<li><a href="carusi.html" data-ajax="false" rel="external" id="carusi_btn">iCarusi</a></li>
-						<li><a href="song.html"  data-ajax="false" rel="external" id="song_btn">Music</a></li>
+						<li><a href="index.html" title="Go to home page" class="ui-btn-active ui-state-persist">Home</a></li>
+						<li><a href="movies.html" title="Go to movies page"  data-ajax="false" rel="external" id="mv_btn">Movies</a></li>
+						<li><a href="carusi.html" title="Go to carusi page"  data-ajax="false" rel="external" id="carusi_btn">iCarusi</a></li>
+						<li><a href="song.html" title="Go to music page"  data-ajax="false" rel="external" id="song_btn">Music</a></li>
 					</ul>
 				</div>	
 			</div>
@@ -45,11 +45,11 @@
 			<div role="main" class="ui-content" style="text-align:center; margin-top:35px">
 				
 				<div id="logo_content">
-					<img src="images/loading.gif"/ style="width:85%" id="cover_img" onerror="set_fallback_image()"><br/><br/>
+					<img src="images/loading.gif" style="width:85%" id="cover_img" onerror="set_fallback_image()"><br/><br/>
 					<span id="version"></span>
 				</div>
 
-				<a href="#popupLogin" data-rel="popup" data-position-to="window" class="ui-btn ui-corner-all ui-shadow ui-btn-inline ui-icon-user ui-btn-icon-left ui-btn-a" data-transition="flow">Sign in</a>
+				<a href="#popupLogin" data-rel="popup" title="Login" data-position-to="window" class="ui-btn ui-corner-all ui-shadow ui-btn-inline ui-icon-user ui-btn-icon-left ui-btn-a" data-transition="flow">Sign in</a>
 				<div data-role="popup" id="popupLogin" data-theme="a" class="ui-corner-all">
 					<div style="padding:10px 20px;">
 						<label for="username">Username</label>
@@ -78,14 +78,14 @@
 						</div>
 				</div>
 				-->
-				<a id="loginGoogle" data-rel="popup" data-position-to="window" class="ui-btn ui-corner-all ui-shadow ui-btn-inline ui-icon-cloud ui-btn-icon-left ui-btn-a" data-transition="flow">Google Login</a>
+				<a id="loginGoogle" data-rel="popup" title="Google Login" data-position-to="window" class="ui-btn ui-corner-all ui-shadow ui-btn-inline ui-icon-cloud ui-btn-icon-left ui-btn-a" data-transition="flow">Google Login</a>
 				<br/><span style="font-size:9px">Note: Google login is fully working but not yet really used by the app<br/>Just try it!</span><br/><br/>
 				<div data-role="popup" id="popupLoginResult" data-theme="a" class="ui-corner-all">
 					<div style="padding:10px 20px;" id="login_message"></div>
 				</div>
 
 				<div id="logged">Not logged in</div>
-				<a href="#settings_page" class="ui-btn ui-icon-gear ui-btn-icon-notext ui-corner-all" style="float:right">Settings</a>
+				<a href="#settings_page" title="Open settings page" class="ui-btn ui-icon-gear ui-btn-icon-notext ui-corner-all" style="float:right">Settings</a>
 			</div>
 			
 			<div data-role="footer" id="footer">
