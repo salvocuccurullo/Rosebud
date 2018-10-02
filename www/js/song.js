@@ -4,6 +4,7 @@
 /*eslint no-global-assign: "error"*/
 /*globals kanazzi:true*/
 /*exported kanazzi */
+/*eslint no-console: ["error", { allow: ["info","warn", "error"] }] */
 
 "use strict";
 
@@ -47,7 +48,7 @@ function setCovers(covers) {
     setCacheInfo();
 
     if (covers.length === 0) {
-        if (DEBUG) { console.log("iCarusi App============> No covers found on remote server."); }
+        if (DEBUG) { console.info("iCarusi App============> No covers found on remote server."); }
     }
 
     var covers_header = '<li data-role="list-divider" data-theme="b" style="text-align:center">';
@@ -114,11 +115,11 @@ function get_song() { // eslint-disable-line no-unused-vars
                 return;
             }
 
-            //if (DEBUG) { console.log("Retrieved song data:" + JSON.stringify(data)); }
+            //if (DEBUG) { console.info("Retrieved song data:" + JSON.stringify(data)); }
             var song = data.message,
                 song_header = '';
 
-            if (DEBUG) { console.log("Retrieved song data:" + song.title + " - " + song.author); }
+            if (DEBUG) { console.info("Retrieved song data:" + song.title + " - " + song.author); }
 
             song_header = '<li data-role="list-divider" data-theme="b" style="text-align:center">';
             song_header += '<button class="ui-btn ui-icon-refresh ui-btn-icon-notext ui-corner-all ui-mini ui-btn-inline ui-btn-b" style="float:right" onclick="get_song()"></button>';
@@ -137,7 +138,7 @@ function get_song() { // eslint-disable-line no-unused-vars
 
         })
         .fail(function () {
-            console.log("Error while retrieving random song");
+            console.info("Error while retrieving random song");
             $("#song_content").html("Error during song loading... i Kani Anassiri!!!");
         })
         .always(function () {
@@ -147,7 +148,7 @@ function get_song() { // eslint-disable-line no-unused-vars
 
 function sort_covers(s_type) {
 
-    if (DEBUG) { console.log("Sort type current: " + sort_type + " --- Sort type passe: " + s_type); }
+    if (DEBUG) { console.info("Sort type current: " + sort_type + " --- Sort type passe: " + s_type); }
 
     if (sort_type !== s_type) {
         sort_order = 1;
@@ -155,7 +156,7 @@ function sort_covers(s_type) {
         sort_order *= -1;
     }
 
-    if (DEBUG) { console.log("Sort type: " + sort_type + " --- Sort order: " + sort_order); }
+    if (DEBUG) { console.info("Sort type: " + sort_type + " --- Sort order: " + sort_order); }
 
     sort_type = s_type;
     $("#cover_search").val("");
@@ -196,7 +197,7 @@ function get_covers() { // eslint-disable-line no-unused-vars
         return false;
     }
 
-    if (DEBUG) { console.log("iCarusi App============> Starting covers retrieving..."); }
+    if (DEBUG) { console.info("iCarusi App============> Starting covers retrieving..."); }
 
     loading(true, "Loading covers...");
 
@@ -223,8 +224,8 @@ function get_covers() { // eslint-disable-line no-unused-vars
         })
         .fail(function (err) {
             if (DEBUG) {
-                console.log("iCarusi App============> Error during remote covers retrieving");
-                console.log("iCarusi App============> " + err.responseText);
+                console.info("iCarusi App============> Error during remote covers retrieving");
+                console.info("iCarusi App============> " + err.responseText);
             }
         })
         .always(function () {
@@ -252,9 +253,9 @@ function edit_cover(id) { // eslint-disable-line no-unused-vars
         });
 
         if (DEBUG) {
-            console.log("==========================");
-            console.log(JSON.stringify(result));
-            console.log("==========================");
+            console.info("==========================");
+            console.info(JSON.stringify(result));
+            console.info("==========================");
         }
 
         result = result[0];
@@ -265,7 +266,7 @@ function edit_cover(id) { // eslint-disable-line no-unused-vars
         if (result.location !== "") {
             $("#cover_img").attr("src", result.location);
         }
-        if (DEBUG) { console.log("cover img src: " + $("#cover_img").attr("src")); }
+        if (DEBUG) { console.info("cover img src: " + $("#cover_img").attr("src")); }
         curr_cover_id = result.id;
     } else {
         $("#id").val("");
@@ -278,7 +279,7 @@ function new_cover() { // eslint-disable-line no-unused-vars
 
 function poster(img_name) { // eslint-disable-line no-unused-vars
 
-    if (DEBUG) { console.log("Show poster called on " + img_name); }
+    if (DEBUG) { console.info("Show poster called on " + img_name); }
 
     var android_version = device.version.split(".");
 
@@ -297,7 +298,7 @@ function poster(img_name) { // eslint-disable-line no-unused-vars
 
 function uploadCover() { // eslint-disable-line no-unused-vars
 
-    if (DEBUG) { console.log("UPLOAD COVER CALLED..."); }
+    if (DEBUG) { console.info("UPLOAD COVER CALLED..."); }
 
     var username = icarusi_user,
         title = $("#title").val(),
@@ -349,8 +350,8 @@ function uploadCover() { // eslint-disable-line no-unused-vars
             try {
                 response = JSON.parse(response);
                 if (DEBUG) {
-                    console.log("Upload Cover -> Result: " + response.result);
-                    console.log("Upload Cover -> Message: " + response.message);
+                    console.info("Upload Cover -> Result: " + response.result);
+                    console.info("Upload Cover -> Message: " + response.message);
                 }
 
                 if (response.result === "failure") {
@@ -358,11 +359,11 @@ function uploadCover() { // eslint-disable-line no-unused-vars
                     return false;
                 }
             } catch (err) {
-                console.log("JSON parsing of upload cover response failed.");
-                if (DEBUG) { console.log(JSON.stringify(response)); }
+                console.info("JSON parsing of upload cover response failed.");
+                if (DEBUG) { console.info(JSON.stringify(response)); }
             }
 
-            if (DEBUG) { console.log("Reloading covers..."); }
+            if (DEBUG) { console.info("Reloading covers..."); }
             encryptText2(getX(), 'get_covers');
 
             $("#title").val("");
@@ -416,7 +417,7 @@ function onDeviceReady() { // eslint-disable-line no-unused-vars
         $("#random_song_message").html("No Random Song available<br/>on Pantalica mode! ;)");
 
         if (icarusi_user !== "" && covers_storage !== "" && covers_storage !== undefined && covers_storage !== null) {
-            console.log("iCarusi App============> NO NETWORK -> Cached Covers loading");
+            console.info("iCarusi App============> NO NETWORK -> Cached Covers loading");
             sort_covers("created");
         }
 
@@ -431,7 +432,7 @@ function onDeviceReady() { // eslint-disable-line no-unused-vars
             diff_sec = diff / 1000;
 
             if (icarusi_user !== "" && diff_sec < 86400 && covers_storage !== "" && covers_storage !== undefined && covers_storage !== null) {
-                if (DEBUG) { console.log("iCarusi App============> CACHE AVAILABLE AND NOT EXPIRED -> Cached Covers loading"); }
+                if (DEBUG) { console.info("iCarusi App============> CACHE AVAILABLE AND NOT EXPIRED -> Cached Covers loading"); }
                 sort_covers("created");
             } else {
                 encryptText2(getX(), "get_covers");
@@ -492,7 +493,7 @@ function onDeviceReady() { // eslint-disable-line no-unused-vars
 
     $("#popupPhotoPortrait").bind({
         popupafterclose: function (event, ui) { // eslint-disable-line no-unused-vars
-            if (DEBUG) { console.log("iCarusi App============> Closing popupPhotoPortrait Popup"); }
+            if (DEBUG) { console.info("iCarusi App============> Closing popupPhotoPortrait Popup"); }
             $("#poster_pic").attr("src", "images/loading.gif");
         }
     });
