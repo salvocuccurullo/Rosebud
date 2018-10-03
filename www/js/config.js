@@ -57,6 +57,15 @@ function get_ls_bool(key) {
     return false;
 }
 
+function get_ls_bool_default(key,def) {
+    if (storage.getItem(key) === "true") {
+         return true;
+    }
+    else if (storage.getItem(key) === "false") {
+         return false;
+    }
+    return def;
+}
 
 function get_all_ls() { // eslint-disable-line no-unused-vars
 

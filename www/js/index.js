@@ -1,6 +1,6 @@
 /*global $, cordova, device, window, document, storage_keys, firebase, firebase_config, get_ls, loading, alert, generic_json_request_new, encrypt_and_execute, getX*/
 /*global geolocationSuccess, geolocationFailure, encryptText2, navigator, Connection, BE_URL, PullToRefresh*/
-/*global swipeleftHandler, swipeRightHandler, power_user, get_ls_bool */
+/*global swipeleftHandler, swipeRightHandler, power_user, get_ls_bool, get_ls_bool_default */
 /*global listDir*/
 /*eslint no-console: ["error", { allow: ["info","warn", "error"] }] */
 
@@ -356,6 +356,7 @@ function onDeviceReady() {  // eslint-disable-line no-unused-vars
         dld_imgs = get_ls_bool("flip-dld-images"),
         extra_info = get_ls_bool("show-extra-info"),
         enable_geoloc = get_ls_bool("enable-geoloc"),
+        lazy_load = get_ls_bool_default("lazy-load", true),
         networkState = navigator.connection.type;
 
     /*
@@ -513,6 +514,12 @@ function onDeviceReady() {  // eslint-disable-line no-unused-vars
      *  BINDINGS
      */
 
+    $('#lazy-load').on('change', function () {
+        var val = $('#lazy-load').prop("checked");
+        if (DEBUG) { console.info("iCarusi App============> Lazy Movie Search : " + val); }
+        storage.setItem("lazy-load", val);
+    });
+
     $('#flip-dld-images').on('change', function () {
         var val = $('#flip-dld-images').prop("checked");
         if (DEBUG) { console.info("iCarusi App============> Flip Downloaded images : " + val); }
@@ -617,6 +624,13 @@ function onDeviceReady() {  // eslint-disable-line no-unused-vars
     if (DEBUG) { console.info("iCarusi App============> Show Extra info switch STORAGE : " + extra_info); }
     if (DEBUG) { console.info("iCarusi App============> Enable Push Notification STORAGE : " + enable_notif); }
     if (DEBUG) { console.info("iCarusi App============> Enable Geo Location : " + enable_geoloc); }
+    if (DEBUG) { console.info("iCarusi App============> Lazy Movie Search : " + lazy_load); }
+
+    if (lazy_load !== "" && lazy_load !== null) {
+        $('#lazy-load').prop("checked", lazy_load);
+    } else {
+        storage.setItem("lazy-load", true);
+    }
 
     if (save_imgs !== "" && save_imgs !== null) {
         $('#flip-save-images').prop("checked", save_imgs);

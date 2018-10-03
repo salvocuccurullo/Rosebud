@@ -1,5 +1,5 @@
-/*global $, cordova, device, window, document, loading, alert, getX*/
-/*global encryptText2, navigator, Connection, BE_URL, PullToRefresh*/
+/*global $, cordova, device, window, document, loading, alert, getX, generic_json_request_new, encrypt_and_execute*/
+/*global encryptText2, navigator, Connection, BE_URL, PullToRefresh, get_ls_bool_default*/
 /*global power_user, get_ls_bool, base_url_poster, PhotoViewer, fancyDate, confirm, FormData, power_user */
 /*eslint no-console: ["error", { allow: ["info","warn", "error"] }] */
 
@@ -22,7 +22,8 @@ var storage = window.localStorage,
     tv_shows_storage,
     tv_shows_storage_ts,
     curr_file_size = 0,
-    curr_pic;
+    curr_pic,
+    lazy_load = get_ls_bool_default("lazy-load", true);
 
 document.addEventListener('deviceready', this.onDeviceReady.bind(this), false); // eslint-disable-line no-unused-vars
 
@@ -113,7 +114,10 @@ function setTvShows(tvshows, votes_user) {
 
     loading(true, 'Rendering movies...');
 
-    if (DEBUG) { console.info("iCarusi App============> SetTvShows called"); }
+    if (DEBUG) {
+        console.info("iCarusi App============> SetTvShows called");
+        console.info(JSON.stringify(tvshows));
+    }
 
     $("#movies-list").empty();
     $("#movies-list_r4").empty();
@@ -329,6 +333,30 @@ function sort_movies() {
     }
 }
 
+function tvShowsNewSuccess(data) {
+
+    if (DEBUG) { console.info(JSON.stringify(data)); }
+
+    var tvshows = data.payload.tvshows,
+        votes_user = [];
+
+    if (data.payload.query === "") {
+        storage.setItem("tv_shows", JSON.stringify(tvshows));       // SAVE ON LOCALSTORAGE
+        storage.setItem("tv_shows_count_ts", new Date().getTime());
+        storage.setItem("votes_user", JSON.stringify(votes_user));
+        setCacheInfo();
+    }
+
+    setTvShows(tvshows, votes_user);
+}
+
+function tvShowsNewFailure(data) {
+
+    if (DEBUG) { console.info(JSON.stringify(data)); }
+    alert(data.message);
+
+}
+
 function getTvShows(use_cache) {
 
     if (icarusi_user === undefined || icarusi_user === "" || icarusi_user === null) {
@@ -337,7 +365,18 @@ function getTvShows(use_cache) {
     }
 
     if (!use_cache) {
-        encryptText2(getX(), "getTvShowsGo");
+
+        var data = {"username": icarusi_user,
+            "firebase_id_token": storage.getItem("firebase_id_token"),
+            "method": "POST",
+            "url": "/getTvShows2",
+            "cB": generic_json_request_new,
+            "successCb": tvShowsNewSuccess,
+            "failureCb": tvShowsNewFailure,
+            };
+        encrypt_and_execute(getX(), "kanazzi", data);
+
+        //encryptText2(getX(), "getTvShowsGo");
     } else {
         var tvshows = storage.getItem("tv_shows"),      // GET FROM LOCALSTORAGE
             votes_user = storage.getItem("votes_user");
@@ -915,6 +954,7 @@ function onDeviceReady() { // eslint-disable-line no-unused-vars
         } else {
             getTvShows(true);
         }
+
     }
 
 /*
@@ -1031,9 +1071,22 @@ function onDeviceReady() { // eslint-disable-line no-unused-vars
      */
 
     $('#movie_search').on('change', function () {
+/*
         var search = $("#movie_search").val(),
             tvshows,
             votes_user;
+
+        var data = {"username": icarusi_user,
+            "firebase_id_token": storage.getItem("firebase_id_token"),
+            "method": "POST",
+            "url": "/getTvShows2",
+            "cB": generic_json_request_new,
+            "successCb": tvShowsNewSuccess,
+            "failureCb": tvShowsNewFailure,
+            "query": search
+            };
+        encrypt_and_execute(getX(), "kanazzi", data);
+
 
         if (search.length === 0) {
             tvshows = storage.getItem("tv_shows");      // GET FROM LOCALSTORAGE
@@ -1042,6 +1095,7 @@ function onDeviceReady() { // eslint-disable-line no-unused-vars
                 setTvShows(JSON.parse(tvshows), JSON.parse(votes_user));
             }
         }
+*/
     });
 
     $("#movie_search").bind("input", function () {
@@ -1066,14 +1120,30 @@ function onDeviceReady() { // eslint-disable-line no-unused-vars
             return false;
         }
 
-        result = $.grep(result, function (element, index) { // eslint-disable-line no-unused-vars
-            return (
-                (element.title.toUpperCase().indexOf(search.toUpperCase()) >= 0) ||
-                (element.media.toUpperCase().indexOf(search.toUpperCase()) >= 0) ||
-                (element.username.toUpperCase().indexOf(search.toUpperCase()) >= 0)
-            );
-        });
-        setTvShows(result, votes_user);
+        if (lazy_load) {
+
+            var data = {"username": icarusi_user,
+                "firebase_id_token": storage.getItem("firebase_id_token"),
+                "method": "POST",
+                "url": "/getTvShows2",
+                "cB": generic_json_request_new,
+                "successCb": tvShowsNewSuccess,
+                "failureCb": tvShowsNewFailure,
+                "query": search
+                };
+            encrypt_and_execute(getX(), "kanazzi", data);
+
+        } else {
+
+            result = $.grep(result, function (element, index) { // eslint-disable-line no-unused-vars
+                return (
+                    (element.title.toUpperCase().indexOf(search.toUpperCase()) >= 0) ||
+                    (element.media.toUpperCase().indexOf(search.toUpperCase()) >= 0) ||
+                    (element.username.toUpperCase().indexOf(search.toUpperCase()) >= 0)
+                );
+            });
+            setTvShows(result, votes_user);
+        }
     });
 
     /*

@@ -138,6 +138,14 @@ function generic_json_request_new(data, successCb, failureCb) { // eslint-disabl
                 console.info("Payload received " + JSON.stringify(response));
             }
 
+            /*
+            if ("forward_vars" in data) {
+                $.each(data.forward_vars, function (index, value) { // eslint-disable-line no-unused-vars
+                    response.value. = data.value;
+                });
+            }
+            */
+
             try {
                 if (DEBUG) {
                     console.info("Status response: " + response.result);
