@@ -15,6 +15,7 @@
 		<script type="text/javascript" src="js/movies.js" ></script>
 		<script type="text/javascript" src="js/pulltorefresh.min.js" ></script>
 		<script type="text/javascript" src="js/utils.js" ></script>
+		<script type="text/javascript" src="js/3rds/list.min.js" ></script>
 	</head>
 	
 	<body>
@@ -62,6 +63,8 @@
 						<!-- </div> --> <!-- end popup new movie -->
 
 						<a href="javascript:newMoviePage()" id="new_movie_btn" data-rel="popup" data-position-to="window" class="ui-btn ui-icon-plus ui-btn-icon-notext ui-corner-all ui-btn-inline"></a>
+						<a href="#" class="ui-btn ui-icon-refresh ui-btn-icon-notext ui-mini ui-btn-icon-right ui-corner-all ui-btn-inline" id="btn_d_reload"></a>
+						
 						<span style="float:right" id="sort_span">
 							Sort
 							<a href="#" class="ui-btn ui-icon-clock ui-btn-icon-notext ui-mini ui-btn-icon-right ui-corner-all ui-btn-inline" id="btn_d_sort"></a>
@@ -72,22 +75,31 @@
 						<div data-role="tabs" id="movie_type_tabs" name="movie_type_tabs">
 							<div data-role="navbar">
 								<ul>
-									<li><a href="#movies_content" class="ui-btn-active ui-state-persist" id="#movies_link">Brand New</a></li>
-									<li><a href="#movies_r4" id="#movies_r4_link">I bellissimi</a></li>
-									<li><a href="#movies_nw" id="#movies_nw_link">#NW</a></li>
+									<li><a href="#movies_content" class="ui-btn-active ui-state-persist" id="movies_link">Loading...</a></li>
+									<li><a href="#series_content" id="series_link">Loading...</a></li>
+									<li><a href="#movies_nw" id="movies_nw_link">Loading...</a></li>
 								</ul>
 							</div>
 							
 							<div id="movie_search_div">
 								<input type="text" data-type="search" name="movie_search" id="movie_search" value="" data-mini="true" placeholder="search (min 4 chars)" />
 							</div>
-							
+
+							<div id="movie_info_box">
+							</div>
+
 							<div id="movies_content" style="text-align:center">
-								<ul data-role="listview" data-theme="a" data-inset="true" data-filter="false" id="movies-list" ></ul>
+								<ul data-role="listview" data-theme="a" data-inset="true" data-filter="false" id="movies-list"></ul>
+								<div id="movie_list_footer" style="display:none">
+									<a href="#" class="ui-btn ui-icon-arrow-d ui-mini ui-btn-icon-right ui-corner-all ui-btn-inline" id="btn_show_more">Show more...</a>
+								</div>
 							</div>
 							
-							<div id="movies_r4" style="text-align:center">
-								<ul data-role="listview" data-theme="a" data-inset="true" data-filter="false" id="movies-list_r4" ></ul>
+							<div id="series_content" style="text-align:center">
+								<ul data-role="listview" data-theme="a" data-inset="true" data-filter="false" id="series-list" ></ul>
+								<div id="serie_list_footer" style="display:none">
+									<a href="#" class="ui-btn ui-icon-arrow-d ui-mini ui-btn-icon-right ui-corner-all ui-btn-inline" id="btn_show_more_2">Show more...</a>
+								</div>
 							</div>
 							
 							<div id="movies_nw" style="text-align:center">
@@ -105,7 +117,7 @@
 								</ul>
 							</div>
 							<div id="tab_top_movies">
-								<ol data-role="listview" data-theme="a" data-inset="true" data-filter="false" id="top-list-movies" ></ol>
+								<ol data-role="listview" data-theme="a" data-inset="true" data-filter="true" id="top-list-movies" ></ol>
 							</div>
 							<div id="tab_top_voters">
 								<ol data-role="listview" data-theme="a" data-inset="true" data-filter="false" id="top-list-voters" ></ol>
@@ -115,10 +127,10 @@
 
 					<!-- CT MOVIES TAB -->
 					<div id="tab_ct" style="margin-top:15px; min-height:700px">
-						<input type="text" data-type="search" name="ct_search" id="ct_search" value="" data-mini="true" placeholder="search (min 4 chars)"/>
+						<!-- <input type="text" data-type="search" name="ct_search" id="ct_search" value="" data-mini="true" placeholder="search (min 4 chars)"/> -->
 						
 						<div id="total_ct_movies" style="text-align:center"></div>
-						<ul data-role="listview" data-theme="a" data-inset="true" data-filter="false" id="ct-movies" ></ul>
+						<ul data-role="listview" data-theme="a" data-inset="true" data-filter="true" id="ct-movies" ></ul>
 
 						<div data-role="panel" data-position="left" data-display="overlay" id="popupMovieCt" data-theme="a" class="ui-corner-all" data-swipe-close="false">
 							<div id="movie-table-custom"></div>
@@ -180,28 +192,29 @@
 								<div class="ui-block-b">
 									<select id="media" name="media" data-type="horizontal" data-mini="true">
 										<option value="">&mdash;</option>
-										<option value="netflix">Netflix</option>
-										<option value="camillina">Camillina</option>
-										<option value="sky">Sky</option>
-										<option value="tv">TV</option>
-										<option value="amazon">Amazon Video</option>
-										<option value="cinema">Cinema</option>
-										<option value="edicola">Edicola</option>
-										<option value="other">Other</option>
 									</select>
 								</div>
 							</div>
 
 							<div class="ui-grid-a" id="custom-grid-movies">
 								<div class="ui-block-a">
-									<label for="media">Type</label>
+									<label for="tvshow_type">Type</label>
 								</div>
 								<div class="ui-block-b">
-									<select id="type" name="type" data-type="horizontal" data-mini="true">
+									<select id="tvshow_type" name="tvshow_type" data-type="horizontal" data-mini="true">
 										<option value="">&mdash;</option>
-										<option value="brand_new">Brand New</option>
-										<option value="r4">I Bellissimi</option>
+										<option value="movie">Movie</option>
+										<option value="serie">Serie</option>
 									</select>
+								</div>
+							</div>
+
+							<div class="ui-grid-a" id="custom-grid-movies">
+								<div class="ui-block-a">
+									<label for="serie_season">Season</label>
+								</div>
+								<div class="ui-block-b">
+									<input type="number" pattern="[0-9]*" name="serie_season" id="serie_season" data-mini="true" value="1"/>
 								</div>
 							</div>
 
@@ -229,7 +242,7 @@
 								<div class="ui-grid-b">
 									<div class="ui-block-a">
 										<div class="ui-bar ui-bar-a">
-											Season<input type="number" pattern="[0-9]*" name="season" id="season" data-mini="true" />
+											Season<input type="number" pattern="[0-9]*" name="season" id="season" data-mini="true" disabled="true"/>
 										</div>
 									</div>
 									<div class="ui-block-b">

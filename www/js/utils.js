@@ -1,4 +1,4 @@
-/*global $, document, swipe_left_target, swipe_right_target, btoa, cryptographyAES, key, window, DEBUG, BE_URL, moment */
+/*global $, document, swipe_left_target, swipe_right_target, btoa, cryptographyAES, key, window, DEBUG, BE_URL, moment, storage */
 /*eslint no-global-assign: "error"*/
 /*globals kanazzi:true*/
 /*exported kanazzi */
@@ -186,4 +186,38 @@ function locale_date(input_date) { // eslint-disable-line no-unused-vars
     var d = new Date(input_date);
     moment.locale('it');
     return moment(d).format("ddd, DD/MM/YYYY HH:mm");
+}
+
+function is_storage_expired_or_invalid(storage_name, storage_ts_name, exp_seconds) { // eslint-disable-line no-unused-vars
+
+    var old_ts = parseInt(storage.getItem(storage_ts_name), 10),
+        new_ts,
+        diff,
+        diff_sec,
+        the_storage;
+
+    the_storage = storage.getItem(storage_name);
+    if (the_storage) {
+
+        if (DEBUG) {
+            console.info("Localstorage " + storage_name + " exists");
+        }
+
+        new_ts = new Date().getTime();
+        diff = new_ts - old_ts;
+        diff_sec = diff / 1000;
+
+        if (diff_sec < exp_seconds) {
+            if (DEBUG) {
+                console.info("Localstorage " + storage_name + " is not expired");
+            }
+            return false;
+        }
+    }
+
+    if (DEBUG) {
+        console.info("Localstorage " + storage_name + " is not empty or expired");
+    }
+
+    return true;
 }
