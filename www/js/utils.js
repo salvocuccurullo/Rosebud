@@ -203,18 +203,21 @@ function is_storage_expired_or_invalid(storage_name, storage_ts_name, exp_second
             console.info("Localstorage " + storage_name + " exists");
         }
 
-        new_ts = new Date().getTime();
-        diff = new_ts - old_ts;
-        diff_sec = diff / 1000;
+        if (storage_ts_name !== "") {
+            new_ts = new Date().getTime();
+            diff = new_ts - old_ts;
+            diff_sec = diff / 1000;
 
-        if (diff_sec < exp_seconds) {
-            if (DEBUG) {
-                console.info("Localstorage " + storage_name + " is not expired");
+            if (diff_sec < exp_seconds) {
+                if (DEBUG) {
+                    console.info("Localstorage " + storage_name + " is not expired");
+                }
+                return false;
             }
+        } else {
             return false;
         }
     }
-
     if (DEBUG) {
         console.info("Localstorage " + storage_name + " is not empty or expired");
     }

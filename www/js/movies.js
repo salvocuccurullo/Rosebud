@@ -1168,15 +1168,13 @@ function onDeviceReady() { // eslint-disable-line no-unused-vars
             };
         encrypt_and_execute(getX(), "kanazzi", data);
 
-
+*/
         if (search.length === 0) {
-            tvshows = storage.getItem("tv_shows");      // GET FROM LOCALSTORAGE
-            votes_user = storage.getItem("votes_user");
-            if (tvshows !== "" && tvshows !== undefined && tvshows !== null && votes_user !== "" && votes_user !== undefined && votes_user !== null) {
-                setTvShows(JSON.parse(tvshows), JSON.parse(votes_user));
+            if (!is_storage_expired_or_invalid("tvshows", "", 0) && !is_storage_expired_or_invalid("votes_user", "", 0)) {
+                setTvShows(JSON.parse(storage.getItem("tv_shows")), JSON.parse(storage.getItem("votes_user")));
             }
         }
-*/
+
     });
 
     $("#movie_search").bind("input", function () {
