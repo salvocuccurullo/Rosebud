@@ -12,8 +12,8 @@ var storage = window.localStorage,
     jsonTvShows = [],
     currentId = 0,
     kanazzi,
-    DEBUG = true,
-    top_movies_count = 20,
+    DEBUG = false,
+    top_movies_count = 15,
     sort_type = "datetime_sec",
     sort_order = 1,
     swipe_left_target = "carusi.html",
@@ -181,7 +181,8 @@ function setTvShows(tvshows, votes_user) {
                 epi = '',
                 season = '',
                 users_votes_keys,
-                comment = '';
+                comment = '',
+                link = '';
 
             content = '<li style="white-space:normal;">';
 
@@ -244,7 +245,8 @@ function setTvShows(tvshows, votes_user) {
 
             // LINK ICON
             if (value.link !== "") {
-                content += '<button class="ui-btn ui-btn-icon-notext ui-icon-forward ui-mini ui-corner-all ui-btn-inline" data-theme="a" id="btn_link" onclick="javascript:open_link(\'' + value.link + '\')"></button>';
+                link = value.link.replace(/'/g, "\\'");
+                content += '<button class="ui-btn ui-btn-icon-notext ui-icon-forward ui-mini ui-corner-all ui-btn-inline" data-theme="a" id="btn_link" onclick="javascript:open_link(\'' + link + '\')"></button>';
             }
 
             // COMMENT ICON
@@ -435,6 +437,12 @@ function catalogueFailure(data) {
 }
 
 function getTvShows(use_cache) {
+    var search = $("#movie_search").val();
+    if (search.length >= 4) {
+        search_mode = true;
+    } else {
+        search = "";
+    }
 
     if (icarusi_user === undefined || icarusi_user === "" || icarusi_user === null) {
         alert("You must be logged in for accessing movies!!");
@@ -450,12 +458,13 @@ function getTvShows(use_cache) {
             "url": "/getTvShows2",
             "lazy_load": lazy_load,
             "cB": generic_json_request_new,
+            "query": search,
             "successCb": tvShowsNewSuccess,
             "failureCb": tvShowsNewFailure,
             };
         encrypt_and_execute(getX(), "kanazzi", data);
-
         //encryptText2(getX(), "getTvShowsGo");
+
     } else {
         var tvshows = storage.getItem("tv_shows"),      // GET FROM LOCALSTORAGE
             votes_user = storage.getItem("votes_user");
@@ -468,7 +477,7 @@ function getTvShows(use_cache) {
     }
 }
 
-
+/*
 function getTvShowsGo() { // eslint-disable-line no-unused-vars
 
     loading(true, 'Loading movies...');
@@ -514,7 +523,7 @@ function getTvShowsGo() { // eslint-disable-line no-unused-vars
             //if (DEBUG) console.info("iCarusi App============> ajax call completed");
         });
 }
-
+*/
 
 /***
 CT MOVIES
@@ -693,8 +702,8 @@ function saveMovieNew() { // eslint-disable-line no-unused-vars
         }
     }
 
-    if (parseInt(serie_season, 10) <= 0) {
-        alert("Invald value for season");
+    if (serie_season === "" || isNaN(serie_season) || !Number.isInteger(parseFloat(serie_season)) || parseInt(serie_season, 10) <= 0) { // parseInt truncate
+        alert("Invalid value for season: " + serie_season);
         return false;
     }
 
@@ -1152,27 +1161,12 @@ function onDeviceReady() { // eslint-disable-line no-unused-vars
      */
 
     $('#movie_search').on('change', function () {
-/*
-        var search = $("#movie_search").val(),
-            tvshows,
-            votes_user;
 
-        var data = {"username": icarusi_user,
-            "firebase_id_token": storage.getItem("firebase_id_token"),
-            "method": "POST",
-            "url": "/getTvShows2",
-            "cB": generic_json_request_new,
-            "successCb": tvShowsNewSuccess,
-            "failureCb": tvShowsNewFailure,
-            "query": search
-            };
-        encrypt_and_execute(getX(), "kanazzi", data);
+        var search = $("#movie_search").val();
 
-*/
-        if (search.length === 0) {
-            if (!is_storage_expired_or_invalid("tvshows", "", 0) && !is_storage_expired_or_invalid("votes_user", "", 0)) {
-                setTvShows(JSON.parse(storage.getItem("tv_shows")), JSON.parse(storage.getItem("votes_user")));
-            }
+        if (search.length === 0 && !is_storage_expired_or_invalid("tv_shows", "", 0) && !is_storage_expired_or_invalid("votes_user", "", 0)) {
+            search_mode = false;
+            setTvShows(JSON.parse(storage.getItem("tv_shows")), JSON.parse(storage.getItem("votes_user")));
         }
 
     });
@@ -1267,32 +1261,7 @@ function onDeviceReady() { // eslint-disable-line no-unused-vars
 
     /*
     window.onscroll = function() {
-        $("#movie_list_footer").hide();
 
-        var search = $("#movie_search").val(),
-            scrollHeight, totalHeight;
-        scrollHeight = document.body.scrollHeight;
-        totalHeight = window.scrollY + window.innerHeight;
-
-        if (search_mode && search.length < 4) {
-            search = "";
-        }
-
-        //if (totalHeight >= scrollHeight) {
-        current_page += 1;
-        append_mode = true;
-        var data = {"username": icarusi_user,
-            "firebase_id_token": storage.getItem("firebase_id_token"),
-            "current_page": current_page,
-            "query": search,
-            "method": "POST",
-            "url": "/getTvShows2",
-            "cB": generic_json_request_new,
-            "successCb": tvShowsNewSuccess,
-            "failureCb": tvShowsNewFailure,
-            };
-        encrypt_and_execute(getX(), "kanazzi", data);
-        //}
     };
     */
 
@@ -1301,16 +1270,20 @@ function onDeviceReady() { // eslint-disable-line no-unused-vars
      * PULL DOWN REFRESH
      */
 
+    function pullDownActions() {
+        current_page = 1;
+        $("#movie_search").val("");
+        $("#movie_list_footer").hide();
+        $("#serie_list_footer").hide();
+        append_mode = false;
+        search_mode = false;
+        getTvShows(false);
+    }
+
     PullToRefresh.init({
         mainElement: '#movies-list',
         onRefresh: function () {
-            current_page = 1;
-            $("#movie_search").val("");
-            $("#movie_list_footer").hide();
-            $("#serie_list_footer").hide();
-            append_mode = false;
-            search_mode = false;
-            getTvShows(false);
+            pullDownActions();
         },
         instructionsReleaseToRefresh: "Pull down for get fresh data from remote server...",
         distThreshold : 20,
@@ -1319,8 +1292,7 @@ function onDeviceReady() { // eslint-disable-line no-unused-vars
     PullToRefresh.init({
         mainElement: '#series-list',
         onRefresh: function () {
-            current_page = 1;
-            getTvShows(false);
+            pullDownActions();
         },
         instructionsReleaseToRefresh: "Pull down for get fresh data from remote server...",
         distThreshold : 20,
@@ -1329,8 +1301,7 @@ function onDeviceReady() { // eslint-disable-line no-unused-vars
     PullToRefresh.init({
         triggerElement: '#movies-list_nw',
         onRefresh: function () {
-            current_page = 1;
-            getTvShows(false);
+            pullDownActions();
         },
         instructionsReleaseToRefresh: "Pull down for get fresh data from remote server...",
         distThreshold : 20,

@@ -219,7 +219,7 @@ function is_storage_expired_or_invalid(storage_name, storage_ts_name, exp_second
         }
     }
     if (DEBUG) {
-        console.info("Localstorage " + storage_name + " is not empty or expired");
+        console.info("Localstorage " + storage_name + " is empty or expired");
     }
 
     return true;
