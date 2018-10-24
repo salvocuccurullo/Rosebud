@@ -27,7 +27,8 @@ var storage = window.localStorage,
     current_page = 1,
     search_mode = false,
     append_mode = false,
-    search_result;
+    search_result,
+    total_show;
 
 document.addEventListener('deviceready', this.onDeviceReady.bind(this), false); // eslint-disable-line no-unused-vars
 
@@ -147,6 +148,7 @@ function setTvShows(tvshows, votes_user) {
             r4c = 0,
         */
         var header_content = '',
+            header_total,
             content = '',
             count;
 
@@ -170,6 +172,18 @@ function setTvShows(tvshows, votes_user) {
                 }
                 return 0;
             });
+        }
+
+        if (!append_mode) {
+            header_total = '<li data-role="list-divider" data-theme="b" style="text-align:center">';
+            if (!search_mode) {
+                header_total += '<span style="color:yellow"> ' + total_show + '</span> items available on database</span></li>';
+            } else {
+                header_total += '<span style="color:yellow">' + $("#movie_search").val() + '</span> matched in total ';
+                header_total += '<span style="color:yellow"> ' + total_show + ' </span>items</li>';
+            }
+            $('#movies-list').append(header_total);
+            $('#series-list').append(header_total);
         }
 
         $.each(tvshows, function (index, value) { // eslint-disable-line no-unused-vars
@@ -322,8 +336,8 @@ function setTvShows(tvshows, votes_user) {
         $('#top-list-voters').listview('refresh');
         $('#top-list-movies').listview('refresh');
 
-        $('#movies_link').text('Movies (' + $('#movies-list').children().length + ')');
-        $('#series_link').text('Series (' + $('#series-list').children().length + ')');
+        $('#movies_link').text('Movies (' + (parseInt($('#movies-list').children().length, 10) - 1) + ')');
+        $('#series_link').text('Series (' + (parseInt($('#series-list').children().length, 10) - 1) + ')');
         $('#movies_nw_link').text('#NW (' + $('#movies-list_nw').children().length + ')');
 
         checkMoviesCT();
@@ -365,6 +379,7 @@ function tvShowsNewSuccess(data) {
 
     var tvshows = data.payload.tvshows,
         votes_user = data.payload.votes_user;
+    total_show = data.payload.total_show;
 
     if (DEBUG) { console.info("- HAS REMOTE MORE DATA? -> + " + data.payload.has_more); }
     if (data.payload.has_more === true) {
@@ -437,7 +452,8 @@ function catalogueFailure(data) {
 }
 
 function getTvShows(use_cache) {
-    var search = $("#movie_search").val();
+
+    var search = $("#movie_search").val().trim();
     if (search.length >= 4) {
         search_mode = true;
     } else {
@@ -1160,18 +1176,29 @@ function onDeviceReady() { // eslint-disable-line no-unused-vars
      * MOVIE SEARCH
      */
 
+
     $('#movie_search').on('change', function () {
 
-        var search = $("#movie_search").val();
-
-        if (search.length === 0 && !is_storage_expired_or_invalid("tv_shows", "", 0) && !is_storage_expired_or_invalid("votes_user", "", 0)) {
+        var search = $("#movie_search").val().trim();
+        if (search.length === 0) {
             search_mode = false;
-            setTvShows(JSON.parse(storage.getItem("tv_shows")), JSON.parse(storage.getItem("votes_user")));
         }
 
+        /*
+        if (lazy_load) {
+            getTvShows(false);
+        } else {
+            var search = $("#movie_search").val();
+            if (search.length === 0 && !is_storage_expired_or_invalid("tv_shows", "", 0) && !is_storage_expired_or_invalid("votes_user", "", 0)) {
+                search_mode = false;
+                setTvShows(JSON.parse(storage.getItem("tv_shows")), JSON.parse(storage.getItem("votes_user")));
+            }
+        }
+        */
     });
 
     $("#movie_search").bind("input", function () {
+
         var tvshows = storage.getItem("tv_shows"), // GET FROM LOCALSTORAGE
             votes_user = storage.getItem("votes_user"),
             search = $("#movie_search").val(),
@@ -1185,11 +1212,17 @@ function onDeviceReady() { // eslint-disable-line no-unused-vars
         votes_user = JSON.parse(votes_user);
 
         if (search.length === 0) {
-            setTvShows(result, votes_user);
-            return false;
+            search_mode = false;
+            if (lazy_load) {
+                getTvShows(false);
+            } else if (!is_storage_expired_or_invalid("tv_shows", "", 0) && !is_storage_expired_or_invalid("votes_user", "", 0)) {
+                setTvShows(JSON.parse(storage.getItem("tv_shows")), JSON.parse(storage.getItem("votes_user")));
+            } else {
+                getTvShows(false);
+            }
         }
 
-        if (search.length < 4) {
+        if (search.trim().length < 4) {
             return false;
         }
 
@@ -1205,7 +1238,7 @@ function onDeviceReady() { // eslint-disable-line no-unused-vars
                 "cB": generic_json_request_new,
                 "successCb": tvShowsNewSuccess,
                 "failureCb": tvShowsNewFailure,
-                "query": search
+                "query": search.trim()
                 };
             encrypt_and_execute(getX(), "kanazzi", data);
 
@@ -1230,7 +1263,7 @@ function onDeviceReady() { // eslint-disable-line no-unused-vars
         $("#movie_list_footer").hide();
         $("#serie_list_footer").hide();
 
-        var search = $("#movie_search").val();
+        var search = $("#movie_search").val().trim();
 
         if (search_mode && search.length < 4) {
             search = "";
