@@ -28,7 +28,7 @@ var storage = window.localStorage,
     search_mode = false,
     append_mode = false,
     search_result,
-    total_show;
+    tvshow_stat = {"total_show":0, "movies":0, "series":0};
 
 document.addEventListener('deviceready', this.onDeviceReady.bind(this), false); // eslint-disable-line no-unused-vars
 
@@ -177,10 +177,10 @@ function setTvShows(tvshows, votes_user) {
         if (!append_mode) {
             header_total = '<li data-role="list-divider" data-theme="b" style="text-align:center">';
             if (!search_mode) {
-                header_total += '<span style="color:yellow"> ' + total_show + '</span> items available on database</span></li>';
+                header_total += '<span style="color:yellow"> ' + tvshow_stat.total_show + '</span> items available on database</span></li>';
             } else {
                 header_total += '<span style="color:yellow">' + $("#movie_search").val() + '</span> matched in total ';
-                header_total += '<span style="color:yellow"> ' + total_show + ' </span>items</li>';
+                header_total += '<span style="color:yellow"> ' + tvshow_stat.total_show + ' </span>items</li>';
             }
             $('#movies-list').append(header_total);
             $('#series-list').append(header_total);
@@ -336,10 +336,15 @@ function setTvShows(tvshows, votes_user) {
         $('#top-list-voters').listview('refresh');
         $('#top-list-movies').listview('refresh');
 
+
+        $('#movies_link').text('Movies (' + tvshow_stat.movies + ')');
+        $('#series_link').text('Series (' + tvshow_stat.series + ')');
+        $('#movies_nw_link').text('#NW (' + $('#movies-list_nw').children().length + ')');
+        /*
         $('#movies_link').text('Movies (' + (parseInt($('#movies-list').children().length, 10) - 1) + ')');
         $('#series_link').text('Series (' + (parseInt($('#series-list').children().length, 10) - 1) + ')');
         $('#movies_nw_link').text('#NW (' + $('#movies-list_nw').children().length + ')');
-
+        */
         checkMoviesCT();
 
         loading(false, '');
@@ -379,7 +384,9 @@ function tvShowsNewSuccess(data) {
 
     var tvshows = data.payload.tvshows,
         votes_user = data.payload.votes_user;
-    total_show = data.payload.total_show;
+    tvshow_stat.total_show = data.payload.total_show;
+    tvshow_stat.movies = data.payload.stat.movie;
+    tvshow_stat.series = data.payload.stat.serie;
 
     if (DEBUG) { console.info("- HAS REMOTE MORE DATA? -> + " + data.payload.has_more); }
     if (data.payload.has_more === true) {
@@ -471,7 +478,7 @@ function getTvShows(use_cache) {
             "firebase_id_token": storage.getItem("firebase_id_token"),
             "current_page": current_page,
             "method": "POST",
-            "url": "/getTvShows2",
+            "url": "/getTvShows3",
             "lazy_load": lazy_load,
             "cB": generic_json_request_new,
             "query": search,
@@ -1234,7 +1241,7 @@ function onDeviceReady() { // eslint-disable-line no-unused-vars
             var data = {"username": icarusi_user,
                 "firebase_id_token": storage.getItem("firebase_id_token"),
                 "method": "POST",
-                "url": "/getTvShows2",
+                "url": "/getTvShows3",
                 "cB": generic_json_request_new,
                 "successCb": tvShowsNewSuccess,
                 "failureCb": tvShowsNewFailure,
@@ -1276,7 +1283,7 @@ function onDeviceReady() { // eslint-disable-line no-unused-vars
             "current_page": current_page,
             "query": search,
             "method": "POST",
-            "url": "/getTvShows2",
+            "url": "/getTvShows3",
             "cB": generic_json_request_new,
             "successCb": tvShowsNewSuccess,
             "failureCb": tvShowsNewFailure,
