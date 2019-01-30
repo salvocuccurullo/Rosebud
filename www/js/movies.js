@@ -428,7 +428,7 @@ function tvShowsNewSuccess(data) {
 function tvShowsNewFailure(data) {
 
     console.error(JSON.stringify(data));
-    alert(data.message);
+    alert(data.responseJSON.message);
 
 }
 

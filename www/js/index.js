@@ -1,6 +1,6 @@
-/*global $, cordova, device, window, document, storage_keys, firebase, firebase_config, get_ls, loading, alert, generic_json_request_new, encrypt_and_execute, getX*/
-/*global geolocationSuccess, geolocationFailure, encryptText2, navigator, Connection, BE_URL, PullToRefresh*/
-/*global swipeleftHandler, swipeRightHandler, power_user, get_ls_bool, get_ls_bool_default */
+/*global $, cordova, device, window, document, storage_keys, get_ls, loading, alert, generic_json_request_new, encrypt_and_execute, getX*/
+/*global idTokenSuccess, idTokenFailure, encryptText2, navigator, Connection, BE_URL, PullToRefresh*/
+/*global swipeleftHandler, swipeRightHandler, power_user, get_ls_bool, get_ls_bool_default, authenticateWithGoogle, json_request, refreshIdToken */
 /*global listDir*/
 /*eslint no-console: ["error", { allow: ["info","warn", "error"] }] */
 
@@ -22,53 +22,11 @@ document.addEventListener('deviceready', this.onDeviceReady.bind(this), false);
  *
  */
 
-function tokenFailure(data) { // eslint-disable-line no-unused-vars
-    loading(true, "Token verification error. Refreshing...");
-    cordova.plugins.firebase.auth.getIdToken()
-        .then(function (idToken) {
-            loading(false, "");
-            // send token to server
-            console.info("_______________________________");
-            console.info("Sending new token to server...");
-            console.info(idToken);
-            console.info("_______________________________");
-            if (icarusi_user !== "") {
-                storage.setItem("firebase_id_token", idToken);
-                data = {"username": icarusi_user,
-                        "token": idToken,
-                        "method": "POST",
-                        "url": "/setFBToken",
-                        "app_version": appVersion,
-                        "cB": generic_json_request_new,
-                        "successCb": geolocationSuccess,
-                        "failureCb": geolocationFailure
-                        };
-                encrypt_and_execute(getX(), "kanazzi", data);
-            }
-        })
-        .catch(function (error) {
-            if (DEBUG) { console.info("Firebase idToken failure" + error); }
-            loading(true, "Token expired or not valid. Trying automatic login...");
-            cordova.plugins.firebase.auth.signInWithEmailAndPassword(storage.getItem("fb_user"), storage.getItem("fb_pass"))
-                .then(function (userInfo) {
-                    loading(false, "");
-                    if (DEBUG) { console.info(JSON.stringify(userInfo)); }
-                    storage.setItem("firebase_uid", userInfo.uid);
-                })
-                .catch(function (error) {
-                    loading(false, "");
-                    alert("Automatic login failed! Please enter your credentials again." + error);
-                    $("#popupLoginFireBase").popup("open");
-                });
-        });
+function error_fall_back() {
+    alert("HAMMUORT!");
 }
 
-function tokenSuccess(data) { // eslint-disable-line no-unused-vars
-    console.info("Firebase token on server is valid. " + JSON.stringify(data));
-    storage.setItem("firebase_id_token", data.payload.firebase_id_token);
-}
-
-function geolocationSuccess(data) {
+function idTokenSuccess(data) {
     try {
         alert("Status: " + data.result + "\n\n" + data.message);
     } catch (err) {
@@ -76,8 +34,51 @@ function geolocationSuccess(data) {
     }
 }
 
-function geolocationFailure(error) {
-    alert(error);
+function idTokenFailure(data) {
+    try {
+        alert("Status: " + data.responseJSON.result + "\n\nMessage: " + data.responseJSON.message);
+    } catch (err) {
+        alert(err);
+    }
+}
+
+function iCaruiLoginSuccess(data) {
+
+    var g_photo = storage.getItem("google_photo_url"),
+        g_name = storage.getItem("google_display_name");
+
+    $("#logged").html('Logged in as <span style="color:green">' + g_name + '</span> (Google)');
+    $("#cover_img").attr("src", g_photo);
+    storage.setItem("icarusi_user", data.payload.username);
+
+}
+
+function iCaruiLoginFailure(data) {
+    alert(data.message);
+}
+
+function googleAuthSuccess() {
+
+    var id_token = storage.getItem("firebase_id_token"),
+    email = storage.getItem("google_email"),
+    app_version = storage.getItem("app_version"),
+    data = {
+            "username": icarusi_user,
+            "firebase_id_token": id_token,
+            "email": email,
+            "app_vesion": app_version,
+            "method": "POST",
+            "url": "/login2",
+            "successCb": iCaruiLoginSuccess,
+            "failureCb": iCaruiLoginFailure
+        };
+
+    json_request(data);
+
+}
+
+function googleAuthFailure() {
+    alert("Error google auth!");
 }
 
 /*
@@ -138,8 +139,6 @@ function set_fallback_image() { // eslint-disable-line no-unused-vars
 
 }
 
-
-
 /*
  *      COVERS FUNCTIONS
  */
@@ -175,37 +174,48 @@ function get_remote_random_cover_2() { // eslint-disable-line no-unused-vars
 }
 
 
+function coverStatsSuccess(data) {
+    if (DEBUG) { console.info("Covers statistics: " + data); }
+    var covers = JSON.parse(data);
+
+    if (covers.payload.remote_covers === 0) {
+        if (DEBUG) { console.info("iCarusi App============> No remote covers found on server."); }
+    }
+
+    $("#remote_covers").html(covers.payload.remote_covers);
+    if (covers.payload.remote_covers > 0) {
+        storage.setItem("remote_covers_count", covers.payload.remote_covers);
+    }
+}
+
+function coverStatsFailure(err) {
+    if (DEBUG) {
+        console.info("iCarusi App============> Error during remote covers retrieving");
+        console.info("iCarusi App============> " + JSON.stringify(err));
+    }
+
+    if (err.status === 401) {
+        authenticateWithGoogle(get_remote_covers_stats, error_fall_back, {});
+    }
+}
+
 function get_remote_covers_stats() { // eslint-disable-line no-unused-vars
 
-    $.ajax({
-        url: BE_URL + "/getcoversstats",
-        method: "POST",
-        data: {
-            username : icarusi_user,
-            kanazzi : kanazzi
-        },
-        dataType: "json"
-    })
-        .done(function (data) {
-            if (DEBUG) { console.info("Covers statistics: " + data); }
-            var covers = JSON.parse(data);
+    if (!icarusi_user) {
+        return false;
+    }
 
-            if (covers.payload.remote_covers === 0) {
-                if (DEBUG) { console.info("iCarusi App============> No remote covers found on server."); }
-            }
+    var id_token = storage.getItem("firebase_id_token"),
+        data = {
+                "username": icarusi_user,
+                "firebase_id_token": id_token,
+                "method": "POST",
+                "url": "/getcoversstats2",
+                "successCb": coverStatsSuccess,
+                "failureCb": coverStatsFailure
+            };
 
-            $("#remote_covers").html(covers.payload.remote_covers);
-            if (covers.payload.remote_covers > 0) {
-                storage.setItem("remote_covers_count", covers.payload.remote_covers);
-            }
-        })
-        .fail(function (err) {
-            if (DEBUG) { console.info("iCarusi App============> Error during remote covers retrieving"); }
-            if (DEBUG) { console.info("iCarusi App============> " + err.responseText); }
-        })
-        .always(function () {
-            if (DEBUG) { console.info("iCarusi App============> Get remote cover stats done."); }
-        });
+    json_request(data);
 }
 
 
@@ -274,6 +284,7 @@ function show_post_login_features() {
     if (icarusi_user === power_user) {
         $("#sabba_info").html(BE_URL);
         $("#debug_session").show();
+        $("#refresh_token").show();
     }
 }
 
@@ -291,7 +302,7 @@ function submit() { // eslint-disable-line no-unused-vars
         return false;
     }
 
-    $.mobile.loading("show");
+    loading(true, "Logging in...");
 
     $.ajax({
         url: BE_URL + "/login",
@@ -327,7 +338,7 @@ function submit() { // eslint-disable-line no-unused-vars
             console.info("========> iCarusi : error during login");
         })
         .always(function () {
-            $.mobile.loading("hide");
+            loading(false, "Logging in...");
         });
 }
 
@@ -350,8 +361,7 @@ function onDeviceReady() {  // eslint-disable-line no-unused-vars
         if (DEBUG) { console.info("====Username is not set: " + icarusi_user + ". Setting it to blank value."); }
         icarusi_user = "";
     }
-    var provider,
-        enable_notif = get_ls_bool("enable-notifications"),
+    var enable_notif = get_ls_bool("enable-notifications"),
         save_imgs = get_ls_bool("flip-save-images"),
         dld_imgs = get_ls_bool("flip-dld-images"),
         extra_info = get_ls_bool("show-extra-info"),
@@ -359,132 +369,48 @@ function onDeviceReady() {  // eslint-disable-line no-unused-vars
         lazy_load = get_ls_bool_default("lazy-load", true),
         networkState = navigator.connection.type;
 
-    /*
-     * FIREBASE AUTH WITH GOOGLE
-     */
-
-    firebase.initializeApp(firebase_config);
-
-    provider = new firebase.auth.GoogleAuthProvider();
 
     $(document).on("click", "#loginGoogle", function () {
-        firebase.auth().signInWithRedirect(provider).then(function () {
-            return firebase.auth().getRedirectResult();
-        })
-            .then(function (result) {
-
-                // This gives you a Google Access Token.
-                var token = result.credential.idToken,      // You can use it to access the Google API.
-                    user = result.user;                     // The signed-in user info.
-
-                if (DEBUG) {
-                    console.info("========== GOOGLE LOGIN ===================");
-                    console.info(" * * CREDENTIALS * * ");
-                    console.info(JSON.stringify(result.credential));
-                    console.info(" * * USER * * ");
-                    console.info(JSON.stringify(user));
-                    console.info("===========================================");
-                }
-
-                storage.setItem("firebase_id_token", token);
-                $("#logged").html('Logged in as <span style="color:green">' + user.displayName + '</span> (Google)');
-                $("#cover_img").attr("src", user.photoURL);
-                storage.setItem("google_photo_url", user.photoURL);
-
-            })
-            .catch(function (error) {
-                // Handle Errors here.
-                var errorCode = error.code,
-                    errorMessage = error.message;
-
-                console.info("========== GOOGLE LOGIN ERROR ===================");
-                console.info(errorCode);
-                console.info(errorMessage);
-                console.info("===========================================");
-            });
+        authenticateWithGoogle(googleAuthSuccess, googleAuthFailure, {});
     });
 
-
     /*
-     * FIREBASE AUTHENTICATION
-     */
-
-    /*
-
-    $(document).on("click", "#login_button_fireb", function() {
-        loading(true, "Logging in with Google Firebase...");
-        cordova.plugins.firebase.auth.signInWithEmailAndPassword($("#username_fireb").val(), $("#password_fireb").val() )
-        .then(function (userInfo) {
-            console.info(JSON.stringify(userInfo));
-            storage.setItem("firebase_uid", userInfo.uid);
-            loading(false, "");
-            storage.setItem("fb_user", $("#username_fireb").val());
-            storage.setItem("fb_pass", $("#password_fireb").val());
-            alert("Login Successful!");
-            $("#popupLoginFireBase").popup("close");
-        })
-        .catch(function (error) {
-            loading(false, "");
-            alert("Login failed! " + error);
-        });
+    firebase.auth().onIdTokenChanged(function(user) {
+      if (user) {
+        console.info(" * * ID TOKEN CHANGED * * ");
+        console.info(JSON.stringify(user));
+        storage.setItem("credential",user);
+      }
     });
     */
-
-    $(document).on("click", "#register_button_fireb", function () {
-        loading(true, "Registering a new user\non Google Firebase...");
-        cordova.plugins.firebase.auth.createUserWithEmailAndPassword($("#username_fireb").val(), $("#password_fireb").val())
-            .then(function (userInfo) {
-
-                console.info(JSON.stringify(userInfo));
-                /*
-                storage.setItem("firebase_uid", userInfo.uid);
-
-                storage.setItem("fb_user", $("#username_fireb").val());
-                storage.setItem("fb_pass", $("#password_fireb").val());
-                */
-                loading(false, "");
-                /*
-                cordova.plugins.firebase.auth.sendEmailVerification()
-                    .then(function (data) {
-                        alert("Email verification succeded! " + data);
-                    })
-                    .catch(function (error) {
-                        alert("Email verification failed! " + error);
-                    });
-                */
-                alert("User creation Successful! Email verification sent...");
-                $("#popupLoginFireBase").popup("close");
-            })
-            .catch(function (error) {
-                loading(false, "");
-                alert("User creation failed! " + error);
-            });
-    });
 
     /*
      * FIREBASE MESSAGING: ON STARTUP THE FCM TOKEN IS RETRIEVED FROM GOOGLE
      * IF SUCCESS: IT WILL BE SAVED ON BOTH LOCALSTORAGE AND SERVER SIDE
      */
+
     if (icarusi_user !== "") {
         window.FirebasePlugin.getToken(function (token) {
             // save this server-side and use it to push notifications to this device
             if (DEBUG) { console.info("==========> FIREBASE MESSAGING TOKEN ========> " + token); }
             storage.setItem("firebase_token", token);
 
-            var data = {
+            var id_token = storage.getItem("firebase_id_token"),
+                data = {
                     "username": icarusi_user,
+                    "firebase_id_token": id_token,
                     "token": token,
                     "method": "POST",
-                    "url": "/setFBToken",
+                    "url": "/setFBToken2",
                     "app_version": appVersion,
-                    "cB": generic_json_request_new
                 };
-            encrypt_and_execute(getX(), "kanazzi", data);
+            json_request(data);
 
         }, function (error) {
             console.error("==========> FIREBASE MESSAGING ERROR ========> " + error);
         });
     }
+
     /*
      * FIREBASE MESSAGING ON NOTIFICATION EVENT MANAGEMENT
      * CURRENTLY JUST PRINT SOMETHING ON CONSOLE
@@ -495,7 +421,6 @@ function onDeviceReady() {  // eslint-disable-line no-unused-vars
     }, function (error) {
         console.error("======= FCM NOTIFICATION OPEN EVENT ERROR ======> " + error);
     });
-
 
     /*
      * FIREBASE MESSAGING: IF THE "ENABLE PUSH NOTIFICATION" IS ON THEN SUBSCRIBE TO FCM TOPIC "iCarusiNotification"
@@ -558,8 +483,8 @@ function onDeviceReady() {  // eslint-disable-line no-unused-vars
                         "method": "POST",
                         "url": "/geolocation2",
                         "cB": generic_json_request_new,
-                        "successCb": geolocationSuccess,
-                        "failureCb": geolocationFailure
+                        "successCb": idTokenSuccess,
+                        "failureCb": idTokenFailure
                         };
                 encrypt_and_execute(getX(), "kanazzi", data);
             } else {
@@ -567,7 +492,6 @@ function onDeviceReady() {  // eslint-disable-line no-unused-vars
             }
         }
     });
-
 
     $('#check-session').on('change', function () {
         var id_token = storage.getItem("firebase_id_token"),
@@ -578,18 +502,21 @@ function onDeviceReady() {  // eslint-disable-line no-unused-vars
             if (id_token === undefined) {
                 id_token = "";
             }
-
             data = {"username": icarusi_user,
-                    "action": "DELETE",
                     "firebase_id_token": id_token,
                     "method": "POST",
                     "url": "/testSession",
-                    "cB": generic_json_request_new,
-                    "successCb": geolocationSuccess,
-                    "failureCb": geolocationFailure
+                    "successCb": idTokenSuccess,
+                    "failureCb": idTokenFailure
                 };
-            encrypt_and_execute(getX(), "kanazzi", data);
+            json_request(data);
         }
+    });
+
+    $('#refresh-token').on('change', function () {
+
+        refreshIdToken();
+
     });
 
     $('#enable-notifications').on('change', function () {
@@ -609,10 +536,6 @@ function onDeviceReady() {  // eslint-disable-line no-unused-vars
 
     $(document).on("click", "#login_button", function () {
         encryptText2($("#password").val(), "submit");
-    });
-
-    $(document).on("click", "#send_album_btn", function () {
-        encryptText2(getX(), "uploadCover");
     });
 
     /*
@@ -668,6 +591,7 @@ function onDeviceReady() {  // eslint-disable-line no-unused-vars
         appVersion = version;
         $('#version').html("Release " + version);
         $("#info_version").html(version);
+        storage.setItem("app_version", version);
     });
 
     $("#info_user").html(icarusi_user);
