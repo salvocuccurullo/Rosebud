@@ -427,7 +427,7 @@ function tvShowsNewSuccess(data) {
 
 function tvShowsNewFailure(data) {
 
-    if (DEBUG) { console.info(JSON.stringify(data)); }
+    console.error(JSON.stringify(data));
     alert(data.message);
 
 }
@@ -447,10 +447,8 @@ function catalogueFailure(data) {
 
     var media_catalogue;
 
-    if (DEBUG) {
-        console.error("Error during retrieving media catalogue. Trying to retrieving from cache...");
-        console.debug(JSON.stringify(data));
-    }
+    console.error("Error during retrieving media catalogue. Trying to retrieving from cache...");
+    console.error(JSON.stringify(data));
 
     media_catalogue = JSON.parse(storage.getItem("media_catalogue"));
     $.each(media_catalogue, function (index, value) { // eslint-disable-line no-unused-vars
