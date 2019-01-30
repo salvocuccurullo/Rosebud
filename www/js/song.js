@@ -300,15 +300,15 @@ function uploadCover() { // eslint-disable-line no-unused-vars
 
     if (DEBUG) { console.info("UPLOAD COVER CALLED..."); }
 
+    $("#username2").val(icarusi_user);
+    $("#kanazzi").val(kanazzi);
+
     var username = icarusi_user,
         title = $("#title").val(),
         author = $("#author").val(),
         year = $("#year").val(),
         the_form = $("#cover_form"),
         formData = new FormData(the_form[0]);
-
-    $("#username2").val(icarusi_user);
-    $("#kanazzi").val(kanazzi);
 
     if (username === "" || username === undefined || username === null) {
         alert("You must be logged in for saving a cover");
