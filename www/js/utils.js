@@ -182,6 +182,64 @@ function generic_json_request_new(data, successCb, failureCb) { // eslint-disabl
         });
 }
 
+
+function json_request(data) { // eslint-disable-line no-unused-vars
+
+    loading(true, "Loading...");
+
+    $.ajax({
+        url: BE_URL + data.url,
+        method: data.method,
+        data: JSON.stringify(data),
+        contentType: "application/json",
+        dataType: "json"
+    })
+        .done(function (response) {
+
+            loading(false, "Loading...");
+
+            if (DEBUG) {
+                console.info("Request to " + data.url + " completed");
+                console.info("Payload received " + JSON.stringify(response));
+            }
+
+            try {
+                if (DEBUG) {
+                    console.info("Status response: " + response.result);
+                }
+                if (response.result === "failure") {
+                    if (data.failureCb) {
+                        data.failureCb(response);
+                    }
+                }
+            } catch (err) {
+                if (DEBUG) { console.error(err); }
+                if (data.failureCb) {
+                    data.failureCb(err);
+                }
+            }
+
+            if (data.successCb) {
+                data.successCb(response);
+            }
+
+        })
+        .fail(function (err) {
+            loading(false, "Loading...");
+            if (DEBUG) {
+                console.info("iCarusi App============> Error during generic request to " + data.url);
+                console.info("iCarusi App============> " + err.responseText);
+                console.info("iCarusi App============> " + JSON.stringify(err));
+            }
+            if (data.failureCb) {
+                data.failureCb(err);
+            }
+        })
+        .always(function () {
+            loading(false, "Loading...");
+        });
+}
+
 function locale_date(input_date) { // eslint-disable-line no-unused-vars
     var d = new Date(input_date);
     moment.locale('it');

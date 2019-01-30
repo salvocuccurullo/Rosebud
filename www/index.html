@@ -19,6 +19,7 @@
 		<script type="text/javascript" src="js/utils.js" ></script>
 		<script type="text/javascript" src="js/index.js" ></script>
 		<script type="text/javascript" src="js/pulltorefresh.min.js" ></script>
+		<script type="text/javascript" src="js/auth.js" ></script>
 	</head>
 	
 	<body>
@@ -79,7 +80,7 @@
 				</div>
 				-->
 				<a id="loginGoogle" data-rel="popup" title="Google Login" data-position-to="window" class="ui-btn ui-corner-all ui-shadow ui-btn-inline ui-icon-cloud ui-btn-icon-left ui-btn-a" data-transition="flow">Google Login</a>
-				<br/><span style="font-size:9px">Note: Google login is fully working but not yet really used by the app<br/>Just try it!</span><br/><br/>
+
 				<div data-role="popup" id="popupLoginResult" data-theme="a" class="ui-corner-all">
 					<div style="padding:10px 20px;" id="login_message"></div>
 				</div>
@@ -162,6 +163,17 @@
 								</div>
 								<div class="ui-block-b">
 									<input type="checkbox" data-role="flipswitch" data-mini="true" name="check-session" id="check-session" data-theme="b"/>
+								</div>
+							</div>
+						</div>
+
+						<div id="refresh_token" style="display:none">
+							<div class="ui-grid-a" id="custom-grid">
+								<div class="ui-block-a">
+									<label for="check-session">Refresh Token</label>
+								</div>
+								<div class="ui-block-b">
+									<input type="checkbox" data-role="flipswitch" data-mini="true" name="refresh-token" id="refresh-token" data-theme="b"/>
 								</div>
 							</div>
 						</div>

@@ -228,7 +228,7 @@ function setTvShows(tvshows, votes_user) {
                     at_least_one_nw = true;
                     name = value.u_v_dict[value1].us_name;
                     epi = value.u_v_dict[value1].episode;
-                    season = value.u_v_dict[value1].season;
+                    season = value.serie_season;
                     content_nw += "[" + name + ' S' + season + 'E' + epi + ']&nbsp;&nbsp;';
                 }
             });
