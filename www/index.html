@@ -1,7 +1,7 @@
 <html>
 	<head>
 		<title>iCarusi Index</title>
-		
+
 		<link rel="stylesheet" href="css/jquery.mobile-1.4.5.min.css" />
 		<link rel="stylesheet" href="css/icarusi.css" />
 		<script src="js/jquery-1.12.4.min.js" type="text/javascript"></script>
@@ -9,29 +9,29 @@
 		<script type="text/javascript" src="cordova.js"></script>
 		<script type="text/javascript" src="cordova_plugins.js"></script>
 		<script type="text/javascript" src="js/shared.js" ></script>
-		
+
 		<!-- Firebase App is always required and must be first -->
 		<script src="js/firebase/firebase-app.js"></script>
 		<!-- Add additional services that you want to use -->
 		<script src="js/firebase/firebase-auth.js"></script>
-		
+
 		<script type="text/javascript" src="js/config.js" ></script>
 		<script type="text/javascript" src="js/utils.js" ></script>
 		<script type="text/javascript" src="js/index.js" ></script>
 		<script type="text/javascript" src="js/pulltorefresh.min.js" ></script>
 		<script type="text/javascript" src="js/auth.js" ></script>
 	</head>
-	
+
 	<body>
 		<div data-role="page" id="home_page" title="iCarusi application home page">
-			
+
 			<!-- navbar -->
 			<div data-role="header" data-nobackbtn="true" data-theme="b">
-				
+
 				<div style="text-align:center;" class="ui-bar ui-bar-b">
 					iCarusi - The App
 				</div>
-					
+
 				<div data-role="navbar" id="navbar" data-theme="a">
 					<ul>
 						<li><a href="index.html" title="Go to home page" class="ui-btn-active ui-state-persist">Home</a></li>
@@ -39,12 +39,12 @@
 						<li><a href="carusi.html" title="Go to carusi page"  data-ajax="false" rel="external" id="carusi_btn">iCarusi</a></li>
 						<li><a href="song.html" title="Go to music page"  data-ajax="false" rel="external" id="song_btn">Music</a></li>
 					</ul>
-				</div>	
+				</div>
 			</div>
 			<div id="connection" style="font-size:11px; font-style:italic; text-align:center; background-color:#C60419; color:white;"></div>
-			
+
 			<div role="main" class="ui-content" style="text-align:center; margin-top:35px">
-				
+
 				<div id="logo_content">
 					<img src="images/loading.gif" style="width:85%" id="cover_img" onerror="set_fallback_image()"><br/><br/>
 					<span id="version"></span>
@@ -88,12 +88,12 @@
 				<div id="logged">Not logged in</div>
 				<a href="#settings_page" title="Open settings page" class="ui-btn ui-icon-gear ui-btn-icon-notext ui-corner-all" style="float:right">Settings</a>
 			</div>
-			
+
 			<div data-role="footer" id="footer">
 				<div id="sabba_info" style="text-align:center"></div>
 			</div>
 		</div>
-		
+
 		<div data-role="page" id="settings_page">
 			<a href="#home_page" class="ui-btn ui-corner-all ui-shadow ui-btn-inline ui-icon-home ui-btn-icon-arrow-l ui-btn-a" data-mini="true">Back</a>
 			<div class="ui-corner-all custom-corners">
@@ -110,7 +110,7 @@
 								<input type="checkbox" data-role="flipswitch" data-mini="true" name="lazy-load" id="lazy-load" data-theme="b" checked="checked"/>
 							</div>
 						</div>
-					 
+
 						<div class="ui-grid-a" id="custom-grid">
 							<div class="ui-block-a">
 								<label for="enable-geoloc">Share your location with iCarusi</label>
@@ -119,7 +119,7 @@
 								<input type="checkbox" data-role="flipswitch" data-mini="true" name="enable-geoloc" id="enable-geoloc" data-theme="b"/>
 							</div>
 						</div>
-						
+
 						<div class="ui-grid-a" id="custom-grid">
 							<div class="ui-block-a">
 								<label for="enable-notifications">Enable Push Notifications</label>
@@ -146,16 +146,16 @@
 								<input type="checkbox" data-role="flipswitch" data-mini="true" name="flip-save-images" id="flip-save-images" data-theme="b" disabled="disabled"/>
 							</div>
 						</div>
-						
+
 						<div class="ui-grid-a" id="custom-grid">
 							<div class="ui-block-a">
 								<label for="show-extra-info">Show extra info</label>
 							</div>
 							<div class="ui-block-b">
-								<input type="checkbox" data-role="flipswitch" data-mini="true" name="show-extra-info" id="show-extra-info" data-theme="b"/>	
+								<input type="checkbox" data-role="flipswitch" data-mini="true" name="show-extra-info" id="show-extra-info" data-theme="b"/>
 							</div>
 						</div>
-						
+
 						<div id="debug_session" style="display:none">
 							<div class="ui-grid-a" id="custom-grid">
 								<div class="ui-block-a">
@@ -177,10 +177,10 @@
 								</div>
 							</div>
 						</div>
-						
+
 				 </div>
 			</div>
-			
+
 			<div class="ui-corner-all custom-corners">
 				<div class="ui-bar ui-bar-a">
 					<h3>Info</h3>
@@ -192,11 +192,12 @@
 					<div style="margin-top:10px"><span style="font-weight:bold">Installed images</span><span style="color:#C60419; float:right" id="hardcoded_images">&ndash;</span></div>
 					<div style="margin-top:10px"><span style="font-weight:bold">Downloaded images</span><span style="color:#C60419; float:right" id="dld_images">&ndash;</span></div>
 					<div style="margin-top:10px"><span style="font-weight:bold">Remote covers</span><span style="color:#C60419; float:right" id="remote_covers">&ndash;</span></div>
+					<div style="margin-top:10px"><span style="font-weight:bold">Server version(s)</span><span style="color:#C60419; float:right" id="server_version">&ndash;</span></div>
 				 </div>
 			</div>
-			
-		</div>		
-		
+
+		</div>
+
 	</body>
 
 </html>

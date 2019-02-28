@@ -1,5 +1,5 @@
 /*global $, cordova, device, window, document, storage_keys, get_ls, loading, alert, generic_json_request_new, encrypt_and_execute, getX*/
-/*global idTokenSuccess, idTokenFailure, encryptText2, navigator, Connection, BE_URL, PullToRefresh*/
+/*global idTokenSuccess, idTokenFailure, encryptText2, navigator, Connection, BE_URL, PullToRefresh, getServerVersion*/
 /*global swipeleftHandler, swipeRightHandler, power_user, get_ls_bool, get_ls_bool_default, authenticateWithGoogle, json_request, refreshIdToken */
 /*global listDir*/
 /*eslint no-console: ["error", { allow: ["info","warn", "error"] }] */
@@ -21,6 +21,34 @@ document.addEventListener('deviceready', this.onDeviceReady.bind(this), false);
  * CALLBACKS
  *
  */
+
+ function getServerVersion() {
+
+     function versionSuccess(data){
+         $("#server_version").html(data.message);
+     }
+     function versionFailure(data){
+         $("#server_version").html("N/A");
+     }
+
+     var id_token = storage.getItem("firebase_id_token"),
+         data;
+
+     if (icarusi_user !== "" && icarusi_user !== undefined) {
+         if (id_token === undefined) {
+             id_token = "";
+         }
+         data = {"username": icarusi_user,
+                 "firebase_id_token": id_token,
+                 "method": "POST",
+                 "url": "/version",
+                 "successCb": versionSuccess,
+                 "failureCb": versionFailure
+             };
+         json_request(data);
+     }
+ };
+
 
 function error_fall_back() {
     alert("HAMMUORT!");
@@ -286,6 +314,8 @@ function show_post_login_features() {
         $("#debug_session").show();
         $("#refresh_token").show();
     }
+
+    getServerVersion();
 }
 
 /*
@@ -341,6 +371,7 @@ function submit() { // eslint-disable-line no-unused-vars
             loading(false, "Logging in...");
         });
 }
+
 
 /*
  * ON DEVICE READY
