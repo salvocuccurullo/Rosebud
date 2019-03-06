@@ -1,5 +1,5 @@
 /*global $, cordova, device, window, document, storage_keys, get_ls, loading, alert, generic_json_request_new, encrypt_and_execute, getX*/
-/*global idTokenSuccess, idTokenFailure, encryptText2, navigator, Connection, BE_URL, PullToRefresh, getServerVersion*/
+/*global idTokenSuccess, idTokenFailure, encryptText2, navigator, Connection, BE_URL, BE_LIST, PullToRefresh, getServerVersion*/
 /*global swipeleftHandler, swipeRightHandler, power_user, get_ls_bool, get_ls_bool_default, authenticateWithGoogle, json_request, refreshIdToken */
 /*global listDir*/
 /*eslint no-console: ["error", { allow: ["info","warn", "error"] }] */
@@ -313,6 +313,7 @@ function show_post_login_features() {
         $("#sabba_info").html(BE_URL);
         $("#debug_session").show();
         $("#refresh_token").show();
+        $("#be_selector").show();
     }
 
     getServerVersion();
@@ -372,6 +373,11 @@ function submit() { // eslint-disable-line no-unused-vars
         });
 }
 
+function set_be_list() {
+  $.each(BE_LIST, function (index, value) { // eslint-disable-line no-unused-vars
+    $("#be-selector").append('<option value="' + value.url + '">' + value.name + '</option>');
+  });
+}
 
 /*
  * ON DEVICE READY
@@ -385,7 +391,10 @@ function onDeviceReady() {  // eslint-disable-line no-unused-vars
     if (DEBUG) { console.info("Localstorage status START ==============="); }
     if (DEBUG) { console.info(JSON.stringify(storage_keys)); }
     if (DEBUG) { console.info(JSON.stringify(get_ls("show-extra-info"))); }
+    if (DEBUG) { console.info(JSON.stringify(get_ls("be-selector"))); }
     if (DEBUG) { console.info("Localstorage status END ==============="); }
+
+    set_be_list();
 
     icarusi_user = storage.getItem("icarusi_user");
     if (!icarusi_user) {
@@ -398,8 +407,12 @@ function onDeviceReady() {  // eslint-disable-line no-unused-vars
         extra_info = get_ls_bool("show-extra-info"),
         enable_geoloc = get_ls_bool("enable-geoloc"),
         lazy_load = get_ls_bool_default("lazy-load", true),
-        networkState = navigator.connection.type;
+        networkState = navigator.connection.type,
+        be_selector = get_ls("be-selector");
 
+    if (be_selector != "") {
+      BE_URL = be_selector;
+    }
 
     $(document).on("click", "#loginGoogle", function () {
         authenticateWithGoogle(googleAuthSuccess, googleAuthFailure, {});
@@ -469,6 +482,16 @@ function onDeviceReady() {  // eslint-disable-line no-unused-vars
     /*
      *  BINDINGS
      */
+
+     $('#be-selector').on('change', function () {
+         var val = $("#be-selector :selected").val();
+         if (DEBUG) { console.info("iCarusi App============> BE Selector : " + val); }
+         if (val != "") {
+           storage.setItem("be-selector", val);
+         } else {
+           storage.setItem("be-selector", BE_URL);  //the default from shared.js
+         }
+     });
 
     $('#lazy-load').on('change', function () {
         var val = $('#lazy-load').prop("checked");

@@ -1007,6 +1007,12 @@ function onDeviceReady() { // eslint-disable-line no-unused-vars
     tv_shows_storage = storage.getItem("tv_shows");
     tv_shows_storage_ts = storage.getItem("tv_shows_count_ts");
     device_app_path = cordova.file.applicationDirectory;
+
+    var be_selector = get_ls("be-selector");
+    if (be_selector != "") {
+      BE_URL = be_selector;
+    }
+
     if (DEBUG) {
         console.info("iCarusi App============> Found Tv Shows Storage");
         console.info("iCarusi App============> Tv Shows Storage datetime " + tv_shows_storage_ts);

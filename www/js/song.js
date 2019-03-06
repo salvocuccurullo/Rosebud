@@ -397,7 +397,12 @@ function onDeviceReady() { // eslint-disable-line no-unused-vars
         old_ts  = parseInt(storage.getItem("covers_ts"), 10),
         new_ts,
         diff,
-        diff_sec;
+        diff_sec,
+        be_selector = get_ls("be-selector");
+
+    if (be_selector != "") {
+      BE_URL = be_selector;
+    }
 
     $("#poster_pic").attr("src", "images/loading.gif");
     $("#connection").html("");

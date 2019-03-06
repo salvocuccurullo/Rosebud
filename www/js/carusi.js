@@ -268,7 +268,12 @@ function onDeviceReady() { // eslint-disable-line no-unused-vars
 
     var positions = [],
         networkState,
-        div;
+        div,
+        be_selector = get_ls("be-selector");
+
+    if (be_selector != "") {
+      BE_URL = be_selector;
+    }
 
     $("#geoloc_info").html("");
 
