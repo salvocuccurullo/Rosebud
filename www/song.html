@@ -1,7 +1,7 @@
 <html>
 	<head>
-		<title>iCarusi Index</title>
-		
+		<title>Rosebud - Music</title>
+
 		<link rel="stylesheet" href="css/jquery.mobile-1.4.5.min.css" />
 		<link rel="stylesheet" href="css/icarusi.css" />
 		<script src="js/jquery-1.12.4.min.js" type="text/javascript"></script>
@@ -14,36 +14,36 @@
 		<script type="text/javascript" src="js/song.js" ></script>
 		<script type="text/javascript" src="js/pulltorefresh.min.js" ></script>
 	</head>
-	
+
 	<body>
 		<div data-role="page" id="song_page">
-			
+
 			<!-- navbar -->
 			<div data-role="header" data-nobackbtn="true" data-theme="b">
-				
+
 				<div style="text-align:center;" class="ui-bar ui-bar-b">
-					iCarusi - The App
+					Rosebud
 				</div>
-					
+
 				<div data-role="navbar" id="navbar" data-theme="a">
 					<ul>
 						<li><a href="index.html" data-ajax="false" rel="external">Home</a></li>
 						<li><a href="movies.html" data-ajax="false" rel="external" id="mv_btn">Movies</a></li>
-						<li><a href="carusi.html" data-ajax="false" rel="external" id="carusi_btn">iCarusi</a></li>
+						<li><a href="carusi.html" data-ajax="false" rel="external" id="carusi_btn">Geo Friends</a></li>
 						<li><a href="song.html" class="ui-btn-active ui-state-persist" id="song_btn">Music</a></li>
 					</ul>
-				</div>	
+				</div>
 			</div>
 			<div id="connection" style="font-size:11px; font-style:italic; text-align:center; background-color:#C60419; color:white;"></div>
 			<div id="cache_info" style="font-size:11px; text-align:center; background-color:#000099; color:white;"></div>
-			
+
 			<div role="main" class="ui-content" style="text-align:center;">
-				
+
 				<div data-role="popup" id="popupPhotoPortrait" class="photopopup" data-overlay-theme="a" data-corners="false" data-tolerance="30,15" data-position-to="origin">
 					<a href="#" data-rel="back" class="ui-btn ui-corner-all ui-shadow ui-btn-a ui-icon-delete ui-btn-icon-notext ui-btn-right">Close</a>
 					<img src="images/loading.gif" alt="Photo portrait" id="poster_pic" name="poster_pic" onload="loading(false,'')" />
 				</div>
-				
+
 				<!-- <a href="#" id="refresh_btn" data-role="button" data-icon="refresh" data-iconpos="right">Refresh...</a> -->
 				<div data-role="tabs" id="music_tabs" name="music_tabs">
 					<div data-role="navbar">
@@ -52,7 +52,7 @@
 							<li><a href="#song_content" id="#random_song_link">Random Song</a></li>
 						</ul>
 					</div>
-					
+
 					<div id="cover_list" style="text-align:center">
 						<br/>
 						<button class="ui-btn ui-icon-tag ui-btn-icon-notext ui-corner-all ui-mini ui-btn-inline ui-btn-b" style="float:left" onclick="sort_covers('name')"></button>
@@ -65,7 +65,7 @@
 						<input type="text" data-type="search" name="cover_search" id="cover_search" value="" data-mini="true" placeholder="search (min 4 chars)"></input>
 						<ul data-role="listview" data-theme="a" data-inset="true" data-filter="false" id="covers-list" ></ul>
 					</div>
-					
+
 					<div id="song_content" style="text-align:center">
 						<div id="random_song_message" name="random_song_message" style="color:#C60419; margin-top:50px"></div>
 						<ul data-role="listview" data-theme="a" data-inset="true" data-filter="false" id="lyrics-list" ></ul>
@@ -73,12 +73,12 @@
 
 				</div>
 			</div>
-			
+
 			<div data-role="footer" id="footer">
 				<div id="sabba_info"></div>
 			</div>
 		</div>
-		
+
 		<div data-role="page" id="cover_page">		<!-- COVER PAGE -->
 			<a href="#song_page" class="ui-btn ui-corner-all ui-shadow ui-btn-inline ui-icon-home ui-btn-icon-arrow-l ui-btn-a" data-mini="true" style="margin-left:15px">Back</a>
 			Cover editing
@@ -99,7 +99,7 @@
 				 </div>
 			</div>
 		</div>				<!-- END COVER PAGE -->
-		
-		
+
+
 	</body>
 </html>

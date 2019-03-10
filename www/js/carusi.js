@@ -54,7 +54,7 @@ function zoomTo(username) {
                     "lat": value.latitude,
                     "lng": value.longitude
                 },
-                title: "iCarusi nel mondo",
+                title: "GeoFriends",
                 snippet: value.name + " was here on:\n" + locale_date(value.last_locate),
                 animation: plugin.google.maps.Animation.DROP
             });
@@ -100,7 +100,7 @@ function setMarkers(positions) {
                     "lat": value.latitude,
                     "lng": value.longitude
                 },
-                title: "iCarusi nel mondo",
+                title: "GeoFriends",
                 snippet: value.name + " was here on:\n" + locale_date(value.last_locate),
                 animation: plugin.google.maps.Animation.DROP,
                 icon: {
@@ -164,7 +164,7 @@ function setMarkers2() {
                         "lat": value.latitude,
                         "lng": value.longitude
                     },
-                    title: "iCarusi nel mondo",
+                    title: "GeoFriends",
                     snippet: value.name + " was here on:\n" + locale_date(value.last_locate),
                     animation: plugin.google.maps.Animation.DROP,
                     icon: {
@@ -212,7 +212,7 @@ function setButtons(positions) {
 function geoLocation() { // eslint-disable-line no-unused-vars
 
     if (icarusi_user === "" || icarusi_user === undefined || icarusi_user === null) {
-        alert("Please login for share your location and/or getting info on iCarusi location");
+        alert("Please login for share your location and/or getting info on your friends location");
         return false;
     }
 
@@ -280,12 +280,12 @@ function onDeviceReady() { // eslint-disable-line no-unused-vars
     if (icarusi_user === undefined || icarusi_user === "" || icarusi_user === null) {
         $('#get_locations').prop('disabled', true).addClass('ui-state-disabled');
         $('#locate_me').prop('disabled', true).addClass('ui-state-disabled');
-        alert("You must be logged in for accessing iCarusi page!!");
+        alert("You must be logged in for accessing Rosebud page!!");
         return false;
     }
 
     if (!enable_geoloc) {
-        $("#geoloc_info").html("You're not sharing your location with iCarusi. Shame on you! Enable it on settings!");
+        $("#geoloc_info").html("You're not sharing your location with your friends. Enable it on settings!");
     }
 
     /*

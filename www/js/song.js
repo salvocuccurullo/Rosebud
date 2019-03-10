@@ -48,7 +48,7 @@ function setCovers(covers) {
     setCacheInfo();
 
     if (covers.length === 0) {
-        if (DEBUG) { console.info("iCarusi App============> No covers found on remote server."); }
+        if (DEBUG) { console.info("Rosebud App============> No covers found on remote server."); }
     }
 
     var covers_header = '<li data-role="list-divider" data-theme="b" style="text-align:center">';
@@ -197,7 +197,7 @@ function get_covers() { // eslint-disable-line no-unused-vars
         return false;
     }
 
-    if (DEBUG) { console.info("iCarusi App============> Starting covers retrieving..."); }
+    if (DEBUG) { console.info("Rosebud App============> Starting covers retrieving..."); }
 
     loading(true, "Loading covers...");
 
@@ -224,8 +224,8 @@ function get_covers() { // eslint-disable-line no-unused-vars
         })
         .fail(function (err) {
             if (DEBUG) {
-                console.info("iCarusi App============> Error during remote covers retrieving");
-                console.info("iCarusi App============> " + err.responseText);
+                console.info("Rosebud App============> Error during remote covers retrieving");
+                console.info("Rosebud App============> " + err.responseText);
             }
         })
         .always(function () {
@@ -422,7 +422,7 @@ function onDeviceReady() { // eslint-disable-line no-unused-vars
         $("#random_song_message").html("No Random Song available<br/>on Pantalica mode! ;)");
 
         if (icarusi_user !== "" && covers_storage !== "" && covers_storage !== undefined && covers_storage !== null) {
-            console.info("iCarusi App============> NO NETWORK -> Cached Covers loading");
+            console.info("Rosebud App============> NO NETWORK -> Cached Covers loading");
             sort_covers("created");
         }
 
@@ -437,7 +437,7 @@ function onDeviceReady() { // eslint-disable-line no-unused-vars
             diff_sec = diff / 1000;
 
             if (icarusi_user !== "" && diff_sec < 86400 && covers_storage !== "" && covers_storage !== undefined && covers_storage !== null) {
-                if (DEBUG) { console.info("iCarusi App============> CACHE AVAILABLE AND NOT EXPIRED -> Cached Covers loading"); }
+                if (DEBUG) { console.info("Rosebud App============> CACHE AVAILABLE AND NOT EXPIRED -> Cached Covers loading"); }
                 sort_covers("created");
             } else {
                 encryptText2(getX(), "get_covers");
@@ -498,7 +498,7 @@ function onDeviceReady() { // eslint-disable-line no-unused-vars
 
     $("#popupPhotoPortrait").bind({
         popupafterclose: function (event, ui) { // eslint-disable-line no-unused-vars
-            if (DEBUG) { console.info("iCarusi App============> Closing popupPhotoPortrait Popup"); }
+            if (DEBUG) { console.info("Rosebud App============> Closing popupPhotoPortrait Popup"); }
             $("#poster_pic").attr("src", "images/loading.gif");
         }
     });

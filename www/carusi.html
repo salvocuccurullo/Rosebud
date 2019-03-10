@@ -1,7 +1,7 @@
 <html>
 	<head>
-		<title>iCarusi Index</title>
-		
+		<title>Rosebud - GeoFriends</title>
+
 		<link rel="stylesheet" href="css/jquery.mobile-1.4.5.min.css" />
 		<link rel="stylesheet" href="css/icarusi.css" />
 		<script src="js/jquery-1.12.4.min.js" type="text/javascript"></script>
@@ -15,37 +15,37 @@
 		<script type="text/javascript" src="js/carusi.js" ></script>
 		<script type="text/javascript" src="js/pulltorefresh.min.js" ></script>
 	</head>
-	
+
 	<body>
 		<div data-role="page" id="carusi_page">
-			
+
 			<!-- navbar -->
 			<div data-role="header" data-nobackbtn="true" data-theme="b">
-				
+
 				<div style="text-align:center;" class="ui-bar ui-bar-b">
-					iCarusi - The App
+					Rosebud
 				</div>
-					
+
 				<div data-role="navbar" id="navbar" data-theme="a">
 					<ul>
 						<li><a href="index.html" data-ajax="false" rel="external">Home</a></li>
 						<li><a href="movies.html" data-ajax="false" rel="external" id="mv_btn">Movies</a></li>
-						<li><a href="#" class="ui-btn-active ui-state-persist" id="carusi_btn">iCarusi</a></li>
+						<li><a href="#" class="ui-btn-active ui-state-persist" id="carusi_btn">Geo Friends</a></li>
 						<li><a href="song.html" data-ajax="false" rel="external" id="song_btn">Music</a></li>
 					</ul>
-				</div>	
+				</div>
 			</div>
 			<div id="connection" style="font-size:11px; font-style:italic; text-align:center; background-color:#C60419; color:white;"></div>
 			<div id="cache_info" style="font-size:11px; font-style:italic; text-align:center; background-color:#000099; color:white;"></div>
 			<div id="geoloc_info" style="font-size:11px; font-style:italic; text-align:center; background-color:#C60419; color:white;"></div>
-						
+
 			<div role="main" class="ui-content" style="text-align:center;">
 				<div class="ui-grid-b">
 					<div class="ui-block-a" style="width:33%">
 						<a href="#" id="locate_me" data-role="button" data-icon="location" data-inline="true" data-iconpos="right" data-mini="true">Me</a>
 					</div>
 					<div class="ui-block-b" style="width:33%">
-						<a href="#" id="get_locations" data-role="button" data-icon="location" data-inline="true" data-iconpos="right" data-mini="true">iCarusi</a>
+						<a href="#" id="get_locations" data-role="button" data-icon="location" data-inline="true" data-iconpos="right" data-mini="true">Friends</a>
 					</div>
 					<div class="ui-block-c" style="width:33%">
 						<select id="carusi_loc_buttons" name="carusi_loc_buttons" data-type="horizontal" data-mini="true" data-icon="user"></select>
@@ -53,7 +53,7 @@
 				</div>
 				<div id="map_canvas" name="map_canvas"></div>
 			</div>
-			
+
 			<div data-role="footer" id="footer">
 					<div id="sabba_info"></div>
 			</div>
