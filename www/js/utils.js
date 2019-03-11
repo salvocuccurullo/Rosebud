@@ -94,7 +94,7 @@ function encryptText2(pText, cb) { // eslint-disable-line no-unused-vars
             }
         },
         function (err) {
-            if (DEBUG) { console.error("iCarusi App============> onFailure: " + JSON.stringify(err)); }
+            if (DEBUG) { console.error("Rosebud App============> onFailure: " + JSON.stringify(err)); }
         }
     );
 }
@@ -112,7 +112,7 @@ function encrypt_and_execute(pText, encKeyName, data) { // eslint-disable-line n
             }
         },
         function (err) {
-            if (DEBUG) { console.error("iCarusi App============> onFailure: " + JSON.stringify(err)); }
+            if (DEBUG) { console.error("Rosebud App============> onFailure: " + JSON.stringify(err)); }
             if (data.failureCb) { data.failureCb(err); }
         }
     );
@@ -170,8 +170,8 @@ function generic_json_request_new(data, successCb, failureCb) { // eslint-disabl
         .fail(function (err) {
             loading(false, "Loading...");
             if (DEBUG) {
-                console.info("iCarusi App============> Error during generic request to " + data.url);
-                console.info("iCarusi App============> " + err.responseText);
+                console.info("Rosebud App============> Error during generic request to " + data.url);
+                console.info("Rosebud App============> " + err.responseText);
             }
             if (failureCb) {
                 failureCb(err);
@@ -227,9 +227,9 @@ function json_request(data) { // eslint-disable-line no-unused-vars
         .fail(function (err) {
             loading(false, "Loading...");
             if (DEBUG) {
-                console.info("iCarusi App============> Error during generic request to " + data.url);
-                console.info("iCarusi App============> " + err.responseText);
-                console.info("iCarusi App============> " + JSON.stringify(err));
+                console.info("Rosebud App============> Error during generic request to " + data.url);
+                console.info("Rosebud App============> " + err.responseText);
+                console.info("Rosebud App============> " + JSON.stringify(err));
             }
             if (data.failureCb) {
                 data.failureCb(err);
