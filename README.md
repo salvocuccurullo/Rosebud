@@ -1,4 +1,4 @@
-# Rosebud (former know as iCarusiTheApp)
+# Rosebud (formerly known as iCarusiTheApp)
 
 Plugins List (version number may change, please ignore it):
 
