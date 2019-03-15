@@ -1,7 +1,9 @@
 /*global $, cordova, device, window, document, loading, alert, getX, generic_json_request_new, encrypt_and_execute*/
 /*global encryptText2, navigator, Connection, BE_URL, PullToRefresh, get_ls_bool_default, is_storage_expired_or_invalid*/
-/*global power_user, get_ls_bool, base_url_poster, PhotoViewer, fancyDate, confirm, FormData, power_user */
+/*global power_user, get_ls_bool, base_url_poster, PhotoViewer, fancyDate, confirm, FormData, power_user, get_ls */
 /*eslint no-console: ["error", { allow: ["info","warn", "error", "debug"] }] */
+/*eslint no-global-assign: "error"*/
+/*globals BE_URL:true*/
 
 "use strict";
 
@@ -28,7 +30,11 @@ var storage = window.localStorage,
     search_mode = false,
     append_mode = false,
     search_result,
-    tvshow_stat = {"total_show":0, "movies":0, "series":0};
+    tvshow_stat = {
+      "total_show":0,
+      "movies":0,
+      "series":0
+    };
 
 document.addEventListener('deviceready', this.onDeviceReady.bind(this), false); // eslint-disable-line no-unused-vars
 
@@ -1007,9 +1013,17 @@ function onDeviceReady() { // eslint-disable-line no-unused-vars
     tv_shows_storage = storage.getItem("tv_shows");
     tv_shows_storage_ts = storage.getItem("tv_shows_count_ts");
     device_app_path = cordova.file.applicationDirectory;
+    //storage.setItem("spotify_url_received", "");
+
+    window.plugins.intent.setNewIntentHandler(function (intent) {
+        console.info(JSON.stringify(intent));
+        //if (intent !== undefined) {
+           storage.setItem("spotify_url_received", intent.clipItems[0].text);
+        //}
+    });
 
     var be_selector = get_ls("be-selector");
-    if (be_selector != "") {
+    if (be_selector !== "") {
       BE_URL = be_selector;
     }
 

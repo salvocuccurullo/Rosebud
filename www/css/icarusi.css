@@ -67,6 +67,16 @@
     vertical-align: middle;
 }
 
+#custom-grid-spoti .ui-block-a {
+    width: 80% !important;
+    vertical-align: middle;
+}
+
+#custom-grid-spoti .ui-block-b {
+    width: 20% !important;
+    vertical-align: middle;
+}
+
 .button1 {
   background-color: white;
   color: black;

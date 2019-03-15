@@ -1,12 +1,14 @@
 /*global $, cordova, device, window, document, storage_keys, get_ls, loading, alert, generic_json_request_new, encrypt_and_execute, getX*/
 /*global idTokenSuccess, idTokenFailure, encryptText2, navigator, Connection, BE_URL, BE_LIST, PullToRefresh, getServerVersion*/
 /*global swipeleftHandler, swipeRightHandler, power_user, get_ls_bool, get_ls_bool_default, authenticateWithGoogle, json_request, refreshIdToken */
-/*global listDir*/
+/*global listDir, pbkdf2_hasher*/
 /*eslint no-console: ["error", { allow: ["info","warn", "error"] }] */
+/*eslint no-global-assign: "error"*/
+/*globals BE_URL:true*/
 
 "use strict";
 
-var DEBUG = true,
+var DEBUG = false,
     icarusi_user = "",
     storage = window.localStorage,
     kanazzi,
@@ -22,32 +24,34 @@ document.addEventListener('deviceready', this.onDeviceReady.bind(this), false);
  *
  */
 
- function getServerVersion() {
+function getServerVersion() {
 
-     function versionSuccess(data){
-         $("#server_version").html(data.message);
-     }
-     function versionFailure(data){
-         $("#server_version").html("N/A");
-     }
+    function versionSuccess(data) {
+       $("#server_version").html(data.message);
+    }
 
-     var id_token = storage.getItem("firebase_id_token"),
-         data;
+    function versionFailure(err) {
+       $("#server_version").html("N/A");
+       if (DEBUG) { console.info("Rosebud App============> " + err.responseText); }
+    }
 
-     if (icarusi_user !== "" && icarusi_user !== undefined) {
-         if (id_token === undefined) {
-             id_token = "";
-         }
-         data = {"username": icarusi_user,
-                 "firebase_id_token": id_token,
-                 "method": "POST",
-                 "url": "/version",
-                 "successCb": versionSuccess,
-                 "failureCb": versionFailure
-             };
-         json_request(data);
-     }
- };
+    var id_token = storage.getItem("firebase_id_token"),
+       data;
+
+    if (icarusi_user !== "" && icarusi_user !== undefined) {
+       if (id_token === undefined) {
+           id_token = "";
+       }
+       data = {"username": icarusi_user,
+               "firebase_id_token": id_token,
+               "method": "POST",
+               "url": "/version",
+               "successCb": versionSuccess,
+               "failureCb": versionFailure
+           };
+       json_request(data);
+    }
+}
 
 
 function error_fall_back() {
@@ -379,72 +383,7 @@ function set_be_list() {
   });
 }
 
-/*
-* OPEN with
-*/
 
-function setupOpenwith() {
-
-  // Increase verbosity if you need more logs
-  //cordova.openwith.setVerbosity(cordova.openwith.DEBUG);
-
-  // Initialize the plugin
-  cordova.openwith.init(initSuccess, initError);
-
-  function initSuccess()  { console.log('init success!'); }
-  function initError(err) { console.log('init failed: ' + err); }
-
-  // Define your file handler
-  cordova.openwith.addHandler(myHandler);
-
-  function myHandler(intent) {
-    console.info('=========== INTENT RECEIVED =============>');
-    console.info(JSON.stringify(intent));
-
-    console.info('Action: ' + intent.action); // type of action requested by the user
-    console.info('Exit: ' + intent.exit); // if true, you should exit the app after processing
-
-    console.info(JSON.stringify(intent.items));
-
-    console.info('<=========== END INTENT RECEIVED =============');
-    /*
-    for (var i = 0; i < intent.items.length; ++i) {
-      var item = intent.items[i];
-      console.log('  type: ', item.type);   // mime type
-      console.log('  uri:  ', item.uri);     // uri to the file, probably NOT a web uri
-
-      // some optional additional info
-      console.log('  text: ', item.text);   // text to share alongside the item, iOS only
-      console.log('  name: ', item.name);   // suggested name of the image, iOS 11+ only
-      console.log('  utis: ', item.utis);
-      console.log('  path: ', item.path);   // path on the device, generally undefined
-    }
-    */
-
-    // ...
-    // Here, you probably want to do something useful with the data
-    // ...
-    // An example...
-    /*
-    if (intent.items.length > 0) {
-      cordova.openwith.load(intent.items[0], function(data, item) {
-
-        // data is a long base64 string with the content of the file
-        console.log("the item weights " + data.length + " bytes");
-        //uploadToServer(item);
-
-        // "exit" when done.
-        // Note that there is no need to wait for the upload to finish,
-        // the app can continue while in background.
-        if (intent.exit) { cordova.openwith.exit(); }
-      });
-    }
-    else {
-      if (intent.exit) { cordova.openwith.exit(); }
-    }
-    */
-  }
-}
 
 /*
  * ON DEVICE READY
@@ -455,13 +394,24 @@ function onDeviceReady() {  // eslint-disable-line no-unused-vars
 
     console.info("========> Rosebud started. Running on Android " + device.version);
 
+    /*
+    * OPEN with
+    */
+
+    window.plugins.intent.setNewIntentHandler(function (intent) {
+        console.info(JSON.stringify(intent));
+        //if (intent !== undefined) {
+           storage.setItem("spotify_url_received", intent.clipItems[0].text);
+           //alert(intent.clipItems[0].text);
+           //window.location.href="song.html#cover_page";
+        //}
+    });
+
     if (DEBUG) { console.info("Localstorage status START ==============="); }
     if (DEBUG) { console.info(JSON.stringify(storage_keys)); }
     if (DEBUG) { console.info(JSON.stringify(get_ls("show-extra-info"))); }
     if (DEBUG) { console.info(JSON.stringify(get_ls("be-selector"))); }
     if (DEBUG) { console.info("Localstorage status END ==============="); }
-
-    setupOpenwith();
 
     set_be_list();
 
@@ -479,7 +429,7 @@ function onDeviceReady() {  // eslint-disable-line no-unused-vars
         networkState = navigator.connection.type,
         be_selector = get_ls("be-selector");
 
-    if (be_selector != "") {
+    if (be_selector !== "") {
       BE_URL = be_selector;
     }
 
@@ -555,7 +505,7 @@ function onDeviceReady() {  // eslint-disable-line no-unused-vars
      $('#be-selector').on('change', function () {
          var val = $("#be-selector :selected").val();
          if (DEBUG) { console.info("Rosebud App============> BE Selector : " + val); }
-         if (val != "") {
+         if (val !== "") {
            storage.setItem("be-selector", val);
          } else {
            storage.setItem("be-selector", BE_URL);  //the default from shared.js

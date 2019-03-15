@@ -1,7 +1,9 @@
 /*global $, window, document, loading, alert, getX*/
 /*global encryptText2, navigator, Connection, BE_URL */
-/*global swipeleftHandler, swipeRightHandler, get_ls_bool, locale_date, plugin */
+/*global swipeleftHandler, swipeRightHandler, get_ls_bool, locale_date, plugin, get_ls */
 /*eslint no-console: ["error", { allow: ["info","warn", "error"] }] */
+/*eslint no-global-assign: "error"*/
+/*globals BE_URL:true*/
 
 "use strict";
 
@@ -265,13 +267,21 @@ function onDeviceReady() { // eslint-disable-line no-unused-vars
     icarusi_user = storage.getItem("icarusi_user");
     enable_geoloc = get_ls_bool("enable-geoloc");
     caruso_photo_url = storage.getItem("google_photo_url");
+    //storage.setItem("spotify_url_received", "");
+
+    window.plugins.intent.setNewIntentHandler(function (intent) {
+        console.info(JSON.stringify(intent));
+        //if (intent !== undefined) {
+           storage.setItem("spotify_url_received", intent.clipItems[0].text);
+        //}
+    });
 
     var positions = [],
         networkState,
         div,
         be_selector = get_ls("be-selector");
 
-    if (be_selector != "") {
+    if (be_selector !== "") {
       BE_URL = be_selector;
     }
 

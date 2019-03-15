@@ -1,10 +1,13 @@
 /*global $, document, window, DEBUG, BE_URL, alert */
 /*global loading, get_ls_bool, fancyDate, PhotoViewer, device, FormData, encryptText2, getX, power_user */
-/*global device, Connection, storage, navigator, cordova, swipeleftHandler, swipeRightHandler */
+/*global device, Connection, storage, navigator, cordova, swipeleftHandler, swipeRightHandler, generic_json_request_new */
+/*global encrypt_and_execute, get_ls */
 /*eslint no-global-assign: "error"*/
 /*globals kanazzi:true*/
 /*exported kanazzi */
 /*eslint no-console: ["error", { allow: ["info","warn", "error"] }] */
+/*eslint no-global-assign: "error"*/
+/*globals BE_URL:true*/
 
 "use strict";
 
@@ -13,7 +16,7 @@ var storage = window.localStorage,
     kanazzi,
     swipe_left_target = "index.html", // eslint-disable-line no-unused-vars
     swipe_right_target = "carusi.html", // eslint-disable-line no-unused-vars
-    DEBUG = true,
+    DEBUG = false,
     device_app_path = "",
     sort_type = "created",
     sort_order = -1,
@@ -191,50 +194,52 @@ function sort_covers(s_type) {
     }
 }
 
-function get_covers() { // eslint-disable-line no-unused-vars
+/*
+* GET COVERS
+*/
 
-    if (icarusi_user === undefined || icarusi_user === "" || icarusi_user === null) {
-        alert("You must be logged in for accessing covers!!");
-        return false;
-    }
-
-    if (DEBUG) { console.info("Rosebud App============> Starting covers retrieving..."); }
-
-    loading(true, "Loading covers...");
-
-    $.ajax({
-        url: BE_URL + "/getcovers",
-        method: "POST",
-        data: {
-            username : icarusi_user,
-            kanazzi : kanazzi
-        },
-        dataType: "json"
-    })
-        .done(function (data) {
-
-            var covers = JSON.parse(data);
-
-            storage.setItem("covers_storage", JSON.stringify(covers));      // SAVE ON LOCALSTORAGE
-            storage.setItem("covers_ts", new Date().getTime());
-            setCacheInfo();
-            current_covers = covers;
-            sort_type = "";
-            sort_covers("created");
-
-        })
-        .fail(function (err) {
-            if (DEBUG) {
-                console.info("Rosebud App============> Error during remote covers retrieving");
-                console.info("Rosebud App============> " + err.responseText);
-            }
-        })
-        .always(function () {
-            loading(false, "");
-        });
+function getCoversSuccess(data) { // eslint-disable-line no-unused-vars
+    var covers = JSON.parse(data);
+    storage.setItem("covers_storage", JSON.stringify(covers));      // SAVE ON LOCALSTORAGE
+    storage.setItem("covers_ts", new Date().getTime());
+    setCacheInfo();
+    current_covers = covers;
+    sort_type = "";
+    sort_covers("created");
 }
 
+function getCoversFailure(err) { // eslint-disable-line no-unused-vars
+    if (DEBUG) { console.error("Rosebud App============> " + err.responseText); }
+}
+
+function get_covers() { // eslint-disable-line no-unused-vars
+
+  if (icarusi_user === undefined || icarusi_user === "" || icarusi_user === null) {
+      alert("You must be logged in for accessing covers!!");
+      return false;
+  }
+
+  if (DEBUG) { console.info("Rosebud App============> Starting covers retrieving..."); }
+
+  var data = {
+    "username": icarusi_user,
+    "method": "POST",
+    "url": "/getcovers",
+    "cB": generic_json_request_new,
+    "successCb": getCoversSuccess,
+    "failureCb": getCoversFailure
+  };
+  encrypt_and_execute(getX(), "kanazzi", data);
+}
+
+/*
+* EDIT Cover, NEW Cover and Show Cover
+*/
+
 function edit_cover(id) { // eslint-disable-line no-unused-vars
+
+    var spotify_url_received = get_ls("spotify_url_received");
+
     $(':mobile-pagecontainer').pagecontainer('change', '#cover_page');
 
     $("#cover_img").show();
@@ -252,6 +257,10 @@ function edit_cover(id) { // eslint-disable-line no-unused-vars
     $("#spoty_url").val("");
     $("#upload_result").html("");
     $('#tracks-list').empty();
+
+    if (spotify_url_received != undefined) {
+      $("#spoty_url").val(spotify_url_received);
+    }
 
     if (id !== 0) {
         var result = $.grep(current_covers, function (element, index) { // eslint-disable-line no-unused-vars
@@ -272,6 +281,12 @@ function edit_cover(id) { // eslint-disable-line no-unused-vars
         $("#spotify_api_url").val(result.spotifyUrl);
         if (result.location !== "") {
             $("#cover_img").attr("src", result.location);
+        }
+        if (result.spotifyUrl !== "") {
+          get_spotify({
+              "action": "tracks-only",
+              "url": result.spotifyUrl
+            });
         }
         if (DEBUG) { console.info("cover img src: " + $("#cover_img").attr("src")); }
         curr_cover_id = result.id;
@@ -333,9 +348,8 @@ function uploadCover() { // eslint-disable-line no-unused-vars
     }
 
     if ($("#spoti_img_url").val() !== "") {
-
-    }
-    else if ($("#pic").val() === "" && curr_cover_id === "") {
+      if (DEBUG) { console.info("Uploading a new cover using spotify data: " + $("#spoti_img_url").val()); }
+    } else if ($("#pic").val() === "" && curr_cover_id === "") {
         alert("File/Spotify Image cannot be empty!");
         return false;
     }
@@ -373,7 +387,7 @@ function uploadCover() { // eslint-disable-line no-unused-vars
             }
 
             if (DEBUG) { console.info("Reloading covers..."); }
-            encryptText2(getX(), 'get_covers');
+            get_covers();
 
             $("#title").val("");
             $("#author").val("");
@@ -426,35 +440,51 @@ function setTracks(tracks) {
     $('#tracks-list').listview('refresh');
 }
 
-function spotySuccess(data){
+
+function setSpotifySong(data) {
     data = JSON.parse(data);
     if (DEBUG) { console.info("Rosebud App============> " + data.images[0].url); }
-    $("#cover_img").attr("src",data.images[0].url);
+    $("#cover_img").attr("src", data.images[0].url);
     $("#spoti_img_url").val(data.images[0].url);
     $("#author").val(data.artists[0].name);
     $("#title").val(data.name);
     $("#year").val(data.release_date.split("-")[0]);
-    $("#spotify_api_url").val(data.href)
+    $("#spotify_api_url").val(data.href);
     setTracks(data.tracks);
     $("#cover_img").show();
 }
 
-function spotyFailure(err){
-  if (DEBUG) { console.error("Rosebud App============> " + err); }
+function setSpotifyTracks(data) {
+    data = JSON.parse(data);
+    setTracks(data.tracks);
 }
 
-function get_spotify(action) {
-    console.info($("#spoty_url").val());
+function spotyFailure(err) {
+  if (DEBUG) { console.error("Rosebud App============> " + err.responseText); }
+}
 
-    var data = {
+function get_spotify(fn_data) {
+    console.info("Rosebud App============> " + JSON.stringify(fn_data));
+
+    var data,
+        successCB = setSpotifySong,
+        spoty_url = $("#spoty_url").val();
+
+    if (fn_data.action === 'tracks-only') {
+      successCB = setSpotifyTracks;
+      spoty_url = fn_data.url;
+    }
+
+    data = {
       "username": icarusi_user,
-      "album_url": $("#spoty_url").val(),
+      "album_url": spoty_url,
       "method": "POST",
       "url": "/spotify",
       "cB": generic_json_request_new,
-      "successCb": spotySuccess,
+      "successCb": successCB,
       "failureCb": spotyFailure
     };
+    console.info("Rosebud App============> " + JSON.stringify(data));
     encrypt_and_execute(getX(), "kanazzi", data);
 }
 
@@ -468,15 +498,30 @@ function onDeviceReady() { // eslint-disable-line no-unused-vars
     icarusi_user = storage.getItem("icarusi_user");
     covers_storage = storage.getItem("covers_storage");
     device_app_path = cordova.file.applicationDirectory;
+    var spotify_url_received = get_ls("spotify_url_received");
+    if (spotify_url_received != undefined) {
+      $("#spoty_url").val(spotify_url_received);
+    }
+
+
+    window.plugins.intent.setNewIntentHandler(function (intent) {
+        console.info(JSON.stringify(intent));
+        //if (intent !== undefined) {
+           storage.setItem("spotify_url_received", intent.clipItems[0].text);
+        //}
+    });
 
     var networkState = navigator.connection.type,
         old_ts  = parseInt(storage.getItem("covers_ts"), 10),
         new_ts,
         diff,
         diff_sec,
-        be_selector = get_ls("be-selector");
+        be_selector = get_ls("be-selector"),
+        spotify_url_received = get_ls("spotify_url_received");
 
-    if (be_selector != "") {
+    //$("#shared_spotify_url").html(spotify_url_received);
+
+    if (be_selector !== "") {
       BE_URL = be_selector;
     }
 
@@ -516,10 +561,10 @@ function onDeviceReady() { // eslint-disable-line no-unused-vars
                 if (DEBUG) { console.info("Rosebud App============> CACHE AVAILABLE AND NOT EXPIRED -> Cached Covers loading"); }
                 sort_covers("created");
             } else {
-                encryptText2(getX(), "get_covers");
+                get_covers();
             }
         } else {
-            encryptText2(getX(), "get_covers");
+            get_covers();
         }
     }
 
@@ -586,7 +631,9 @@ function onDeviceReady() { // eslint-disable-line no-unused-vars
 
 
     $(document).on("click", "#spoty_btn", function () {
-        get_spotify('all');
+        get_spotify({
+            'action':'all'
+        });
     });
 
     $('#pic').bind('change', function () {

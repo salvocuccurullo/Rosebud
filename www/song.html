@@ -79,7 +79,7 @@
 			</div>
 		</div>
 
-		<div data-role="page" id="cover_page">		<!-- COVER PAGE -->
+		<div data-role="page" id="cover_page" name="cover_page">		<!-- COVER PAGE -->
 			<a href="#song_page" class="ui-btn ui-corner-all ui-shadow ui-btn-inline ui-icon-home ui-btn-icon-arrow-l ui-btn-a" data-mini="true" style="margin-left:15px">Back</a>
 			Cover editing
 			<div class="ui-corner-all custom-corners" style="min-height:600px; text-align:center">
@@ -89,7 +89,7 @@
 							<input type="hidden" name="username2" id="username2"/>
 							<input type="hidden" name="kanazzi" id="kanazzi"/>
 							<input type="hidden" name="id" id="id" />
-							<input type="text" name="spotify_api_url" id="spotify_api_url" />
+							<input type="hidden" name="spotify_api_url" id="spotify_api_url" />
 							<input type="text" name="title" id="title" data-mini="true" placeholder="Set album title (required)" data-clear-btn="true"/>
 							<input type="text" name="author" id="author" data-mini="true" placeholder="Set album author (required)" data-clear-btn="true"/>
 							<input type="number" pattern="[0-9]*" name="year" id="year" data-mini="true" placeholder="Set album release year (optional)" data-clear-btn="true"/>
@@ -98,9 +98,22 @@
 							<a href="#" id="send_album_btn" data-role="button" data-icon="check" data-inline="true" data-iconpos="right" data-mini="true">Send...</a>
 							<div id="upload_result"></div>
 						</form>
-						<br/>
-						<input type="text" name="spoty_url" id="spoty_url" data-mini="true" placeholder="Spotify Album URL" data-clear-btn="true" value=""/>
-						<a href="#" id="spoty_btn" data-role="button" data-icon="check" data-inline="true" data-iconpos="right" data-mini="true">SpotiMe...</a>
+
+						<div id="shared_spotify_url" style:"font-size:8px; color:light-gray">
+						</div>
+
+						<div class="ui-grid-a" id="custom-grid-spoti">
+							<div class="ui-block-a">
+								<input type="text" name="spoty_url" id="spoty_url" data-mini="true" placeholder="Spotify Album URL" data-clear-btn="true" value=""/>
+							</div>
+							<div class="ui-block-b">
+								<a href="#" id="spoty_btn" data-role="button" data-inline="true" data-iconpos="right" data-mini="true">
+									<img src="images/spoti-icon.png" style="width:18px; height:18px"/>
+								</a>
+							</div>
+						</div>
+
+
 						<ol data-role="listview" data-theme="a" data-inset="true" data-filter="false" id="tracks-list" ></ol>
 				 </div>
 			</div>

@@ -137,7 +137,6 @@ function pbkdf2_hasher(data, successCb, failureCb) {
 function generic_json_request_new(data, successCb, failureCb) { // eslint-disable-line no-unused-vars
 
     loading(true, "Loading...");
-
     $.ajax({
         url: BE_URL + data.url,
         method: data.method,
