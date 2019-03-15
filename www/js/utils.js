@@ -118,6 +118,22 @@ function encrypt_and_execute(pText, encKeyName, data) { // eslint-disable-line n
     );
 }
 
+function pbkdf2_hasher(data, successCb, failureCb) {
+
+  pbkdf2(
+      "password", // the password
+      "X1oXfKeBOw08ahdSFjeP2Q==", // Base64-encoded salt
+      {
+          iterations: 100000, // number of iterations to be used (default: 10000)
+          keySize: 512, // desired key size (supported values: 256, 512, default: 256)
+      },
+      (key) => successCb(key), // Success callback. Single argument is the Base64-encoded derived key
+      (err) => failureCb(err), // Error callback
+  );
+
+
+}
+
 function generic_json_request_new(data, successCb, failureCb) { // eslint-disable-line no-unused-vars
 
     loading(true, "Loading...");

@@ -32,12 +32,12 @@
     width: 10px;
     height: 10px;
     padding: 4px;
-    
+
     background: blue;
     border: 2px solid #666;
     color: white;
     text-align: center;
-    
+
     font: 11px Arial, sans-serif;
 }
 
@@ -54,7 +54,7 @@
 }
 
 #custom-grid .ui-block-b {
-    width: 20% !important;    
+    width: 20% !important;
 }
 
 #custom-grid-movies .ui-block-a {
@@ -64,5 +64,11 @@
 
 #custom-grid-movies .ui-block-b {
     width: 80% !important;
-    vertical-align: middle;   
+    vertical-align: middle;
+}
+
+.button1 {
+  background-color: white;
+  color: black;
+  border: 2px solid #4CAF50; /* Green */
 }
