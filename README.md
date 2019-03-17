@@ -3,6 +3,7 @@
 Plugins List (version number may change, please ignore it):
 
 - com-sarriaroman-photoviewer 1.1.18 "PhotoViewer"
+- com.napolitano.cordova.plugin.intent 0.1.3 "IntentPlugin"
 - cordova-android-support-gradle-release 2.0.1 "cordova-android-support-gradle-release"
 - cordova-plugin-app-version 0.1.9 "AppVersion"
 - cordova-plugin-browsertab2 0.3.1 "cordova-plugin-browsertab2"
