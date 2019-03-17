@@ -461,14 +461,21 @@ function setSpotifyTracks(data) {
 
 function spotyFailure(err) {
   if (DEBUG) { console.error("Rosebud App============> " + err.responseText); }
+  console.error("Rosebud App============> " + err);
+  alert( JSON.parse(err.responseText).message);
 }
 
 function get_spotify(fn_data) {
-    console.info("Rosebud App============> " + JSON.stringify(fn_data));
+    if (DEBUG) { console.info("Rosebud App============> " + JSON.stringify(fn_data)); }
 
     var data,
         successCB = setSpotifySong,
         spoty_url = $("#spoty_url").val();
+
+    if (spoty_url === "") {
+      alert("Spotify Url is blank!");
+      return false;
+    }
 
     if (fn_data.action === 'tracks-only') {
       successCB = setSpotifyTracks;
@@ -484,7 +491,7 @@ function get_spotify(fn_data) {
       "successCb": successCB,
       "failureCb": spotyFailure
     };
-    console.info("Rosebud App============> " + JSON.stringify(data));
+    if (DEBUG) { console.info("Rosebud App============> " + JSON.stringify(data)); }
     encrypt_and_execute(getX(), "kanazzi", data);
 }
 

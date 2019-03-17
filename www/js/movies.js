@@ -203,8 +203,17 @@ function setTvShows(tvshows, votes_user) {
                 users_votes_keys,
                 comment = '',
                 link = '';
+/*
+                li {
+                  background: url(images/bullet.gif) no-repeat left top;
+                  padding: 3px 0px 3px 10px;
+                  list-style: none;
+                  margin: 0;
+                }
+*/
+            content = '<li style="background: url(images/' + value.media + '-icon.png) no-repeat center left; padding: 10px 10px 10px 50px; background-size: 48px 48px; background-color:white; white-space:normal;">';
 
-            content = '<li style="white-space:normal;">';
+  //          content += '<img src="images/' + value.media + '-icon.png" style="width:32px; height:32px; vertical-align:middle; float:left; border:1px ridge">';
 
             jsonTvShows[value.id] = value;
 
@@ -217,8 +226,8 @@ function setTvShows(tvshows, votes_user) {
             }
 
             // NW SECTION
-            content_nw = '<li style="white-space:normal;">';
-            content_nw += '<a data-transition="slide" href="javascript:setPopupData(' + value.id + ',\'nw\')">';
+            content_nw = '<li style="white-space:normal; background-color:white;">';
+            content_nw += '<a data-transition="slide" style="background: url(images/' + value.media + '-icon.png) no-repeat center left; padding: 10px 10px 10px 50px; background-size: 48px 48px;" href="javascript:setPopupData(' + value.id + ',\'nw\')">';
             content_nw += '<b>' + value.title + '</b> <br/>';
             content_nw += '<span style="color:#000099; font-style:italic; font-size:11px;">';
 
