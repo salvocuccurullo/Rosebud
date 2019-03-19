@@ -79,9 +79,13 @@
 			</div>
 		</div>
 
-		<div data-role="page" id="cover_page" name="cover_page">		<!-- COVER PAGE -->
-			<a href="#song_page" class="ui-btn ui-corner-all ui-shadow ui-btn-inline ui-icon-home ui-btn-icon-arrow-l ui-btn-a" data-mini="true" style="margin-left:15px">Back</a>
-			Cover editing
+		<div data-role="page" id="cover_page" name="cover_page" style="min-height: auto !important;">		<!-- COVER PAGE -->
+			<a href="#song_page" style="text-decoration:none;">
+				<img src="images/back-icon.png" style="width:36px; height:36px; padding: 10px"/>
+			</a>
+			<span style="font-weight: bold; position:absolute; margin-top:20px; margin-left:100px;">New/Edit Cover</span>
+			<img src="images/cd-off.png" id="tracks-button" name="tracks-button" style="width:36px; height:36px; float:right; padding: 10px 10px"/>
+
 			<div class="ui-corner-all custom-corners" style="min-height:600px; text-align:center">
 				 <div class="ui-body ui-body-a" id="switch-page">
 						<img src="" style="margin-top:10px; width:85%; float:center" id="cover_img" name="cover_img" onerror="no_image()"/><br/>
@@ -112,9 +116,10 @@
 								</a>
 							</div>
 						</div>
-
-
-						<ol data-role="listview" data-theme="a" data-inset="true" data-filter="false" id="tracks-list" ></ol>
+						<div data-role="panel" data-position="left" data-display="overlay" id="tracks_list_panel" data-theme="a" class="ui-corner-all" data-swipe-close="false" style="font-size:11px; min-width: 280px;">
+							<!--<div id="movie-table-custom"></div>-->
+							<ol data-role="listview" data-theme="a" data-inset="true" data-filter="false" id="tracks-list" style="min-width: 250px;" ></ol>
+						</div>
 				 </div>
 			</div>
 		</div>				<!-- END COVER PAGE -->

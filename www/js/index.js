@@ -225,10 +225,13 @@ function coverStatsFailure(err) {
         console.info("Rosebud App============> Error during remote covers retrieving");
         console.info("Rosebud App============> " + JSON.stringify(err));
     }
+    $("#remote_covers").html("N/A");
 
+    /*
     if (err.status === 401) {
         authenticateWithGoogle(get_remote_covers_stats, error_fall_back, {});
     }
+    */
 }
 
 function get_remote_covers_stats() { // eslint-disable-line no-unused-vars
@@ -250,6 +253,24 @@ function get_remote_covers_stats() { // eslint-disable-line no-unused-vars
     json_request(data);
 }
 
+function get_remote_covers_stats_legacy() { // eslint-disable-line no-unused-vars
+
+    if (!icarusi_user) {
+        return false;
+    }
+
+    var data = {
+      "username": icarusi_user,
+      "method": "POST",
+      "url": "/getcoversstats",
+      "cB": generic_json_request_new,
+      "successCb": coverStatsSuccess,
+      "failureCb": coverStatsFailure
+    };
+    if (DEBUG) { console.info("Rosebud App============> " + JSON.stringify(data)); }
+    encrypt_and_execute(getX(), "kanazzi", data);
+
+}
 
 /*
  *      LOCAL COVERS
@@ -311,7 +332,8 @@ function listDir(path) {
 
 function show_post_login_features() {
 
-    encryptText2(getX(), 'get_remote_covers_stats');
+    //encryptText2(getX(), 'get_remote_covers_stats_legacy');
+    get_remote_covers_stats_legacy();
 
     if (icarusi_user === power_user) {
         $("#sabba_info").html(BE_URL);
@@ -712,5 +734,7 @@ function onDeviceReady() {  // eslint-disable-line no-unused-vars
     }
 
     pbkdf2_hasher({}, hash_success, hash_failure);
+
+    get_remote_covers_stats_legacy();
 
 }   // CORDOVA
