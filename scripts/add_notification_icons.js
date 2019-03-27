@@ -28,6 +28,10 @@ var filestocopy = [
     {
 	"google-services.json":
 	"platforms/android/app/google-services.json"
+    },
+    {
+	"release-signing.properties":
+	"platforms/android/release-signing.properties"
     }
 ];
 

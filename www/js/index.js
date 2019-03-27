@@ -399,12 +399,46 @@ function submit() { // eslint-disable-line no-unused-vars
         });
 }
 
-function set_be_list() {
+/*
+* BE Url
+*/
+
+function set_be_list(data) {
+  //if (DEBUG) { console.info("Rosebud App============> " + JSON.stringify(data)); }
+  $.each(data.payload, function (index, value) { // eslint-disable-line no-unused-vars
+    if (value.config_type === "be_url") {
+      $("#be-selector").append('<option value="' + value.value + '">' + value.name + '</option>');
+    }
+  });
+  $("#be-selector").listview('refresh');
+}
+
+function configsFailure(err) {
+  if (DEBUG) { console.error("Rosebud App============> " + JSON.stringify(err)); }
   $.each(BE_LIST, function (index, value) { // eslint-disable-line no-unused-vars
     $("#be-selector").append('<option value="' + value.url + '">' + value.name + '</option>');
   });
+  $("#be-selector").listview('refresh');
 }
 
+function get_configurations() { // eslint-disable-line no-unused-vars
+
+    if (!icarusi_user) {
+        return false;
+    }
+
+    var data = {
+      "username": icarusi_user,
+      "method": "POST",
+      "url": "/getconfigs",
+      "cB": generic_json_request_new,
+      "successCb": set_be_list,
+      "failureCb": configsFailure
+    };
+    if (DEBUG) { console.info("Rosebud App============> Configs: " + JSON.stringify(data)); }
+    encrypt_and_execute(getX(), "kanazzi", data);
+
+}
 
 
 /*
@@ -435,8 +469,6 @@ function onDeviceReady() {  // eslint-disable-line no-unused-vars
     if (DEBUG) { console.info(JSON.stringify(get_ls("be-selector"))); }
     if (DEBUG) { console.info("Localstorage status END ==============="); }
 
-    set_be_list();
-
     icarusi_user = storage.getItem("icarusi_user");
     if (!icarusi_user) {
         if (DEBUG) { console.info("====Username is not set: " + icarusi_user + ". Setting it to blank value."); }
@@ -454,6 +486,9 @@ function onDeviceReady() {  // eslint-disable-line no-unused-vars
     if (be_selector !== "") {
       BE_URL = be_selector;
     }
+
+    get_configurations();
+
 
     $(document).on("click", "#loginGoogle", function () {
         authenticateWithGoogle(googleAuthSuccess, googleAuthFailure, {});

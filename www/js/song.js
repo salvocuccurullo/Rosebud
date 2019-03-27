@@ -390,7 +390,7 @@ function uploadCover() { // eslint-disable-line no-unused-vars
                 }
 
                 if (response.result === "failure") {
-                    alert("Error" + response.message);
+                    alert("Error: " + response.message);
                     return false;
                 }
             } catch (err) {
@@ -434,7 +434,10 @@ function setTracks(tracks) {
 
     if (tracks.items.length === 0) {
         if (DEBUG) { console.info("Rosebud App============> No tracks found on Spotify."); }
+        return false;
     }
+
+    $("#tracks-button").attr("src", "images/cd-on.png");
 
     var tracks_header = '<li data-role="list-divider" data-theme="b" style="text-align:center">';
     tracks_header += 'Found <span style="color:yellow">' + tracks.items.length + '</span> tracks';
