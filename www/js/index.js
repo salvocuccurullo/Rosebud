@@ -404,13 +404,12 @@ function submit() { // eslint-disable-line no-unused-vars
 */
 
 function set_be_list(data) {
-  //if (DEBUG) { console.info("Rosebud App============> " + JSON.stringify(data)); }
+  if (DEBUG) { console.info("Rosebud App============> " + JSON.stringify(data)); }
   $.each(data.payload, function (index, value) { // eslint-disable-line no-unused-vars
     if (value.config_type === "be_url") {
       $("#be-selector").append('<option value="' + value.value + '">' + value.name + '</option>');
     }
   });
-  $("#be-selector").listview('refresh');
 }
 
 function configsFailure(err) {
@@ -418,7 +417,6 @@ function configsFailure(err) {
   $.each(BE_LIST, function (index, value) { // eslint-disable-line no-unused-vars
     $("#be-selector").append('<option value="' + value.url + '">' + value.name + '</option>');
   });
-  $("#be-selector").listview('refresh');
 }
 
 function get_configurations() { // eslint-disable-line no-unused-vars

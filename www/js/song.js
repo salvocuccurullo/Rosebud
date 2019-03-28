@@ -267,7 +267,9 @@ function edit_cover(id) { // eslint-disable-line no-unused-vars
     $("#spotify_api_url").val("");
     $("#spoty_url").val("");
     $("#upload_result").html("");
+    $("#spoty_search").val("");
     $('#tracks-list').empty();
+    $('#search-list').empty();
 
     if (spotify_url_received !== undefined) {
       $("#spoty_url").val(spotify_url_received);
@@ -519,6 +521,73 @@ function get_spotify(fn_data) {
     encrypt_and_execute(getX(), "kanazzi", data);
 }
 
+function set_album(url) {
+  $("#spoty_url").val(url);
+  get_spotify({
+      'action':'all'
+  });
+}
+
+function spotySearchSuccess(data) {
+
+  $('#search-list').empty();
+
+  if (data.payload.length === 0) {
+      if (DEBUG) { console.info("Rosebud App============> No tracks found on Spotify."); }
+      return false;
+  }
+
+  var tracks_header = '<li data-role="list-divider" data-theme="b" style="text-align:center">';
+  tracks_header += 'Found <span style="color:yellow">' + data.payload.length + '</span> items';
+  tracks_header += '</li>';
+  $('#search-list').append(tracks_header);
+
+  if (data.payload.length === 0) {
+      $('#search-list').append('<li style="white-space:normal;">No results</li>');
+  }
+
+  $.each(data.payload, function (index, value) {
+      var album_item = '<li style="white-space:normal">';
+      album_item += value.name + "<br/>";
+      album_item += value.author + " (" + value.year + ")";
+      album_item += '<button class="ui-btn ui-icon-arrow-r ui-btn-icon-notext ui-corner-all ui-mini ui-btn-inline" style="float:right" onclick="set_album(\'' + value.url + '\')"></button>';
+      album_item += '</li>';
+      $('#search-list').append(album_item);
+  });
+  $('#search-list').listview('refresh');
+
+}
+
+function search_spotify(fn_data) {
+    if (DEBUG) { console.info("Rosebud App============> " + JSON.stringify(fn_data)); }
+
+    var data,
+        successCB = setSpotifySong,
+        spoty_search;
+
+    spoty_search = $("#spoty_search").val();
+
+    if (spoty_search === "") {
+      alert("Spotify Search is blank!");
+      return false;
+    } else if (spoty_search.lenght < 5) {
+      alert("Spotify Search minimum size is 5 characters!");
+      return false;
+    }
+
+    data = {
+      "username": icarusi_user,
+      "query": spoty_search,
+      "search_type": 'track',
+      "method": "POST",
+      "url": "/spotifysearch",
+      "cB": generic_json_request_new,
+      "successCb": spotySearchSuccess,
+      "failureCb": spotyFailure
+    };
+    if (DEBUG) { console.info("Rosebud App============> " + JSON.stringify(data)); }
+    encrypt_and_execute(getX(), "kanazzi", data);
+}
   /*
   * CORDOVA ON DEVICE onDeviceReady
   */
@@ -664,6 +733,12 @@ function onDeviceReady() { // eslint-disable-line no-unused-vars
 
     $(document).on("click", "#spoty_btn", function () {
         get_spotify({
+            'action':'all'
+        });
+    });
+
+    $(document).on("click", "#spoty_btn_search", function () {
+        search_spotify({
             'action':'all'
         });
     });
