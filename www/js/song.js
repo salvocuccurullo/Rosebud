@@ -1,10 +1,13 @@
 /*global $, document, window, DEBUG, BE_URL, alert */
 /*global loading, get_ls_bool, fancyDate, PhotoViewer, device, FormData, encryptText2, getX, power_user */
-/*global device, Connection, storage, navigator, cordova, swipeleftHandler, swipeRightHandler */
+/*global device, Connection, storage, navigator, cordova, swipeleftHandler, swipeRightHandler, generic_json_request_new */
+/*global encrypt_and_execute, get_ls */
 /*eslint no-global-assign: "error"*/
 /*globals kanazzi:true*/
 /*exported kanazzi */
 /*eslint no-console: ["error", { allow: ["info","warn", "error"] }] */
+/*eslint no-global-assign: "error"*/
+/*globals BE_URL:true*/
 
 "use strict";
 
@@ -48,7 +51,7 @@ function setCovers(covers) {
     setCacheInfo();
 
     if (covers.length === 0) {
-        if (DEBUG) { console.info("iCarusi App============> No covers found on remote server."); }
+        if (DEBUG) { console.info("Rosebud App============> No covers found on remote server."); }
     }
 
     var covers_header = '<li data-role="list-divider" data-theme="b" style="text-align:center">';
@@ -62,8 +65,17 @@ function setCovers(covers) {
 
     $.each(covers, function (index, value) {
 
-        var cover_content = '<li style="white-space:normal">',
-            cover_location = '';
+        var cover_content,
+            cover_location = '',
+            icon_name;
+
+        if (value.spotifyUrl !== "") {
+          icon_name = "spoti";
+        } else {
+          icon_name = "hand";
+        }
+
+        cover_content = '<li style="background: url(images/' + icon_name + '-icon.png) no-repeat center left; padding: 10px 10px 10px 35px; background-size: 32px 32px; background-color:white; white-space:normal;">';
 
         if (value.type === undefined || value.type === "local") {
             cover_location = device_app_path + "www/images/covers/" + value.location;
@@ -92,6 +104,7 @@ function setCovers(covers) {
     });
     $('#covers-list').listview('refresh');
 }
+
 
 function get_song() { // eslint-disable-line no-unused-vars
 
@@ -190,50 +203,52 @@ function sort_covers(s_type) {
     }
 }
 
-function get_covers() { // eslint-disable-line no-unused-vars
+/*
+* GET COVERS
+*/
 
-    if (icarusi_user === undefined || icarusi_user === "" || icarusi_user === null) {
-        alert("You must be logged in for accessing covers!!");
-        return false;
-    }
-
-    if (DEBUG) { console.info("iCarusi App============> Starting covers retrieving..."); }
-
-    loading(true, "Loading covers...");
-
-    $.ajax({
-        url: BE_URL + "/getcovers",
-        method: "POST",
-        data: {
-            username : icarusi_user,
-            kanazzi : kanazzi
-        },
-        dataType: "json"
-    })
-        .done(function (data) {
-
-            var covers = JSON.parse(data);
-
-            storage.setItem("covers_storage", JSON.stringify(covers));      // SAVE ON LOCALSTORAGE
-            storage.setItem("covers_ts", new Date().getTime());
-            setCacheInfo();
-            current_covers = covers;
-            sort_type = "";
-            sort_covers("created");
-
-        })
-        .fail(function (err) {
-            if (DEBUG) {
-                console.info("iCarusi App============> Error during remote covers retrieving");
-                console.info("iCarusi App============> " + err.responseText);
-            }
-        })
-        .always(function () {
-            loading(false, "");
-        });
+function getCoversSuccess(data) { // eslint-disable-line no-unused-vars
+    var covers = JSON.parse(data);
+    storage.setItem("covers_storage", JSON.stringify(covers));      // SAVE ON LOCALSTORAGE
+    storage.setItem("covers_ts", new Date().getTime());
+    setCacheInfo();
+    current_covers = covers;
+    sort_type = "";
+    sort_covers("created");
 }
 
+function getCoversFailure(err) { // eslint-disable-line no-unused-vars
+    if (DEBUG) { console.error("Rosebud App============> " + err.responseText); }
+}
+
+function get_covers() { // eslint-disable-line no-unused-vars
+
+  if (icarusi_user === undefined || icarusi_user === "" || icarusi_user === null) {
+      alert("You must be logged in for accessing covers!!");
+      return false;
+  }
+
+  if (DEBUG) { console.info("Rosebud App============> Starting covers retrieving..."); }
+
+  var data = {
+    "username": icarusi_user,
+    "method": "POST",
+    "url": "/getcovers",
+    "cB": generic_json_request_new,
+    "successCb": getCoversSuccess,
+    "failureCb": getCoversFailure
+  };
+  encrypt_and_execute(getX(), "kanazzi", data);
+}
+
+/*
+* EDIT Cover, NEW Cover and Show Cover
+*/
+
 function edit_cover(id) { // eslint-disable-line no-unused-vars
+
+    var spotify_url_received = get_ls("spotify_url_received");
+
     $(':mobile-pagecontainer').pagecontainer('change', '#cover_page');
 
     $("#cover_img").show();
@@ -241,17 +256,30 @@ function edit_cover(id) { // eslint-disable-line no-unused-vars
     if (id === 0) {
         $("#cover_img").hide();
     }
+    $("#spoty_url").val("");
+    $("#tracks-button").attr("src", "images/cd-off.png");
     $("#title").val("");
     $("#author").val("");
     $("#year").val("");
     $("#pic").val("");
+    $("spoty_url").val("");
+    $("#spoti_img_url").val("");
+    $("#spotify_api_url").val("");
+    $("#spoty_url").val("");
     $("#upload_result").html("");
+    $("#spoty_search").val("");
+    $('#tracks-list').empty();
+    $('#search-list').empty();
+
+    if (spotify_url_received !== undefined) {
+      $("#spoty_url").val(spotify_url_received);
+    }
 
     if (id !== 0) {
         var result = $.grep(current_covers, function (element, index) { // eslint-disable-line no-unused-vars
             return (element.id === id);
         });
-
+        console.info(JSON.stringify(result));
         if (DEBUG) {
             console.info("==========================");
             console.info(JSON.stringify(result));
@@ -263,8 +291,16 @@ function edit_cover(id) { // eslint-disable-line no-unused-vars
         $("#title").val(result.name);
         $("#author").val(result.author);
         $("#year").val(result.year);
+        $("#spotify_api_url").val(result.spotifyUrl);
+        $("#spoty_url").val(result.spotifyUrl);
         if (result.location !== "") {
             $("#cover_img").attr("src", result.location);
+        }
+        if (result.spotifyUrl !== "") {
+          get_spotify({
+              "action": "tracks-only",
+              "url": result.spotifyUrl
+            });
         }
         if (DEBUG) { console.info("cover img src: " + $("#cover_img").attr("src")); }
         curr_cover_id = result.id;
@@ -325,8 +361,10 @@ function uploadCover() { // eslint-disable-line no-unused-vars
         return false;
     }
 
-    if ($("#pic").val() === "" && curr_cover_id === "") {
-        alert("File cannot be empty!");
+    if ($("#spoti_img_url").val() !== "") {
+      if (DEBUG) { console.info("Uploading a new cover using spotify data: " + $("#spoti_img_url").val()); }
+    } else if ($("#pic").val() === "" && curr_cover_id === "") {
+        alert("File/Spotify Image cannot be empty!");
         return false;
     }
 
@@ -346,16 +384,15 @@ function uploadCover() { // eslint-disable-line no-unused-vars
         processData: false
     })
         .done(function (response) {
-
             try {
-                response = JSON.parse(response);
+                //response = JSON.parse(response);
                 if (DEBUG) {
                     console.info("Upload Cover -> Result: " + response.result);
                     console.info("Upload Cover -> Message: " + response.message);
                 }
 
                 if (response.result === "failure") {
-                    alert("Error" + response.message);
+                    alert("Error: " + response.message);
                     return false;
                 }
             } catch (err) {
@@ -364,12 +401,14 @@ function uploadCover() { // eslint-disable-line no-unused-vars
             }
 
             if (DEBUG) { console.info("Reloading covers..."); }
-            encryptText2(getX(), 'get_covers');
+            get_covers();
 
             $("#title").val("");
             $("#author").val("");
             $("#year").val("");
             $("#pic").val("");
+            $("#spoty_url").val("");
+            storage.setItem("spotify_url_received", "");
 
             $("#upload_result").html('<span style="font-weight:bold; color:green">Success!</span>');
             $(':mobile-pagecontainer').pagecontainer('change', '#song_page');
@@ -387,11 +426,190 @@ function no_image() { // eslint-disable-line no-unused-vars
 }
 
 
+/*
+* SPOTIFY FUNCTIONS
+*/
+
+function setTracks(tracks) {
+
+    $('#tracks-list').empty();
+
+    if (tracks.items.length === 0) {
+        if (DEBUG) { console.info("Rosebud App============> No tracks found on Spotify."); }
+        return false;
+    }
+
+    $("#tracks-button").attr("src", "images/cd-on.png");
+
+    var tracks_header = '<li data-role="list-divider" data-theme="b" style="text-align:center">';
+    tracks_header += 'Found <span style="color:yellow">' + tracks.items.length + '</span> tracks';
+    tracks_header += '</li>';
+    $('#tracks-list').append(tracks_header);
+
+    if (tracks.items.length === 0) {
+        $('#tracks-list').append('<li style="white-space:normal;">No covers available</li>');
+    }
+
+    $.each(tracks.items, function (index, value) {
+        var track_content = '<li style="white-space:normal">';
+        track_content += value.name;
+        track_content += '</li>';
+        $('#tracks-list').append(track_content);
+    });
+    $('#tracks-list').listview('refresh');
+    $('#tracks_list_panel').trigger('updatelayout');
+}
+
+
+function setSpotifySong(data) {
+    data = JSON.parse(data);
+    if (DEBUG) { console.info("Rosebud App============> " + data.images[0].url); }
+    $("#cover_img").attr("src", data.images[0].url);
+    $("#spoti_img_url").val(data.images[0].url);
+    $("#author").val(data.artists[0].name);
+    $("#title").val(data.name);
+    $("#year").val(data.release_date.split("-")[0]);
+    $("#spotify_api_url").val(data.href);
+    setTracks(data.tracks);
+    $("#cover_img").show();
+}
+
+function setSpotifyTracks(data) {
+    data = JSON.parse(data);
+    $("#tracks-button").attr("src", "images/cd-on.png");
+    setTracks(data.tracks);
+}
+
+function spotyFailure(err) {
+  if (DEBUG) { console.error("Rosebud App============> " + err.responseText); }
+  alert(JSON.parse(err.responseText).message);
+}
+
+function get_spotify(fn_data) {
+    if (DEBUG) { console.info("Rosebud App============> " + JSON.stringify(fn_data)); }
+
+    var data,
+        successCB = setSpotifySong,
+        spoty_url;
+
+    if (fn_data.url === "" || fn_data.url === undefined) {
+       spoty_url = $("#spoty_url").val();
+    } else {
+      spoty_url = fn_data.url;
+    }
+
+    if (spoty_url === "") {
+      alert("Spotify Url is blank!");
+      return false;
+    }
+
+    if (fn_data.action === 'tracks-only') {
+      successCB = setSpotifyTracks;
+      spoty_url = fn_data.url;
+    }
+
+    data = {
+      "username": icarusi_user,
+      "album_url": spoty_url,
+      "method": "POST",
+      "url": "/spotify",
+      "cB": generic_json_request_new,
+      "successCb": successCB,
+      "failureCb": spotyFailure
+    };
+    if (DEBUG) { console.info("Rosebud App============> " + JSON.stringify(data)); }
+    encrypt_and_execute(getX(), "kanazzi", data);
+}
+
+function set_album(url) {
+  $("#spoty_url").val(url);
+  get_spotify({
+      'action':'all'
+  });
+}
+
+function spotySearchSuccess(data) {
+
+  $('#search-list').empty();
+
+  if (data.payload.length === 0) {
+      if (DEBUG) { console.info("Rosebud App============> No tracks found on Spotify."); }
+      return false;
+  }
+
+  var tracks_header = '<li data-role="list-divider" data-theme="b" style="text-align:center">';
+  tracks_header += 'Found <span style="color:yellow">' + data.payload.length + '</span> items';
+  tracks_header += '</li>';
+  $('#search-list').append(tracks_header);
+
+  if (data.payload.length === 0) {
+      $('#search-list').append('<li style="white-space:normal;">No results</li>');
+  }
+
+  $.each(data.payload, function (index, value) {
+      var album_item = '<li style="white-space:normal">';
+      album_item += value.name + "<br/>";
+      album_item += value.author + " (" + value.year + ")";
+      album_item += '<button class="ui-btn ui-icon-arrow-r ui-btn-icon-notext ui-corner-all ui-mini ui-btn-inline" style="float:right" onclick="set_album(\'' + value.url + '\')"></button>';
+      album_item += '</li>';
+      $('#search-list').append(album_item);
+  });
+  $('#search-list').listview('refresh');
+
+}
+
+function search_spotify(fn_data) {
+    if (DEBUG) { console.info("Rosebud App============> " + JSON.stringify(fn_data)); }
+
+    var data,
+        successCB = setSpotifySong,
+        spoty_search;
+
+    spoty_search = $("#spoty_search").val();
+
+    if (spoty_search === "") {
+      alert("Spotify Search is blank!");
+      return false;
+    } else if (spoty_search.lenght < 5) {
+      alert("Spotify Search minimum size is 5 characters!");
+      return false;
+    }
+
+    data = {
+      "username": icarusi_user,
+      "query": spoty_search,
+      "search_type": 'track',
+      "method": "POST",
+      "url": "/spotifysearch",
+      "cB": generic_json_request_new,
+      "successCb": spotySearchSuccess,
+      "failureCb": spotyFailure
+    };
+    if (DEBUG) { console.info("Rosebud App============> " + JSON.stringify(data)); }
+    encrypt_and_execute(getX(), "kanazzi", data);
+}
+  /*
+  * CORDOVA ON DEVICE onDeviceReady
+  */
+
+
 function onDeviceReady() { // eslint-disable-line no-unused-vars
 
     icarusi_user = storage.getItem("icarusi_user");
     covers_storage = storage.getItem("covers_storage");
     device_app_path = cordova.file.applicationDirectory;
+    var spotify_url_received = get_ls("spotify_url_received");
+    if (spotify_url_received !== undefined) {
+      $("#spoty_url").val(spotify_url_received);
+    }
+
+
+    window.plugins.intent.setNewIntentHandler(function (intent) {
+        console.info(JSON.stringify(intent));
+        //if (intent !== undefined) {
+           storage.setItem("spotify_url_received", intent.clipItems[0].text);
+        //}
+    });
 
     var networkState = navigator.connection.type,
         old_ts  = parseInt(storage.getItem("covers_ts"), 10),
@@ -400,7 +618,7 @@ function onDeviceReady() { // eslint-disable-line no-unused-vars
         diff_sec,
         be_selector = get_ls("be-selector");
 
-    if (be_selector != "") {
+    if (be_selector !== "") {
       BE_URL = be_selector;
     }
 
@@ -422,7 +640,7 @@ function onDeviceReady() { // eslint-disable-line no-unused-vars
         $("#random_song_message").html("No Random Song available<br/>on Pantalica mode! ;)");
 
         if (icarusi_user !== "" && covers_storage !== "" && covers_storage !== undefined && covers_storage !== null) {
-            console.info("iCarusi App============> NO NETWORK -> Cached Covers loading");
+            console.info("Rosebud App============> NO NETWORK -> Cached Covers loading");
             sort_covers("created");
         }
 
@@ -437,13 +655,13 @@ function onDeviceReady() { // eslint-disable-line no-unused-vars
             diff_sec = diff / 1000;
 
             if (icarusi_user !== "" && diff_sec < 86400 && covers_storage !== "" && covers_storage !== undefined && covers_storage !== null) {
-                if (DEBUG) { console.info("iCarusi App============> CACHE AVAILABLE AND NOT EXPIRED -> Cached Covers loading"); }
+                if (DEBUG) { console.info("Rosebud App============> CACHE AVAILABLE AND NOT EXPIRED -> Cached Covers loading"); }
                 sort_covers("created");
             } else {
-                encryptText2(getX(), "get_covers");
+                get_covers();
             }
         } else {
-            encryptText2(getX(), "get_covers");
+            get_covers();
         }
     }
 
@@ -498,13 +716,31 @@ function onDeviceReady() { // eslint-disable-line no-unused-vars
 
     $("#popupPhotoPortrait").bind({
         popupafterclose: function (event, ui) { // eslint-disable-line no-unused-vars
-            if (DEBUG) { console.info("iCarusi App============> Closing popupPhotoPortrait Popup"); }
+            if (DEBUG) { console.info("Rosebud App============> Closing popupPhotoPortrait Popup"); }
             $("#poster_pic").attr("src", "images/loading.gif");
         }
     });
 
     $(document).on("click", "#send_album_btn", function () {
         encryptText2(getX(), "uploadCover");
+    });
+
+    $(document).on("click", "#tracks-button", function () {
+      $("#tracks_list_panel").trigger("updatelayout");
+      $("#cover_page").trigger("updatelayout");
+      $("#tracks_list_panel").panel("open");
+    });
+
+    $(document).on("click", "#spoty_btn", function () {
+        get_spotify({
+            'action':'all'
+        });
+    });
+
+    $(document).on("click", "#spoty_btn_search", function () {
+        search_spotify({
+            'action':'all'
+        });
     });
 
     $('#pic').bind('change', function () {

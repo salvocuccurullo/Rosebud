@@ -94,7 +94,7 @@ function encryptText2(pText, cb) { // eslint-disable-line no-unused-vars
             }
         },
         function (err) {
-            if (DEBUG) { console.error("iCarusi App============> onFailure: " + JSON.stringify(err)); }
+            if (DEBUG) { console.error("Rosebud App============> onFailure: " + JSON.stringify(err)); }
         }
     );
 }
@@ -112,16 +112,31 @@ function encrypt_and_execute(pText, encKeyName, data) { // eslint-disable-line n
             }
         },
         function (err) {
-            if (DEBUG) { console.error("iCarusi App============> onFailure: " + JSON.stringify(err)); }
+            if (DEBUG) { console.error("Rosebud App============> onFailure: " + JSON.stringify(err)); }
             if (data.failureCb) { data.failureCb(err); }
         }
     );
 }
 
+function pbkdf2_hasher(data, successCb, failureCb) {
+
+  pbkdf2(
+      "password", // the password
+      "X1oXfKeBOw08ahdSFjeP2Q==", // Base64-encoded salt
+      {
+          iterations: 100000, // number of iterations to be used (default: 10000)
+          keySize: 512, // desired key size (supported values: 256, 512, default: 256)
+      },
+      (key) => successCb(key), // Success callback. Single argument is the Base64-encoded derived key
+      (err) => failureCb(err), // Error callback
+  );
+
+
+}
+
 function generic_json_request_new(data, successCb, failureCb) { // eslint-disable-line no-unused-vars
 
     loading(true, "Loading...");
-
     $.ajax({
         url: BE_URL + data.url,
         method: data.method,
@@ -170,8 +185,8 @@ function generic_json_request_new(data, successCb, failureCb) { // eslint-disabl
         .fail(function (err) {
             loading(false, "Loading...");
             if (DEBUG) {
-                console.info("iCarusi App============> Error during generic request to " + data.url);
-                console.info("iCarusi App============> " + err.responseText);
+                console.info("Rosebud App============> Error during generic request to " + data.url);
+                console.info("Rosebud App============> " + err.responseText);
             }
             if (failureCb) {
                 failureCb(err);
@@ -227,9 +242,9 @@ function json_request(data) { // eslint-disable-line no-unused-vars
         .fail(function (err) {
             loading(false, "Loading...");
             if (DEBUG) {
-                console.info("iCarusi App============> Error during generic request to " + data.url);
-                console.info("iCarusi App============> " + err.responseText);
-                console.info("iCarusi App============> " + JSON.stringify(err));
+                console.info("Rosebud App============> Error during generic request to " + data.url);
+                console.info("Rosebud App============> " + err.responseText);
+                console.info("Rosebud App============> " + JSON.stringify(err));
             }
             if (data.failureCb) {
                 data.failureCb(err);

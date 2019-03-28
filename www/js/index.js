@@ -1,8 +1,10 @@
 /*global $, cordova, device, window, document, storage_keys, get_ls, loading, alert, generic_json_request_new, encrypt_and_execute, getX*/
 /*global idTokenSuccess, idTokenFailure, encryptText2, navigator, Connection, BE_URL, BE_LIST, PullToRefresh, getServerVersion*/
 /*global swipeleftHandler, swipeRightHandler, power_user, get_ls_bool, get_ls_bool_default, authenticateWithGoogle, json_request, refreshIdToken */
-/*global listDir*/
+/*global listDir, pbkdf2_hasher*/
 /*eslint no-console: ["error", { allow: ["info","warn", "error"] }] */
+/*eslint no-global-assign: "error"*/
+/*globals BE_URL:true*/
 
 "use strict";
 
@@ -22,32 +24,34 @@ document.addEventListener('deviceready', this.onDeviceReady.bind(this), false);
  *
  */
 
- function getServerVersion() {
+function getServerVersion() {
 
-     function versionSuccess(data){
-         $("#server_version").html(data.message);
-     }
-     function versionFailure(data){
-         $("#server_version").html("N/A");
-     }
+    function versionSuccess(data) {
+       $("#server_version").html(data.message);
+    }
 
-     var id_token = storage.getItem("firebase_id_token"),
-         data;
+    function versionFailure(err) {
+       $("#server_version").html("N/A");
+       if (DEBUG) { console.info("Rosebud App============> " + err.responseText); }
+    }
 
-     if (icarusi_user !== "" && icarusi_user !== undefined) {
-         if (id_token === undefined) {
-             id_token = "";
-         }
-         data = {"username": icarusi_user,
-                 "firebase_id_token": id_token,
-                 "method": "POST",
-                 "url": "/version",
-                 "successCb": versionSuccess,
-                 "failureCb": versionFailure
-             };
-         json_request(data);
-     }
- };
+    var id_token = storage.getItem("firebase_id_token"),
+       data;
+
+    if (icarusi_user !== "" && icarusi_user !== undefined) {
+       if (id_token === undefined) {
+           id_token = "";
+       }
+       data = {"username": icarusi_user,
+               "firebase_id_token": id_token,
+               "method": "POST",
+               "url": "/version",
+               "successCb": versionSuccess,
+               "failureCb": versionFailure
+           };
+       json_request(data);
+    }
+}
 
 
 function error_fall_back() {
@@ -131,17 +135,17 @@ function setImage(tot_imgs) {
         id_img = 0,
         image = "";
 
-    if (DEBUG) { console.info("iCarusi App============> Remote covers count: " + remote_covers_count); }
+    if (DEBUG) { console.info("Rosebud App============> Remote covers count: " + remote_covers_count); }
 
     if (networkState !== Connection.NONE && remote_url !== "" && dld_imgs !== "" && dld_imgs && remote_covers_count !== undefined && remote_covers_count > 0) {
-        if (DEBUG) { console.info("iCarusi App============> Considering remote images..."); }
+        if (DEBUG) { console.info("Rosebud App============> Considering remote images..."); }
         id_img = Math.floor((Math.random() * (parseInt(tot_imgs, 10) + parseInt(remote_covers_count, 10))) + 1);     // Consider also the remote images
     } else {
-        if (DEBUG) { console.info("iCarusi App============> Considering ony local images..."); }
+        if (DEBUG) { console.info("Rosebud App============> Considering ony local images..."); }
         id_img = Math.floor((Math.random() * tot_imgs) + 1);                           // Consider only local images
     }
 
-    if (DEBUG) { console.info("iCarusi App============> Image id selected: " + id_img); }
+    if (DEBUG) { console.info("Rosebud App============> Image id selected: " + id_img); }
 
     if (id_img < 10) {
         image = "0" + id_img + ".jpg";
@@ -156,7 +160,7 @@ function setImage(tot_imgs) {
     }
 
     image = "images/covers/" + image;
-    if (DEBUG) { console.info("iCarusi App============> Cover image seleted: " + image); }
+    if (DEBUG) { console.info("Rosebud App============> Cover image seleted: " + image); }
     $("#cover_img").attr("src", image);
 
 }
@@ -187,17 +191,17 @@ function get_remote_random_cover_2() { // eslint-disable-line no-unused-vars
             var cover = JSON.parse(data);
 
             if (cover !== undefined) {
-                if (DEBUG) { console.info("iCarusi App============> Fetched remote random cover data: " + cover.name); }
+                if (DEBUG) { console.info("Rosebud App============> Fetched remote random cover data: " + cover.name); }
                 storage.setItem("remote_cover_url", cover.location);
                 set_remote_image();
             }
         })
         .fail(function (err) {
-            if (DEBUG) { console.info("iCarusi App============> Error during remote covers retrieving"); }
-            if (DEBUG) { console.info("iCarusi App============> " + err.responseText); }
+            if (DEBUG) { console.info("Rosebud App============> Error during remote covers retrieving"); }
+            if (DEBUG) { console.info("Rosebud App============> " + err.responseText); }
         })
         .always(function () {
-            if (DEBUG) { console.info("iCarusi App============> Random Cover 2 get done."); }
+            if (DEBUG) { console.info("Rosebud App============> Random Cover 2 get done."); }
         });
 }
 
@@ -207,7 +211,7 @@ function coverStatsSuccess(data) {
     var covers = JSON.parse(data);
 
     if (covers.payload.remote_covers === 0) {
-        if (DEBUG) { console.info("iCarusi App============> No remote covers found on server."); }
+        if (DEBUG) { console.info("Rosebud App============> No remote covers found on server."); }
     }
 
     $("#remote_covers").html(covers.payload.remote_covers);
@@ -218,13 +222,16 @@ function coverStatsSuccess(data) {
 
 function coverStatsFailure(err) {
     if (DEBUG) {
-        console.info("iCarusi App============> Error during remote covers retrieving");
-        console.info("iCarusi App============> " + JSON.stringify(err));
+        console.info("Rosebud App============> Error during remote covers retrieving");
+        console.info("Rosebud App============> " + JSON.stringify(err));
     }
+    $("#remote_covers").html("N/A");
 
+    /*
     if (err.status === 401) {
         authenticateWithGoogle(get_remote_covers_stats, error_fall_back, {});
     }
+    */
 }
 
 function get_remote_covers_stats() { // eslint-disable-line no-unused-vars
@@ -246,6 +253,24 @@ function get_remote_covers_stats() { // eslint-disable-line no-unused-vars
     json_request(data);
 }
 
+function get_remote_covers_stats_legacy() { // eslint-disable-line no-unused-vars
+
+    if (!icarusi_user) {
+        return false;
+    }
+
+    var data = {
+      "username": icarusi_user,
+      "method": "POST",
+      "url": "/getcoversstats",
+      "cB": generic_json_request_new,
+      "successCb": coverStatsSuccess,
+      "failureCb": coverStatsFailure
+    };
+    if (DEBUG) { console.info("Rosebud App============> " + JSON.stringify(data)); }
+    encrypt_and_execute(getX(), "kanazzi", data);
+
+}
 
 /*
  *      LOCAL COVERS
@@ -262,37 +287,37 @@ function listDir(path) {
     $("#cover_img").attr("src", "images/loading.gif");
 
     if (diff_sec < 86400 && covers_count_cache !== "" && covers_count_cache !== null && covers_count_cache !== undefined) {
-        if (DEBUG) { console.info("iCarusi App============> Cached covers count: " + covers_count_cache); }
+        if (DEBUG) { console.info("Rosebud App============> Cached covers count: " + covers_count_cache); }
         $("#hardcoded_images").html(covers_count_cache);
         setImage(covers_count_cache);
         return false;
     }
 
     function dir_success(entries) {
-        if (DEBUG) { console.info("iCarusi App============> Success!"); }
+        if (DEBUG) { console.info("Rosebud App============> Success!"); }
         setImage(entries.length);
-        if (DEBUG) { console.info("iCarusi App============> Found " + entries.length + " cover images."); }
+        if (DEBUG) { console.info("Rosebud App============> Found " + entries.length + " cover images."); }
         storage.setItem("covers_count", entries.length);
         storage.setItem("covers_count_ts", new Date().getTime());
         $("#hardcoded_images").html(entries.length);
     }
 
     function dir_error(err) {
-        if (DEBUG) { console.info("iCarusi App============> DIR ERROR"); }
+        if (DEBUG) { console.info("Rosebud App============> DIR ERROR"); }
         if (DEBUG) { console.info(err); }
     }
 
     function fs_success(fileSystem) {
-        if (DEBUG) { console.info("iCarusi App============> FS SUCCESSFUL"); }
+        if (DEBUG) { console.info("Rosebud App============> FS SUCCESSFUL"); }
         var reader = fileSystem.createReader();
-        if (DEBUG) { console.info("iCarusi App============> CREATE READER SUCCESSFUL"); }
-        if (DEBUG) { console.info("iCarusi App============> Starting to reading the directory..."); }
+        if (DEBUG) { console.info("Rosebud App============> CREATE READER SUCCESSFUL"); }
+        if (DEBUG) { console.info("Rosebud App============> Starting to reading the directory..."); }
         //$("#cover_img").attr("src", "images/spinner_01.gif");
         reader.readEntries(dir_success, dir_error);
     }
 
     function fs_error(err) {
-        if (DEBUG) { console.info("iCarusi App============> FS ERROR"); }
+        if (DEBUG) { console.info("Rosebud App============> FS ERROR"); }
         if (DEBUG) { console.info(err); }
     }
 
@@ -307,7 +332,8 @@ function listDir(path) {
 
 function show_post_login_features() {
 
-    encryptText2(getX(), 'get_remote_covers_stats');
+    //encryptText2(getX(), 'get_remote_covers_stats_legacy');
+    get_remote_covers_stats_legacy();
 
     if (icarusi_user === power_user) {
         $("#sabba_info").html(BE_URL);
@@ -346,13 +372,13 @@ function submit() { // eslint-disable-line no-unused-vars
     })
         .done(function (response) {
             if (DEBUG) {
-                console.info("========> iCarusi : login completed ");
-                console.info("========> iCarusi : Result... ");
+                console.info("========> Rosebud : login completed ");
+                console.info("========> Rosebud : Result... ");
             }
             if (response.result === "success" && response.payload.logged === "yes") {
-                if (DEBUG) { console.info("========> iCarusi : Login successful"); }
-                if (DEBUG) { console.info("========> iCarusi : " + response.payload.username); }
-                if (DEBUG) { console.info("========> iCarusi : " + response.payload.message); }
+                if (DEBUG) { console.info("========> Rosebud : Login successful"); }
+                if (DEBUG) { console.info("========> Rosebud : " + response.payload.username); }
+                if (DEBUG) { console.info("========> Rosebud : " + response.payload.message); }
                 storage.setItem("icarusi_user", response.payload.username);
                 icarusi_user = response.payload.username;
                 $("#logged").html('Logged in as <span style="color:green">' + storage.getItem("icarusi_user") + '</span>');
@@ -361,23 +387,57 @@ function submit() { // eslint-disable-line no-unused-vars
                 $("#popupLoginResult").popup("open");
                 show_post_login_features();
             } else {
-                console.info("========> iCarusi : Login unsuccessful");
+                console.info("========> Rosebud : Login unsuccessful");
             }
         })
         .fail(function (err) {
             alert(err.responseJSON.payload.message);
-            console.info("========> iCarusi : error during login");
+            console.info("========> Rosebud : error during login");
         })
         .always(function () {
             loading(false, "Logging in...");
         });
 }
 
-function set_be_list() {
+/*
+* BE Url
+*/
+
+function set_be_list(data) {
+  if (DEBUG) { console.info("Rosebud App============> " + JSON.stringify(data)); }
+  $.each(data.payload, function (index, value) { // eslint-disable-line no-unused-vars
+    if (value.config_type === "be_url") {
+      $("#be-selector").append('<option value="' + value.value + '">' + value.name + '</option>');
+    }
+  });
+}
+
+function configsFailure(err) {
+  if (DEBUG) { console.error("Rosebud App============> " + JSON.stringify(err)); }
   $.each(BE_LIST, function (index, value) { // eslint-disable-line no-unused-vars
     $("#be-selector").append('<option value="' + value.url + '">' + value.name + '</option>');
   });
 }
+
+function get_configurations() { // eslint-disable-line no-unused-vars
+
+    if (!icarusi_user) {
+        return false;
+    }
+
+    var data = {
+      "username": icarusi_user,
+      "method": "POST",
+      "url": "/getconfigs",
+      "cB": generic_json_request_new,
+      "successCb": set_be_list,
+      "failureCb": configsFailure
+    };
+    if (DEBUG) { console.info("Rosebud App============> Configs: " + JSON.stringify(data)); }
+    encrypt_and_execute(getX(), "kanazzi", data);
+
+}
+
 
 /*
  * ON DEVICE READY
@@ -386,15 +446,26 @@ function set_be_list() {
 // CORDOVA
 function onDeviceReady() {  // eslint-disable-line no-unused-vars
 
-    console.info("========> iCarusi started. Running on Android " + device.version);
+    console.info("========> Rosebud started. Running on Android " + device.version);
+
+    /*
+    * OPEN with
+    */
+
+    window.plugins.intent.setNewIntentHandler(function (intent) {
+        console.info(JSON.stringify(intent));
+        //if (intent !== undefined) {
+           storage.setItem("spotify_url_received", intent.clipItems[0].text);
+           //alert(intent.clipItems[0].text);
+           //window.location.href="song.html#cover_page";
+        //}
+    });
 
     if (DEBUG) { console.info("Localstorage status START ==============="); }
     if (DEBUG) { console.info(JSON.stringify(storage_keys)); }
     if (DEBUG) { console.info(JSON.stringify(get_ls("show-extra-info"))); }
     if (DEBUG) { console.info(JSON.stringify(get_ls("be-selector"))); }
     if (DEBUG) { console.info("Localstorage status END ==============="); }
-
-    set_be_list();
 
     icarusi_user = storage.getItem("icarusi_user");
     if (!icarusi_user) {
@@ -410,9 +481,12 @@ function onDeviceReady() {  // eslint-disable-line no-unused-vars
         networkState = navigator.connection.type,
         be_selector = get_ls("be-selector");
 
-    if (be_selector != "") {
+    if (be_selector !== "") {
       BE_URL = be_selector;
     }
+
+    get_configurations();
+
 
     $(document).on("click", "#loginGoogle", function () {
         authenticateWithGoogle(googleAuthSuccess, googleAuthFailure, {});
@@ -471,10 +545,10 @@ function onDeviceReady() {  // eslint-disable-line no-unused-vars
     */
 
     if (enable_notif !== "" && enable_notif !== undefined && enable_notif) {
-        if (DEBUG) { console.info("iCarusi App============> Enabling Push notification : " + enable_notif); }
+        if (DEBUG) { console.info("Rosebud App============> Enabling Push notification : " + enable_notif); }
         window.FirebasePlugin.subscribe("iCarusiNotifications");
     } else {
-        if (DEBUG) { console.info("iCarusi App============> Disabling Push notification : " + enable_notif); }
+        if (DEBUG) { console.info("Rosebud App============> Disabling Push notification : " + enable_notif); }
         window.FirebasePlugin.unsubscribe("iCarusiNotifications");
     }
 
@@ -485,8 +559,8 @@ function onDeviceReady() {  // eslint-disable-line no-unused-vars
 
      $('#be-selector').on('change', function () {
          var val = $("#be-selector :selected").val();
-         if (DEBUG) { console.info("iCarusi App============> BE Selector : " + val); }
-         if (val != "") {
+         if (DEBUG) { console.info("Rosebud App============> BE Selector : " + val); }
+         if (val !== "") {
            storage.setItem("be-selector", val);
          } else {
            storage.setItem("be-selector", BE_URL);  //the default from shared.js
@@ -495,25 +569,25 @@ function onDeviceReady() {  // eslint-disable-line no-unused-vars
 
     $('#lazy-load').on('change', function () {
         var val = $('#lazy-load').prop("checked");
-        if (DEBUG) { console.info("iCarusi App============> Lazy Movie Search : " + val); }
+        if (DEBUG) { console.info("Rosebud App============> Lazy Movie Search : " + val); }
         storage.setItem("lazy-load", val);
     });
 
     $('#flip-dld-images').on('change', function () {
         var val = $('#flip-dld-images').prop("checked");
-        if (DEBUG) { console.info("iCarusi App============> Flip Downloaded images : " + val); }
+        if (DEBUG) { console.info("Rosebud App============> Flip Downloaded images : " + val); }
         storage.setItem("flip-dld-images", val);
     });
 
     $('#flip-save-images').on('change', function () {
         var val = $('#flip-save-images').prop("checked");
-        if (DEBUG) { console.info("iCarusi App============> Flip Save images : " + val); }
+        if (DEBUG) { console.info("Rosebud App============> Flip Save images : " + val); }
         storage.setItem("flip-save-images", val);
     });
 
     $('#show-extra-info').on('change', function () {
         var val = $('#show-extra-info').prop("checked");
-        if (DEBUG) { console.info("iCarusi App============> Flip Show extra info : " + val); }
+        if (DEBUG) { console.info("Rosebud App============> Flip Show extra info : " + val); }
         storage.setItem("show-extra-info", val);
     });
 
@@ -523,7 +597,7 @@ function onDeviceReady() {  // eslint-disable-line no-unused-vars
             id_token = storage.getItem("firebase_id_token"),
             data;
 
-        if (DEBUG) { console.info("iCarusi App============> Flip enable geolocation : " + val); }
+        if (DEBUG) { console.info("Rosebud App============> Flip enable geolocation : " + val); }
         storage.setItem("enable-geoloc", val);
         if (icarusi_user !== "" && icarusi_user !== undefined) {
             if (!val) {
@@ -542,7 +616,7 @@ function onDeviceReady() {  // eslint-disable-line no-unused-vars
                         };
                 encrypt_and_execute(getX(), "kanazzi", data);
             } else {
-                alert("Thanks for sharing your location!\n\nPlease open 'iCarusi' page for sharing your gps coords");
+                alert("Thanks for sharing your location!\n\nPlease open 'Geo Friends' page for sharing your gps coords");
             }
         }
     });
@@ -551,7 +625,7 @@ function onDeviceReady() {  // eslint-disable-line no-unused-vars
         var id_token = storage.getItem("firebase_id_token"),
             data;
 
-        if (DEBUG) { console.info("iCarusi App============> Flip check session (" + icarusi_user + ")"); }
+        if (DEBUG) { console.info("Rosebud App============> Flip check session (" + icarusi_user + ")"); }
         if (icarusi_user !== "" && icarusi_user !== undefined) {
             if (id_token === undefined) {
                 id_token = "";
@@ -575,14 +649,14 @@ function onDeviceReady() {  // eslint-disable-line no-unused-vars
 
     $('#enable-notifications').on('change', function () {
         var val = $('#enable-notifications').prop("checked");
-        if (DEBUG) { console.info("iCarusi App============> Flip Enable Notifications : " + val); }
+        if (DEBUG) { console.info("Rosebud App============> Flip Enable Notifications : " + val); }
         if (val) {
             window.FirebasePlugin.subscribe("iCarusiNotifications");
         } else {
             window.FirebasePlugin.unsubscribe("iCarusiNotifications");
         }
 
-        if (DEBUG) { console.info("iCarusi App============> Push notification Status: " + val); }
+        if (DEBUG) { console.info("Rosebud App============> Push notification Status: " + val); }
 
         storage.setItem("enable-notifications", val);
     });
@@ -596,12 +670,12 @@ function onDeviceReady() {  // eslint-disable-line no-unused-vars
      *      INIT
      */
 
-    if (DEBUG) { console.info("iCarusi App============> Downloaded images switch STORAGE : " + dld_imgs); }
-    if (DEBUG) { console.info("iCarusi App============> Save Downloaded images switch STORAGE : " + save_imgs); }
-    if (DEBUG) { console.info("iCarusi App============> Show Extra info switch STORAGE : " + extra_info); }
-    if (DEBUG) { console.info("iCarusi App============> Enable Push Notification STORAGE : " + enable_notif); }
-    if (DEBUG) { console.info("iCarusi App============> Enable Geo Location : " + enable_geoloc); }
-    if (DEBUG) { console.info("iCarusi App============> Lazy Movie Search : " + lazy_load); }
+    if (DEBUG) { console.info("Rosebud App============> Downloaded images switch STORAGE : " + dld_imgs); }
+    if (DEBUG) { console.info("Rosebud App============> Save Downloaded images switch STORAGE : " + save_imgs); }
+    if (DEBUG) { console.info("Rosebud App============> Show Extra info switch STORAGE : " + extra_info); }
+    if (DEBUG) { console.info("Rosebud App============> Enable Push Notification STORAGE : " + enable_notif); }
+    if (DEBUG) { console.info("Rosebud App============> Enable Geo Location : " + enable_geoloc); }
+    if (DEBUG) { console.info("Rosebud App============> Lazy Movie Search : " + lazy_load); }
 
     if (lazy_load !== "" && lazy_load !== null) {
         $('#lazy-load').prop("checked", lazy_load);
@@ -682,5 +756,18 @@ function onDeviceReady() {  // eslint-disable-line no-unused-vars
 
     listDir(cordova.file.applicationDirectory + "www/images/covers/");
     show_post_login_features();     // User can be already logged in from previous session
+
+
+    function hash_success(key) {
+      if (DEBUG) { console.info("Rosebud App============> PBKDF2 Hasher: " + key); }
+    }
+
+    function hash_failure(err) {
+      if (DEBUG) { console.error("Rosebud App============> PBKDF2 Hasher Error: " + err); }
+    }
+
+    pbkdf2_hasher({}, hash_success, hash_failure);
+
+    get_remote_covers_stats_legacy();
 
 }   // CORDOVA

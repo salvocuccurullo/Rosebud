@@ -1,7 +1,9 @@
 /*global $, cordova, device, window, document, loading, alert, getX, generic_json_request_new, encrypt_and_execute*/
 /*global encryptText2, navigator, Connection, BE_URL, PullToRefresh, get_ls_bool_default, is_storage_expired_or_invalid*/
-/*global power_user, get_ls_bool, base_url_poster, PhotoViewer, fancyDate, confirm, FormData, power_user */
+/*global power_user, get_ls_bool, base_url_poster, PhotoViewer, fancyDate, confirm, FormData, power_user, get_ls */
 /*eslint no-console: ["error", { allow: ["info","warn", "error", "debug"] }] */
+/*eslint no-global-assign: "error"*/
+/*globals BE_URL:true*/
 
 "use strict";
 
@@ -28,7 +30,11 @@ var storage = window.localStorage,
     search_mode = false,
     append_mode = false,
     search_result,
-    tvshow_stat = {"total_show":0, "movies":0, "series":0};
+    tvshow_stat = {
+      "total_show":0,
+      "movies":0,
+      "series":0
+    };
 
 document.addEventListener('deviceready', this.onDeviceReady.bind(this), false); // eslint-disable-line no-unused-vars
 
@@ -121,7 +127,7 @@ function setTvShows(tvshows, votes_user) {
         loading(true, 'Rendering movies...');
 
         if (DEBUG) {
-            console.info("iCarusi App============> SetTvShows called");
+            console.info("Rosebud App============> SetTvShows called");
             //console.info(JSON.stringify(tvshows));
         }
 
@@ -197,8 +203,17 @@ function setTvShows(tvshows, votes_user) {
                 users_votes_keys,
                 comment = '',
                 link = '';
+/*
+                li {
+                  background: url(images/bullet.gif) no-repeat left top;
+                  padding: 3px 0px 3px 10px;
+                  list-style: none;
+                  margin: 0;
+                }
+*/
+            content = '<li style="background: url(images/' + value.media + '-icon.png) no-repeat center left; padding: 10px 10px 10px 50px; background-size: 48px 48px; background-color:white; white-space:normal;">';
 
-            content = '<li style="white-space:normal;">';
+  //          content += '<img src="images/' + value.media + '-icon.png" style="width:32px; height:32px; vertical-align:middle; float:left; border:1px ridge">';
 
             jsonTvShows[value.id] = value;
 
@@ -211,8 +226,8 @@ function setTvShows(tvshows, votes_user) {
             }
 
             // NW SECTION
-            content_nw = '<li style="white-space:normal;">';
-            content_nw += '<a data-transition="slide" href="javascript:setPopupData(' + value.id + ',\'nw\')">';
+            content_nw = '<li style="white-space:normal; background-color:white;">';
+            content_nw += '<a data-transition="slide" style="background: url(images/' + value.media + '-icon.png) no-repeat center left; padding: 10px 10px 10px 50px; background-size: 48px 48px;" href="javascript:setPopupData(' + value.id + ',\'nw\')">';
             content_nw += '<b>' + value.title + '</b> <br/>';
             content_nw += '<span style="color:#000099; font-style:italic; font-size:11px;">';
 
@@ -510,7 +525,7 @@ function getTvShowsGo() { // eslint-disable-line no-unused-vars
     $("#top-list-voters").empty();
     $("#ct-movies").empty();
 
-    //if (DEBUG) console.info("iCarusi App============> ----------------> " + kanazzi + " <---------------");
+    //if (DEBUG) console.info("Rosebud App============> ----------------> " + kanazzi + " <---------------");
 
     $.ajax({
         url: BE_URL + "/getTvShows",
@@ -541,7 +556,7 @@ function getTvShowsGo() { // eslint-disable-line no-unused-vars
         })
         .always(function () {
             loading(false, '');
-            //if (DEBUG) console.info("iCarusi App============> ajax call completed");
+            //if (DEBUG) console.info("Rosebud App============> ajax call completed");
         });
 }
 */
@@ -556,16 +571,16 @@ function checkMoviesCT() {
         ul_ct_size = $('#ct-movies li').length; //CHECK WHETHER THE UL IS ALREADY POPULATED
 
     if (ct_movies !== "" && ul_ct_size > 1) {
-        if (DEBUG) { console.info("iCarusi App============> Skipping CT movies rebuild..."); }
+        if (DEBUG) { console.info("Rosebud App============> Skipping CT movies rebuild..."); }
         return false;
     }
 
     if (ct_movies === "" || ct_movies === "undefined" || ct_movies === null) {
-        if (DEBUG) { console.info("iCarusi App============> No cache for CT movies... going to retrieve from remote server..."); }
+        if (DEBUG) { console.info("Rosebud App============> No cache for CT movies... going to retrieve from remote server..."); }
         getMoviesCT();
     } else {
         ct_movies = JSON.parse(ct_movies);
-        if (DEBUG) { console.info("iCarusi App============> Data cached found for CT movies... data retireved from localstorage... Size: " + ct_movies.length); }
+        if (DEBUG) { console.info("Rosebud App============> Data cached found for CT movies... data retireved from localstorage... Size: " + ct_movies.length); }
         setCtMovies(ct_movies, true, false);
     }
 }
@@ -645,7 +660,7 @@ function setPopupCT(id) { // eslint-disable-line no-unused-vars
         return false;
     }
 
-    if (DEBUG) { console.info("iCarusi App============> Id to open.. " + id); }
+    if (DEBUG) { console.info("Rosebud App============> Id to open.. " + id); }
 
     $("#popupMovieCt").panel("open");
     var content = '',
@@ -796,8 +811,8 @@ function deleteMovie() { // eslint-disable-line no-unused-vars
         .done(function (data) {
             var response = data;
             if (DEBUG) {
-                console.info("iCarusi App============> ========> " + response.result);
-                console.info("iCarusi App============> ========> " + response.message);
+                console.info("Rosebud App============> ========> " + response.result);
+                console.info("Rosebud App============> ========> " + response.message);
             }
 
             if (response.result === "failure") {
@@ -854,9 +869,9 @@ function setPopupData(id, src) { // eslint-disable-line no-unused-vars
         additional_info;
 
     if (DEBUG) {
-        console.info("iCarusi App============> Set Popup Data for movie id: " + id);
-        console.info("iCarusi App============> " + item.title + " ** " + item.media + " ** " + item.username + " ** " + item.avg_vote);
-        console.info("iCarusi App============> " + JSON.stringify(item.u_v_dict));
+        console.info("Rosebud App============> Set Popup Data for movie id: " + id);
+        console.info("Rosebud App============> " + item.title + " ** " + item.media + " ** " + item.username + " ** " + item.avg_vote);
+        console.info("Rosebud App============> " + JSON.stringify(item.u_v_dict));
     }
 
     if (!(icarusi_user in item.u_v_dict)) {
@@ -864,7 +879,7 @@ function setPopupData(id, src) { // eslint-disable-line no-unused-vars
         episode = 1;
         //season = 1;
         comment = '';
-        if (DEBUG) { console.info("iCarusi App============> User " + icarusi_user + " has not voted for this movie. Setting default value to: " + vote); }
+        if (DEBUG) { console.info("Rosebud App============> User " + icarusi_user + " has not voted for this movie. Setting default value to: " + vote); }
     } else {
         vote = item.u_v_dict[icarusi_user].us_vote;
         nw = item.u_v_dict[icarusi_user].now_watching;
@@ -874,7 +889,7 @@ function setPopupData(id, src) { // eslint-disable-line no-unused-vars
         if (nw) {
             $("#nw").prop("checked", true).checkboxradio("refresh");
         }
-        if (DEBUG) { console.info("iCarusi App============> Vote for user " + icarusi_user + " = " + vote + " (Now watching: " + nw + ")"); }
+        if (DEBUG) { console.info("Rosebud App============> Vote for user " + icarusi_user + " = " + vote + " (Now watching: " + nw + ")"); }
     }
 
     $("#top_title").html('<span style="text-align:center; vertical-align:middle">' + item.title + '</span>');
@@ -961,12 +976,12 @@ function setComments(id, src) { // eslint-disable-line no-unused-vars
         content,
         header_content;
 
-    if (DEBUG) { console.info("iCarusi App============> " + item.title + " ** " + item.media + " ** " + item.username + " ** " + item.avg_vote); }
+    if (DEBUG) { console.info("Rosebud App============> " + item.title + " ** " + item.media + " ** " + item.username + " ** " + item.avg_vote); }
     currentId = id;
 
     $("#top_title_comments").html("iCarusi's reviews <br/><i>" + item.title + "</i>");
 
-    if (DEBUG) { console.info("iCarusi App============> " + JSON.stringify(item.u_v_dict)); }
+    if (DEBUG) { console.info("Rosebud App============> " + JSON.stringify(item.u_v_dict)); }
 
     $('#movie_comments').empty();
 
@@ -1007,15 +1022,23 @@ function onDeviceReady() { // eslint-disable-line no-unused-vars
     tv_shows_storage = storage.getItem("tv_shows");
     tv_shows_storage_ts = storage.getItem("tv_shows_count_ts");
     device_app_path = cordova.file.applicationDirectory;
+    //storage.setItem("spotify_url_received", "");
+
+    window.plugins.intent.setNewIntentHandler(function (intent) {
+        console.info(JSON.stringify(intent));
+        //if (intent !== undefined) {
+           storage.setItem("spotify_url_received", intent.clipItems[0].text);
+        //}
+    });
 
     var be_selector = get_ls("be-selector");
-    if (be_selector != "") {
+    if (be_selector !== "") {
       BE_URL = be_selector;
     }
 
     if (DEBUG) {
-        console.info("iCarusi App============> Found Tv Shows Storage");
-        console.info("iCarusi App============> Tv Shows Storage datetime " + tv_shows_storage_ts);
+        console.info("Rosebud App============> Found Tv Shows Storage");
+        console.info("Rosebud App============> Tv Shows Storage datetime " + tv_shows_storage_ts);
     }
 
     var networkState = navigator.connection.type;
@@ -1067,7 +1090,7 @@ function onDeviceReady() { // eslint-disable-line no-unused-vars
         checkMoviesCT();
 
         if (tv_shows_storage !== "" && tv_shows_storage !== undefined && tv_shows_storage !== null) {
-            if (DEBUG) { console.info("iCarusi App============> Found Tv Shows Storage"); }
+            if (DEBUG) { console.info("Rosebud App============> Found Tv Shows Storage"); }
             getTvShows(true);
         }
     } else if (!lazy_load && !is_storage_expired_or_invalid("tv_shows", "tv_shows_count_ts", 86400)) {
@@ -1094,10 +1117,10 @@ function onDeviceReady() { // eslint-disable-line no-unused-vars
 
     $("#popupPhotoPortrait").bind({
         popupafteropen: function (event, ui) { // eslint-disable-line no-unused-vars
-            if (DEBUG) { console.info("iCarusi App============> Opening Picture Popup -> "); }
+            if (DEBUG) { console.info("Rosebud App============> Opening Picture Popup -> "); }
         },
         popupafterclose: function (event, ui) { // eslint-disable-line no-unused-vars
-            if (DEBUG) { console.info("iCarusi App============> Closing Picture Popup -> Resetting picture src"); }
+            if (DEBUG) { console.info("Rosebud App============> Closing Picture Popup -> Resetting picture src"); }
         }
     });
 

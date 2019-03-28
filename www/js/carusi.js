@@ -1,7 +1,9 @@
 /*global $, window, document, loading, alert, getX*/
 /*global encryptText2, navigator, Connection, BE_URL */
-/*global swipeleftHandler, swipeRightHandler, get_ls_bool, locale_date, plugin */
+/*global swipeleftHandler, swipeRightHandler, get_ls_bool, locale_date, plugin, get_ls */
 /*eslint no-console: ["error", { allow: ["info","warn", "error"] }] */
+/*eslint no-global-assign: "error"*/
+/*globals BE_URL:true*/
 
 "use strict";
 
@@ -54,7 +56,7 @@ function zoomTo(username) {
                     "lat": value.latitude,
                     "lng": value.longitude
                 },
-                title: "iCarusi nel mondo",
+                title: "GeoFriends",
                 snippet: value.name + " was here on:\n" + locale_date(value.last_locate),
                 animation: plugin.google.maps.Animation.DROP
             });
@@ -100,7 +102,7 @@ function setMarkers(positions) {
                     "lat": value.latitude,
                     "lng": value.longitude
                 },
-                title: "iCarusi nel mondo",
+                title: "GeoFriends",
                 snippet: value.name + " was here on:\n" + locale_date(value.last_locate),
                 animation: plugin.google.maps.Animation.DROP,
                 icon: {
@@ -164,7 +166,7 @@ function setMarkers2() {
                         "lat": value.latitude,
                         "lng": value.longitude
                     },
-                    title: "iCarusi nel mondo",
+                    title: "GeoFriends",
                     snippet: value.name + " was here on:\n" + locale_date(value.last_locate),
                     animation: plugin.google.maps.Animation.DROP,
                     icon: {
@@ -212,7 +214,7 @@ function setButtons(positions) {
 function geoLocation() { // eslint-disable-line no-unused-vars
 
     if (icarusi_user === "" || icarusi_user === undefined || icarusi_user === null) {
-        alert("Please login for share your location and/or getting info on iCarusi location");
+        alert("Please login for share your location and/or getting info on your friends location");
         return false;
     }
 
@@ -265,13 +267,21 @@ function onDeviceReady() { // eslint-disable-line no-unused-vars
     icarusi_user = storage.getItem("icarusi_user");
     enable_geoloc = get_ls_bool("enable-geoloc");
     caruso_photo_url = storage.getItem("google_photo_url");
+    //storage.setItem("spotify_url_received", "");
+
+    window.plugins.intent.setNewIntentHandler(function (intent) {
+        console.info(JSON.stringify(intent));
+        //if (intent !== undefined) {
+           storage.setItem("spotify_url_received", intent.clipItems[0].text);
+        //}
+    });
 
     var positions = [],
         networkState,
         div,
         be_selector = get_ls("be-selector");
 
-    if (be_selector != "") {
+    if (be_selector !== "") {
       BE_URL = be_selector;
     }
 
@@ -280,12 +290,12 @@ function onDeviceReady() { // eslint-disable-line no-unused-vars
     if (icarusi_user === undefined || icarusi_user === "" || icarusi_user === null) {
         $('#get_locations').prop('disabled', true).addClass('ui-state-disabled');
         $('#locate_me').prop('disabled', true).addClass('ui-state-disabled');
-        alert("You must be logged in for accessing iCarusi page!!");
+        alert("You must be logged in for accessing Rosebud page!!");
         return false;
     }
 
     if (!enable_geoloc) {
-        $("#geoloc_info").html("You're not sharing your location with iCarusi. Shame on you! Enable it on settings!");
+        $("#geoloc_info").html("You're not sharing your location with your friends. Enable it on settings!");
     }
 
     /*
