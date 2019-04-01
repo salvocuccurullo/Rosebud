@@ -75,7 +75,7 @@ function setCovers(covers) {
           icon_name = "hand";
         }
 
-        cover_content = '<li style="background: url(images/' + icon_name + '-icon.png) no-repeat center left; padding: 10px 10px 10px 35px; background-size: 32px 32px; background-color:white; white-space:normal;">';
+        cover_content = '<li style="background: url(images/icons/' + icon_name + '-icon.png) no-repeat center left; padding: 10px 10px 10px 35px; background-size: 32px 32px; background-color:white; white-space:normal;">';
 
         if (value.type === undefined || value.type === "local") {
             cover_location = device_app_path + "www/images/covers/" + value.location;
@@ -257,7 +257,7 @@ function edit_cover(id) { // eslint-disable-line no-unused-vars
         $("#cover_img").hide();
     }
     $("#spoty_url").val("");
-    $("#tracks-button").attr("src", "images/cd-off.png");
+    $("#tracks-button").attr("src", "images/icons/cd-off.png");
     $("#title").val("");
     $("#author").val("");
     $("#year").val("");
@@ -439,7 +439,7 @@ function setTracks(tracks) {
         return false;
     }
 
-    $("#tracks-button").attr("src", "images/cd-on.png");
+    $("#tracks-button").attr("src", "images/icons/cd-on.png");
 
     var tracks_header = '<li data-role="list-divider" data-theme="b" style="text-align:center">';
     tracks_header += 'Found <span style="color:yellow">' + tracks.items.length + '</span> tracks';
@@ -464,6 +464,7 @@ function setTracks(tracks) {
 function setSpotifySong(data) {
     data = JSON.parse(data);
     if (DEBUG) { console.info("Rosebud App============> " + data.images[0].url); }
+    $("#id").val("0");
     $("#cover_img").attr("src", data.images[0].url);
     $("#spoti_img_url").val(data.images[0].url);
     $("#author").val(data.artists[0].name);
@@ -476,7 +477,7 @@ function setSpotifySong(data) {
 
 function setSpotifyTracks(data) {
     data = JSON.parse(data);
-    $("#tracks-button").attr("src", "images/cd-on.png");
+    $("#tracks-button").attr("src", "images/icons/cd-on.png");
     setTracks(data.tracks);
 }
 

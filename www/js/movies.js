@@ -211,7 +211,7 @@ function setTvShows(tvshows, votes_user) {
                   margin: 0;
                 }
 */
-            content = '<li style="background: url(images/' + value.media + '-icon.png) no-repeat center left; padding: 10px 10px 10px 50px; background-size: 48px 48px; background-color:white; white-space:normal;">';
+            content = '<li style="background: url(images/icons/' + value.media + '-icon.png) no-repeat center left; padding: 10px 10px 10px 50px; background-size: 48px 48px; background-color:white; white-space:normal;">';
 
   //          content += '<img src="images/' + value.media + '-icon.png" style="width:32px; height:32px; vertical-align:middle; float:left; border:1px ridge">';
 
@@ -227,7 +227,7 @@ function setTvShows(tvshows, votes_user) {
 
             // NW SECTION
             content_nw = '<li style="white-space:normal; background-color:white;">';
-            content_nw += '<a data-transition="slide" style="background: url(images/' + value.media + '-icon.png) no-repeat center left; padding: 10px 10px 10px 50px; background-size: 48px 48px;" href="javascript:setPopupData(' + value.id + ',\'nw\')">';
+            content_nw += '<a data-transition="slide" style="background: url(images/icons/' + value.media + '-icon.png) no-repeat center left; padding: 10px 10px 10px 50px; background-size: 48px 48px;" href="javascript:setPopupData(' + value.id + ',\'nw\')">';
             content_nw += '<b>' + value.title + '</b> <br/>';
             content_nw += '<span style="color:#000099; font-style:italic; font-size:11px;">';
 
@@ -679,11 +679,11 @@ function setPopupCT(id) { // eslint-disable-line no-unused-vars
     content += '<span style="font-weight:bold">FilmTV:</span><br/>';
 
     if (result[0].filmtv.indexOf("A") === 0) {
-        content += '<img src="images/green.png" style="width:60px"/>';
+        content += '<img src="images/filmtv/green.png" style="width:60px"/>';
     } else if (result[0].filmtv.indexOf("B") === 0) {
-        content += '<img src="images/blue.png" style="width:60px"/>';
+        content += '<img src="images/filmtv/blue.png" style="width:60px"/>';
     } else if (result[0].filmtv.indexOf("C") === 0) {
-        content += '<img src="images/red.png" style="width:60px"/>';
+        content += '<img src="images/filmtv/red.png" style="width:60px"/>';
     }
 
     content += '<br/><br/><br/><span style="font-style:italic;">Tap outside the panel for close</span>';
