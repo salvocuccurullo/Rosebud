@@ -83,6 +83,8 @@ function iCaruiLoginSuccess(data) {
     $("#cover_img").attr("src", g_photo);
     storage.setItem("icarusi_user", data.payload.username);
 
+    getServerVersion();
+
 }
 
 function iCaruiLoginFailure(data) {
