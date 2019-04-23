@@ -55,7 +55,7 @@ function setCovers(covers) {
     }
 
     var covers_header = '<li data-role="list-divider" data-theme="b" style="text-align:center">';
-    covers_header += 'Found <span style="color:yellow">' + covers.length + '</span> covers';
+    covers_header += 'Found/Latest <span style="color:yellow">' + covers.length + '</span> covers';
     covers_header += '</li>';
     $('#covers-list').append(covers_header);
 
@@ -230,14 +230,16 @@ function get_covers() { // eslint-disable-line no-unused-vars
 
   if (DEBUG) { console.info("Rosebud App============> Starting covers retrieving..."); }
 
-  var data = {
-    "username": icarusi_user,
-    "method": "POST",
-    "url": "/getcovers",
-    "cB": generic_json_request_new,
-    "successCb": getCoversSuccess,
-    "failureCb": getCoversFailure
-  };
+  var limit = "15",
+      data = {
+      "username": icarusi_user,
+      "limit": limit,
+      "method": "POST",
+      "url": "/getcovers",
+      "cB": generic_json_request_new,
+      "successCb": getCoversSuccess,
+      "failureCb": getCoversFailure
+    };
   encrypt_and_execute(getX(), "kanazzi", data);
 }
 
@@ -682,6 +684,10 @@ function onDeviceReady() { // eslint-disable-line no-unused-vars
     $("#song_page").on("swiperight", swipeRightHandler);
     // FINE SWIPE RUDIMENTALE
 
+    /*
+    * LOCAL SEARCH
+    */
+
     $('#cover_search').on('change', function () {
         var search = $("#cover_search").val();
         if (search.length === 0) {
@@ -713,6 +719,54 @@ function onDeviceReady() { // eslint-disable-line no-unused-vars
         });
         setCovers(result);
     });
+
+    /*
+    * REMOTE SEARCH
+    */
+
+    $('#cover_search_online').on('change', function () {
+        var search = $("#cover_search_online").val();
+        /*
+        if (search.length === 0) {
+            sort_covers(sort_type);
+            return false;
+        }
+        */
+    });
+
+    $("#cover_search_online").bind("input", function () {
+        var search = $("#cover_search_online").val();
+
+        if (search.length < 4) {
+            return false;
+        }
+
+        if (networkState === Connection.NONE) {
+
+          result = $.grep(result, function (element, index) { // eslint-disable-line no-unused-vars
+              return (
+                  (element.year.toString() === search) ||
+                  (element.name.toUpperCase().indexOf(search.toUpperCase()) >= 0) ||
+                  (element.author.toUpperCase().indexOf(search.toUpperCase()) >= 0)
+              );
+          });
+          setCovers(result);
+
+        } else {
+
+          var data = {
+            "username": icarusi_user,
+            "search": search,
+            "method": "POST",
+            "url": "/localsearch",
+            "cB": generic_json_request_new,
+            "successCb": getCoversSuccess,
+            "failureCb": getCoversFailure
+          };
+          encrypt_and_execute(getX(), "kanazzi", data);
+      }
+    });
+
 
 
     $("#popupPhotoPortrait").bind({
