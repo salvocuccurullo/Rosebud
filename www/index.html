@@ -20,6 +20,7 @@
 		<script type="text/javascript" src="js/index.js" ></script>
 		<script type="text/javascript" src="js/pulltorefresh.min.js" ></script>
 		<script type="text/javascript" src="js/auth.js" ></script>
+
 	</head>
 
 	<body>
@@ -31,7 +32,7 @@
 				<div style="text-align:center;" class="ui-bar ui-bar-b">
 					Rosebud
 				</div>
-
+				<!--
 				<div data-role="navbar" id="navbar" data-theme="a">
 					<ul>
 						<li><a href="index.html" title="Go to home page" class="ui-btn-active ui-state-persist">Home</a></li>
@@ -40,10 +41,11 @@
 						<li><a href="song.html" title="Go to music page"  data-ajax="false" rel="external" id="song_btn">Music</a></li>
 					</ul>
 				</div>
+			-->
 			</div>
 			<div id="connection" style="font-size:11px; font-style:italic; text-align:center; background-color:#C60419; color:white;"></div>
 
-			<div role="main" class="ui-content" style="text-align:center; margin-top:35px">
+			<div role="main" class="ui-content" style="text-align:center; margin-top:65px">
 
 				<div id="logo_content">
 					<img src="images/loading.gif" style="width:85%;" id="cover_img" onerror="set_fallback_image()"><br/><br/>
@@ -89,8 +91,21 @@
 				<a href="#settings_page" title="Open settings page" class="ui-btn ui-icon-gear ui-btn-icon-notext ui-corner-all" style="float:right">Settings</a>
 			</div>
 
-			<div data-role="footer" id="footer">
-				<div id="sabba_info" style="text-align:center"></div>
+			<div data-role="footer" id="footer2" data-position="fixed" data-theme="b">
+				<div data-role="navbar" id="navbar2" class="custom-footer" data-theme="a">
+					<ul>
+						<li><a href="index.html"  data-icon="home" id="home_btn_fo" class="ui-btn-active ui-state-persist ui-nodisc-icon" data-ajax="false" rel="external">Home</a></li>
+						<li><a href="movies.html"  data-icon="video" id="movies_btn_fo" class="ui-nodisc-icon" data-ajax="false" rel="external">Movies</a></li>
+						<li><a href="carusi.html"  data-icon="location" id="geo_btn_fo" class="ui-nodisc-icon" data-ajax="false" rel="external">GeoFriends</a></li>
+						<li><a href="song.html"  data-icon="camera" id="covers_btn_fo" class="ui-nodisc-icon" data-ajax="false" rel="external">Covers</a></li>
+						<!--
+						<li><a href="index.html"  data-icon="custom" id="home_btn_fo" class="ui-btn-active ui-state-persist ui-nodisc-icon" data-ajax="false" rel="external">Home</a></li>
+						<li><a href="movies.html"  data-icon="custom" id="movies_btn_fo" class="ui-nodisc-icon" data-ajax="false" rel="external">Movies</a></li>
+						<li><a href="carusi.html"  data-icon="custom" id="geo_btn_fo" class="ui-nodisc-icon" data-ajax="false" rel="external">GeoFriends</a></li>
+						<li><a href="song.html"  data-icon="custom" id="covers_btn_fo" class="ui-nodisc-icon" data-ajax="false" rel="external">Covers</a></li>
+					-->
+					</ul>
+				</div>
 			</div>
 		</div>
 
@@ -98,7 +113,7 @@
 			<a href="#home_page" class="ui-btn ui-corner-all ui-shadow ui-btn-inline ui-icon-home ui-btn-icon-arrow-l ui-btn-a" data-mini="true">Back</a>
 			<div class="ui-corner-all custom-corners">
 				<div class="ui-bar ui-bar-a">
-					<h3>Settings</h3>
+					<div id="sabba_info" style="text-align:center"></div>
 				 </div>
 				 <div class="ui-body ui-body-a" id="switch-page">
 

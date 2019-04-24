@@ -82,3 +82,29 @@
   color: black;
   border: 2px solid #4CAF50; /* Green */
 }
+
+.ui-footer{
+	height:48px;
+}
+
+/*
+.custom-footer .ui-btn .ui-btn-inner {
+	padding-top: 40px !important;
+}
+
+.custom-footer .ui-btn .ui-icon {
+	width: 30px!important; height: 30px!important;
+	margin-left: -15px !important;
+	box-shadow: none!important;
+	-moz-box-shadow: none!important;
+	-webkit-box-shadow: none!important;
+	-webkit-border-radius: 0 !important;
+	border-radius: 0 !important;
+}
+
+#covers_btn_fo2  {
+	 background:  url('../images/icons/edicola-icon.png') 50% 50% no-repeat;
+	background-size: 32px 32px;
+	 background-color: #ffffff;
+}
+*/
