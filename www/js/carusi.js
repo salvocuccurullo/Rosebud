@@ -244,8 +244,11 @@ function geoLocation() { // eslint-disable-line no-unused-vars
                 return false;
             }
 
+            $("#distance_info").html("As the crow flies...<br/> from your last location you moved about " + response.distance + " km.");
+
             if (curr_action === "GET") {
                 curr_positions = response.body;
+                $("#distance_info").html("As the crow flies...<br/> from your last location you moved about " + response.distance + " km.");
                 setMarkers2();
                 setButtons(curr_positions);
             }
@@ -286,6 +289,7 @@ function onDeviceReady() { // eslint-disable-line no-unused-vars
     }
 
     $("#geoloc_info").html("");
+    $("#distance_info").html("");
 
     if (icarusi_user === undefined || icarusi_user === "" || icarusi_user === null) {
         $('#get_locations').prop('disabled', true).addClass('ui-state-disabled');
