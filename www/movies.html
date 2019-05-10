@@ -224,23 +224,33 @@
 								</div>
 							</div>
 
-							<div class="ui-grid-a" id="custom-grid-movies">
+							<div class="ui-grid-a" id="custom-grid-movies-4">
 								<div class="ui-block-a">
 									<label for="serie_season">Season</label>
 								</div>
 								<div class="ui-block-b">
 									<input type="number" pattern="[0-9]*" name="serie_season" id="serie_season" data-mini="true" value="1"/>
 								</div>
-							</div>
-
-							<div data-role="collapsible" id="the_votes_d" data-theme="a" data-content-theme="a" data-collapsed="true">
-									<h4>How iCarusi voted...</h4>
-									<ul data-role="listview" data-theme="a" data-inset="true" data-filter="false" id="users_votes" ></ul>
+								<div class="ui-block-c">
+									<label for="serie_season">Clone Serie</label>
+								</div>
+								<div class="ui-block-d">
+									<input type="number" pattern="[0-9]*" name="clone_season" id="clone_season" data-mini="true" value="1" placeholder="Max 10 clones"/>
+								</div>
 							</div>
 
 							<div class="ui-field-contain">
 								<label for="vote">Vote</label>
 								<input type="range" name="vote" id="vote" value="5" min="0" max="10" step="0.5" data-highlight="true" />
+							</div>
+
+							<div class="ui-grid-a" id="custom-grid-movies">
+								<div class="ui-block-a">
+									<!--<label for="link" style="vertical-align:middle">Link</label>-->Link
+								</div>
+								<div class="ui-block-b">
+									<input type="url" name="link" id="link" data-mini="true" placeholder="link (optional) only wikipedia" data-clear-btn="true"/>
+								</div>
 							</div>
 
 							<div data-role="collapsible" id="additional_info">
@@ -270,14 +280,9 @@
 								<label for="comment">Comment:</label>
 								<textarea name="comment" id="comment" data-mini="true" maxlength="280" rows="4" placeholder="Comment (280 chars)"></textarea>
 
-							</div>
-
-							<div class="ui-grid-a" id="custom-grid-movies">
-								<div class="ui-block-a">
-									<!--<label for="link" style="vertical-align:middle">Link</label>-->Link
-								</div>
-								<div class="ui-block-b">
-									<input type="url" name="link" id="link" data-mini="true" placeholder="link (optional) only wikipedia" data-clear-btn="true"/>
+								<div data-role="collapsible" id="the_votes_d" data-theme="a" data-content-theme="a" data-collapsed="true">
+										<h4>How iCarusi voted...</h4>
+										<ul data-role="listview" data-theme="a" data-inset="true" data-filter="false" id="users_votes" ></ul>
 								</div>
 							</div>
 						</form>

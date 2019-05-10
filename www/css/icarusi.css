@@ -51,6 +51,7 @@
 
 #custom-grid .ui-block-a {
     width: 80% !important;
+		padding-top: 10px;
 }
 
 #custom-grid .ui-block-b {
@@ -59,13 +60,32 @@
 
 #custom-grid-movies .ui-block-a {
     width: 20% !important;
-    vertical-align: middle;
+    padding-top: 10px;
 }
 
 #custom-grid-movies .ui-block-b {
     width: 80% !important;
-    vertical-align: middle;
 }
+
+#custom-grid-movies-4 .ui-block-a {
+    width: 20% !important;
+    padding-top: 10px;
+}
+
+#custom-grid-movies-4 .ui-block-b {
+    width: 20% !important;
+}
+
+#custom-grid-movies-4 .ui-block-c {
+    width: 30% !important;
+    padding-top: 10px;
+		padding-left: 10px;
+}
+
+#custom-grid-movies-4 .ui-block-d {
+    width: 30% !important;
+}
+
 
 #custom-grid-spoti .ui-block-a {
     width: 80% !important;

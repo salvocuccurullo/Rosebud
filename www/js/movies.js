@@ -69,6 +69,10 @@ function poster(img_name) { // eslint-disable-line no-unused-vars
 
 function resetPopupElements() {
     currentId = 0;
+    $('#clone_season').textinput('disable');
+    $('#serie_season').textinput('disable');
+    $('#clone_season').val('1');
+    $('#serie_season').val('1');
     $("#title").prop('readonly', false);
     $("#link").prop('readonly', false);
     $("#title").textinput("option", "clearBtn", true);
@@ -696,6 +700,33 @@ function setPopupCT(id) { // eslint-disable-line no-unused-vars
  ***/
 
 $(document).on("click", "#send_movie_btn", function () {
+
+    var clone_s = $('#clone_season').val(),
+        serie_s = $('#serie_season').val(),
+        vote = $('#vote').val(),
+        first = 0,
+        last = 0,
+        clone_alert = '';
+
+    if (!parseInt(clone_s, 10) || !parseInt(serie_s, 10) || !parseInt(vote, 10)){
+        alert("Not valid numveric value");
+        return false;
+    }
+
+    if ( clone_s > 1 && clone_s <= 10 ) {
+      first = parseInt(parseInt(serie_s,10) + 1, 10);
+      last = parseInt(parseInt(clone_s,10) + parseInt(serie_s,10), 10);
+      clone_alert = `
+This serie will be cloned ${clone_s} times.\n
+First clone will be season ${first}, last season ${last} \n
+Poster/Vote/Comment (if available) will be applied only to season ${serie_s}`;
+      if (!confirm(clone_alert)) {
+        return false;
+      }
+    } else if ( clone_s > 1 && clone_s > 10 ) {
+      alert("The max number of allowed cloned season is 10");
+      return false;
+    }
     encryptText2(getX(), "saveMovieNew");
 });
 
@@ -1206,6 +1237,16 @@ function onDeviceReady() { // eslint-disable-line no-unused-vars
         $('#season').val($('#serie_season').val());
     });
 
+
+    $('#tvshow_type').on('change', function () {
+        if ( $('#tvshow_type').val() === "serie" ) {
+          $('#clone_season').textinput('enable');
+          $('#serie_season').textinput('enable');
+        } else {
+          $('#serie_season').textinput('disable');
+          $('#clone_season').textinput('disable');
+        }
+    });
     /*
      * MOVIE SEARCH
      */
