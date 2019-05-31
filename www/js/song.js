@@ -87,6 +87,10 @@ function setCovers(covers) {
             cover_content += '<button class="ui-btn ui-icon-edit ui-btn-icon-notext ui-corner-all ui-mini ui-btn-inline" id="btn_edit_cover" style="float:right" onclick="edit_cover(\'' + value.id + '\')"></button>';
         }
 
+        if (value.spotifyAlbumUrl !== "" && value.spotifyAlbumUrl !== undefined) {
+            cover_content += '<button class="ui-btn ui-icon-audio ui-btn-icon-notext ui-corner-all ui-mini ui-btn-inline" id="btn_edit_cover" style="float:right" onclick="window.open(\'' + value.spotifyAlbumUrl + '\', \'_system\')"></button>';
+        }
+
         cover_content += '<button class="ui-btn ui-icon-camera ui-btn-icon-notext ui-corner-all ui-mini ui-btn-inline" id="btn_show_cover" style="float:right" onclick="poster(\'' + cover_location + '\')"></button>';
         cover_content += value.name + '<br/>';
         if (value.year !== 0 && value.year !== "") {
@@ -105,6 +109,9 @@ function setCovers(covers) {
     $('#covers-list').listview('refresh');
 }
 
+function play_song(url) { // eslint-disable-line no-unused-vars
+  window.open(url, '_system');
+}
 
 function get_song() { // eslint-disable-line no-unused-vars
 
@@ -133,8 +140,10 @@ function get_song() { // eslint-disable-line no-unused-vars
                 song_header = '';
 
             if (DEBUG) { console.info("Retrieved song data:" + song.title + " - " + song.author); }
-
             song_header = '<li data-role="list-divider" data-theme="b" style="text-align:center">';
+            if (song.spotify !== undefined) {
+              song_header += '<button class="ui-btn ui-icon-audio ui-btn-icon-notext ui-corner-all ui-mini ui-btn-inline ui-btn-b" style="float:right" onclick="play_song(\'' + song.spotify + '\')"></button>';
+            }
             song_header += '<button class="ui-btn ui-icon-refresh ui-btn-icon-notext ui-corner-all ui-mini ui-btn-inline ui-btn-b" style="float:right" onclick="get_song()"></button>';
             song_header += '<span style="color:yellow">' + song.title + '</span><br/>' + song.author + '</li>';
             $('#lyrics-list').append(song_header);
@@ -267,6 +276,7 @@ function edit_cover(id) { // eslint-disable-line no-unused-vars
     $("spoty_url").val("");
     $("#spoti_img_url").val("");
     $("#spotify_api_url").val("");
+    $("#spotify_album_url").val("");
     $("#spoty_url").val("");
     $("#upload_result").html("");
     $("#spoty_search").val("");
@@ -294,6 +304,7 @@ function edit_cover(id) { // eslint-disable-line no-unused-vars
         $("#author").val(result.author);
         $("#year").val(result.year);
         $("#spotify_api_url").val(result.spotifyUrl);
+        $("#spotify_album_url").val(result.spotifyAlbumUrl);
         $("#spoty_url").val(result.spotifyUrl);
         if (result.location !== "") {
             $("#cover_img").attr("src", result.location);
@@ -473,6 +484,7 @@ function setSpotifySong(data) {
     $("#title").val(data.name);
     $("#year").val(data.release_date.split("-")[0]);
     $("#spotify_api_url").val(data.href);
+    $("#spotify_album_url").val(data.external_urls.spotify);    // TO-DO - Maybe data.external_urls.spotify
     setTracks(data.tracks);
     $("#cover_img").show();
 }
@@ -524,7 +536,7 @@ function get_spotify(fn_data) {
     encrypt_and_execute(getX(), "kanazzi", data);
 }
 
-function set_album(url) {
+function set_album(url) {  // eslint-disable-line no-unused-vars
   $("#spoty_url").val(url);
   get_spotify({
       'action':'all'
@@ -565,7 +577,7 @@ function search_spotify(fn_data) {
     if (DEBUG) { console.info("Rosebud App============> " + JSON.stringify(fn_data)); }
 
     var data,
-        successCB = setSpotifySong,
+        //successCB = setSpotifySong,
         spoty_search;
 
     spoty_search = $("#spoty_search").val();
@@ -629,11 +641,16 @@ function onDeviceReady() { // eslint-disable-line no-unused-vars
     $("#connection").html("");
     $("#random_song_message").html("");
 
+    cordova.getAppVersion.getVersionNumber().then(function (version) {
+        $('#version').html(" " + version);
+        storage.setItem("app_version", version);
+    });
+
     if (networkState === Connection.NONE) {
         $("#connection").html("No network... Pantalica mode...");
     }
 
-    if (icarusi_user === power_user) {
+    if (power_user.includes(icarusi_user)) {
         $("#sabba_info").html(BE_URL);
     }
 
@@ -724,18 +741,15 @@ function onDeviceReady() { // eslint-disable-line no-unused-vars
     * REMOTE SEARCH
     */
 
+    /*
     $('#cover_search_online').on('change', function () {
         var search = $("#cover_search_online").val();
-        /*
-        if (search.length === 0) {
-            sort_covers(sort_type);
-            return false;
-        }
-        */
     });
+    */
 
     $("#cover_search_online").bind("input", function () {
-        var search = $("#cover_search_online").val();
+        var search = $("#cover_search_online").val(),
+            result;
 
         if (search.length < 4) {
             return false;

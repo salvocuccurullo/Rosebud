@@ -1,5 +1,5 @@
 /*global $, window, document, loading, alert, getX*/
-/*global encryptText2, navigator, Connection, BE_URL */
+/*global encryptText2, navigator, Connection, BE_URL, cordova */
 /*global swipeleftHandler, swipeRightHandler, get_ls_bool, locale_date, plugin, get_ls */
 /*eslint no-console: ["error", { allow: ["info","warn", "error"] }] */
 /*eslint no-global-assign: "error"*/
@@ -311,6 +311,11 @@ function onDeviceReady() { // eslint-disable-line no-unused-vars
     if (networkState === Connection.NONE) {
         $("#connection").html("No network... Pantalica mode...");
     }
+
+    cordova.getAppVersion.getVersionNumber().then(function (version) {
+        $('#version').html(" " + version);
+        storage.setItem("app_version", version);
+    });
 
     /*
      * BUILD GOOGLE MAPS CANVAS

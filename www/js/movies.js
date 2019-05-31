@@ -4,6 +4,8 @@
 /*eslint no-console: ["error", { allow: ["info","warn", "error", "debug"] }] */
 /*eslint no-global-assign: "error"*/
 /*globals BE_URL:true*/
+/*eslint quotes: [1, "double", "single", "backtick"]*/
+/*eslint-env es6*/
 
 "use strict";
 
@@ -30,6 +32,7 @@ var storage = window.localStorage,
     search_mode = false,
     append_mode = false,
     search_result,
+    aaaa=`aaaa`,
     tvshow_stat = {
       "total_show":0,
       "movies":0,
@@ -71,7 +74,7 @@ function resetPopupElements() {
     currentId = 0;
     $('#clone_season').textinput('disable');
     $('#serie_season').textinput('disable');
-    $('#clone_season').val('1');
+    $('#clone_season').val('0');
     $('#serie_season').val('1');
     $("#title").prop('readonly', false);
     $("#link").prop('readonly', false);
@@ -708,22 +711,23 @@ $(document).on("click", "#send_movie_btn", function () {
         last = 0,
         clone_alert = '';
 
-    if (!parseInt(clone_s, 10) || !parseInt(serie_s, 10) || !parseInt(vote, 10)){
-        alert("Not valid numveric value");
+    if (!parseInt(serie_s, 10) || !parseInt(vote, 10) || parseInt(clone_s, 10) < 0 || parseInt(serie_s, 10) < 0) {
+        alert("Not valid numeric value");
         return false;
     }
 
-    if ( clone_s > 1 && clone_s <= 10 ) {
+    if ( clone_s > 0 && clone_s <= 10 ) {
       first = parseInt(parseInt(serie_s,10) + 1, 10);
       last = parseInt(parseInt(clone_s,10) + parseInt(serie_s,10), 10);
       clone_alert = `
 This serie will be cloned ${clone_s} times.\n
 First clone will be season ${first}, last season ${last} \n
-Poster/Vote/Comment (if available) will be applied only to season ${serie_s}`;
+Poster/Vote/Comment (if available) will be applied only to season ${serie_s} \n
+Note: it won't work on editing movie mode`;
       if (!confirm(clone_alert)) {
         return false;
       }
-    } else if ( clone_s > 1 && clone_s > 10 ) {
+    } else if ( clone_s > 10 ) {
       alert("The max number of allowed cloned season is 10");
       return false;
     }
@@ -735,6 +739,7 @@ function saveMovieNew() { // eslint-disable-line no-unused-vars
     // TRICK
     $('#media').selectmenu('enable');
     $('#tvshow_type').selectmenu('enable');
+    $("#serie_season").textinput('enable');
     // END TRICK
     $("#username").val(icarusi_user);
     $("#kanazzi").val(kanazzi);
@@ -927,6 +932,9 @@ function setPopupData(id, src) { // eslint-disable-line no-unused-vars
     $("#title").val(item.title);
     $("#link").val(item.link);
     $("#serie_season").val(item.serie_season);
+    if (item.tvshow_type === "serie") {
+        $('#serie_season').textinput('enable');
+    }
     $('#media').val(item.media).selectmenu('refresh', true);
     $('#tvshow_type').val(item.tvshow_type).selectmenu('refresh', true);
     $("#curr_pic").val(item.poster);
@@ -1076,7 +1084,12 @@ function onDeviceReady() { // eslint-disable-line no-unused-vars
 
     $("#connection").html("");
 
-    if (icarusi_user === power_user) {
+    cordova.getAppVersion.getVersionNumber().then(function (version) {
+        $('#version').html(" " + version);
+        storage.setItem("app_version", version);
+    });
+
+    if (power_user.includes(icarusi_user)) {
         $("#sabba_info").html(BE_URL);
     }
 

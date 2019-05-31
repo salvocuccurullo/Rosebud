@@ -1,8 +1,8 @@
 /*global $, cordova, device, window, document, storage_keys, get_ls, loading, alert, generic_json_request_new, encrypt_and_execute, getX*/
-/*global idTokenSuccess, idTokenFailure, encryptText2, navigator, Connection, BE_URL, BE_LIST, PullToRefresh, getServerVersion*/
+/*global idTokenSuccess, idTokenFailure, encryptText2, navigator, Connection, BE_URL, BE_LIST, PullToRefresh, getServerVersion, show_image*/
 /*global swipeleftHandler, swipeRightHandler, power_user, get_ls_bool, get_ls_bool_default, authenticateWithGoogle, json_request, refreshIdToken */
 /*global listDir, pbkdf2_hasher*/
-/*eslint no-console: ["error", { allow: ["info","warn", "error"] }] */
+/*eslint no-console: ["error", { allow: ["info","warn", "error", "debug"] }] */
 /*eslint no-global-assign: "error"*/
 /*globals BE_URL:true*/
 
@@ -13,8 +13,7 @@ var DEBUG = false,
     storage = window.localStorage,
     kanazzi,
     swipe_left_target = "movies.html", // eslint-disable-line no-unused-vars
-    swipe_right_target = "song.html", // eslint-disable-line no-unused-vars
-    appVersion;
+    swipe_right_target = "song.html"; // eslint-disable-line no-unused-vars
 
 document.addEventListener('deviceready', this.onDeviceReady.bind(this), false);
 
@@ -54,7 +53,7 @@ function getServerVersion() {
 }
 
 
-function error_fall_back() {
+function error_fall_back() { // eslint-disable-line no-unused-vars
     alert("HAMMUORT!");
 }
 
@@ -119,12 +118,15 @@ function googleAuthFailure() {
  *      SET IMAGE
  */
 
-function set_remote_image() {
+function show_image(cover_type) {
     var remote_url = storage.getItem("remote_cover_url");
-    if (remote_url !== "" && remote_url !== undefined) {
+
+    if (cover_type === "remote" && remote_url !== "" && remote_url !== undefined) {
         $("#cover_img").attr("src", remote_url);
+    } else if (cover_type === "local") {
+        $("#cover_img").attr("src", "images/covers/" + remote_url);
     } else {
-        $("#cover_img").attr("src", "images/covers/01.jpg");
+        $("#cover_img").attr("src", "images/no-image-available.jpg");
     }
 }
 
@@ -139,26 +141,24 @@ function setImage(tot_imgs) {
 
     if (DEBUG) { console.info("Rosebud App============> Remote covers count: " + remote_covers_count); }
 
+    $("#spoty_button_img").attr('src', 'images/icons/spoti-icon-gray.png');
+    storage.setItem("random_cover_spotify_url", "");
+
     if (networkState !== Connection.NONE && remote_url !== "" && dld_imgs !== "" && dld_imgs && remote_covers_count !== undefined && remote_covers_count > 0) {
         if (DEBUG) { console.info("Rosebud App============> Considering remote images..."); }
-        id_img = Math.floor((Math.random() * (parseInt(tot_imgs, 10) + parseInt(remote_covers_count, 10))) + 1);     // Consider also the remote images
-    } else {
-        if (DEBUG) { console.info("Rosebud App============> Considering ony local images..."); }
-        id_img = Math.floor((Math.random() * tot_imgs) + 1);                           // Consider only local images
+        $("#cover_img").attr("images/covers/loading_spinner.gif");
+        encryptText2(getX(), 'get_remote_random_cover_2');
+        return false;
     }
 
+    if (DEBUG) { console.info("Rosebud App============> Considering ony local images..."); }
+    id_img = Math.floor((Math.random() * tot_imgs) + 1);                           // Consider only local images - No spotify links
     if (DEBUG) { console.info("Rosebud App============> Image id selected: " + id_img); }
 
     if (id_img < 10) {
         image = "0" + id_img + ".jpg";
     } else {
         image = id_img + ".jpg";
-    }
-
-    if (id_img > 24) {
-        $("#cover_img").attr("images/covers/loading_spinner.gif");
-        encryptText2(getX(), 'get_remote_random_cover_2');
-        return false;
     }
 
     image = "images/covers/" + image;
@@ -169,7 +169,9 @@ function setImage(tot_imgs) {
 
 function set_fallback_image() { // eslint-disable-line no-unused-vars
 
-    $("#cover_img").attr("src", "images/covers/01.jpg");
+    $("#cover_img").attr("src", "images/no-image-available.jpg");
+    $("#spoty_button_img").attr('src', 'images/icons/spoti-icon-gray.png');
+    storage.setItem("random_cover_spotify_url", "");
 
 }
 
@@ -189,13 +191,18 @@ function get_remote_random_cover_2() { // eslint-disable-line no-unused-vars
         dataType: "json"
     })
         .done(function (data) {
-            if (DEBUG) { console.info(data); }
+            if (DEBUG) { console.debug(data); }
             var cover = JSON.parse(data);
 
             if (cover !== undefined) {
-                if (DEBUG) { console.info("Rosebud App============> Fetched remote random cover data: " + cover.name); }
+                if (DEBUG) { console.debug("Rosebud App============> Fetched remote random cover data: " + cover.name); }
+                console.debug("-------------> " + cover.type);
                 storage.setItem("remote_cover_url", cover.location);
-                set_remote_image();
+                storage.setItem("random_cover_spotify_url", cover.spotifyAlbumUrl);
+                if (cover.spotifyAlbumUrl !== "" && cover.spotifyAlbumUrl !== undefined) {
+                  $("#spoty_button_img").attr('src', 'images/icons/spoti-icon.png');
+                }
+                show_image(cover.type);
             }
         })
         .fail(function (err) {
@@ -337,7 +344,7 @@ function show_post_login_features() {
     //encryptText2(getX(), 'get_remote_covers_stats_legacy');
     get_remote_covers_stats_legacy();
 
-    if (icarusi_user === power_user) {
+    if (power_user.includes(icarusi_user)) {
         $("#sabba_info").html(BE_URL);
         $("#debug_session").show();
         $("#refresh_token").show();
@@ -494,6 +501,14 @@ function onDeviceReady() {  // eslint-disable-line no-unused-vars
         authenticateWithGoogle(googleAuthSuccess, googleAuthFailure, {});
     });
 
+    $(document).on("click", "#spoty_album_go", function () {
+        var spotifyAlbumUrl = storage.getItem("random_cover_spotify_url");
+        if (spotifyAlbumUrl !== "" && spotifyAlbumUrl !== undefined) {
+          window.open(spotifyAlbumUrl, '_system');
+        }
+    });
+
+
     /*
     firebase.auth().onIdTokenChanged(function(user) {
       if (user) {
@@ -522,7 +537,7 @@ function onDeviceReady() {  // eslint-disable-line no-unused-vars
                     "token": token,
                     "method": "POST",
                     "url": "/setFBToken2",
-                    "app_version": appVersion,
+                    "app_version": storage.getItem("app_version")
                 };
             json_request(data);
 
@@ -569,11 +584,13 @@ function onDeviceReady() {  // eslint-disable-line no-unused-vars
          }
      });
 
+    /*
     $('#lazy-load').on('change', function () {
         var val = $('#lazy-load').prop("checked");
         if (DEBUG) { console.info("Rosebud App============> Lazy Movie Search : " + val); }
         storage.setItem("lazy-load", val);
     });
+    */
 
     $('#flip-dld-images').on('change', function () {
         var val = $('#flip-dld-images').prop("checked");
@@ -679,11 +696,13 @@ function onDeviceReady() {  // eslint-disable-line no-unused-vars
     if (DEBUG) { console.info("Rosebud App============> Enable Geo Location : " + enable_geoloc); }
     if (DEBUG) { console.info("Rosebud App============> Lazy Movie Search : " + lazy_load); }
 
+    /*
     if (lazy_load !== "" && lazy_load !== null) {
         $('#lazy-load').prop("checked", lazy_load);
     } else {
         storage.setItem("lazy-load", true);
     }
+    */
 
     if (save_imgs !== "" && save_imgs !== null) {
         $('#flip-save-images').prop("checked", save_imgs);
@@ -718,8 +737,7 @@ function onDeviceReady() {  // eslint-disable-line no-unused-vars
     $("#connection").html("");
 
     cordova.getAppVersion.getVersionNumber().then(function (version) {
-        appVersion = version;
-        $('#version').html("Release " + version);
+        $('#version').html("Rel. " + version);
         $("#info_version").html(version);
         storage.setItem("app_version", version);
     });
@@ -740,7 +758,7 @@ function onDeviceReady() {  // eslint-disable-line no-unused-vars
         onRefresh: function () {
             listDir(cordova.file.applicationDirectory + "www/images/covers/");
         },
-        instructionsReleaseToRefresh: "Manadittu !",
+        instructionsReleaseToRefresh: "Have fun!",
         distThreshold : 20,
     });
 
