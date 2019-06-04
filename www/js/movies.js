@@ -220,11 +220,9 @@ function setTvShows(tvshows, votes_user) {
 */
             content = '<li style="background: url(images/icons/' + value.media + '-icon.png) no-repeat center left; padding: 10px 10px 10px 50px; background-size: 48px 48px; background-color:white; white-space:normal;">';
 
-  //          content += '<img src="images/' + value.media + '-icon.png" style="width:32px; height:32px; vertical-align:middle; float:left; border:1px ridge">';
-
             jsonTvShows[value.id] = value;
 
-            content += '<span style="font-weight:bold">' + value.title + '</span>';
+            content += '<span style="font-weight:bold" class="clickable" poster="' + value.poster + '">' + value.title + '</span>';
 
             if (value.avg_vote === 0) {
                 content += '<span style="color:#C60419; float:right"> [ N/A ]</span>';
@@ -272,9 +270,11 @@ function setTvShows(tvshows, votes_user) {
             content += '<span style="color:#C60419; float:right">';
 
             // PICTURE ICON
+            /*
             if (value.poster !== "") {
                 content += '<button class="ui-btn ui-icon-camera ui-btn-icon-notext ui-corner-all ui-mini ui-btn-inline" id="btn_show_poster" onclick="poster(\'' + value.poster + '\')"></button>';
             }
+            */
 
             // EDIT ICON
             content += '<button class="ui-btn ui-icon-edit ui-btn-icon-notext ui-mini ui-corner-all ui-btn-inline" id="btn_show_poster" onclick="setPopupData(\'' + value.id + '\',\'a\')"></button>';
@@ -1018,7 +1018,7 @@ function setComments(id, src) { // eslint-disable-line no-unused-vars
     if (DEBUG) { console.info("Rosebud App============> " + item.title + " ** " + item.media + " ** " + item.username + " ** " + item.avg_vote); }
     currentId = id;
 
-    $("#top_title_comments").html("iCarusi's reviews <br/><i>" + item.title + "</i>");
+    $("#top_title_comments").html('Users\' reviews on <br/><span style="color:#8B0000; font-style:italic">' + item.title + '</span>');
 
     if (DEBUG) { console.info("Rosebud App============> " + JSON.stringify(item.u_v_dict)); }
 
@@ -1378,6 +1378,16 @@ function onDeviceReady() { // eslint-disable-line no-unused-vars
 
     $("#btn_show_more_2").on("click", function () {
         show_me_more();
+    });
+
+    $(document).on("click", ".clickable", function () {
+      var curr_poster = $(this).attr('poster');
+      if (curr_poster !== "" && curr_poster !== undefined) {
+        poster(curr_poster);
+      } else {
+        poster(device_app_path + "www/images/no-image-available.jpg");
+      }
+
     });
 
     /*

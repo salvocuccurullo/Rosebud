@@ -44,6 +44,62 @@ function setCacheInfo() {
     }
 }
 
+function setComments(id) { // eslint-disable-line no-unused-vars
+
+  console.info("Retrieving comments of album with id " + id);
+
+  if (id !== 0) {
+      var item = $.grep(current_covers, function (element, index) { // eslint-disable-line no-unused-vars
+          return (element.id === id);
+      }),
+      comments_count,
+      content,
+      header_content;
+
+      if (DEBUG) {
+          console.info("==========================");
+          console.info(JSON.stringify(item));
+          console.info("==========================");
+      }
+
+      if (item.length > 0) {
+        item = item[0];
+      } else {
+        return false;
+      }
+
+    // NEW
+    $(':mobile-pagecontainer').pagecontainer('change', '#comments_page');
+
+    if (DEBUG) { console.info("Rosebud App============> " + item.name + " ** " + item.author + " ** "); }
+    //currentId = id;
+
+    $("#top_title_comments").html('Users\' reviews on <br/><span style="color:#8B0000; font-style:italic">' + item.name + '</span>');
+
+    if (DEBUG) { console.info("Rosebud App============> " + JSON.stringify(item.reviews)); }
+
+    $('#album_comments').empty();
+
+    comments_count = 0;
+    $.each(item.reviews, function (index, value) { // eslint-disable-line no-unused-vars
+        content = '<li style="white-space:normal;">';
+        if (value.review !== "") {
+            comments_count += 1;
+        }
+        content += '<b>' + value.username + '</b> <span style="color:red; float:right">' + value.vote + '</span>';
+        content += '<br/><p style="white-space:normal; font-style:italic; font-size:12px">' + value.review + '</p>';
+        content += '</li>';
+        $('#album_comments').append(content);
+    });
+
+    header_content = '<li data-role="list-divider" data-theme="b" style="text-align:center">';
+    header_content += '<span style="color:yellow">' + comments_count + ' comment(s)...</span></li>';
+    $('#album_comments').prepend(header_content);
+    $('#album_comments').listview('refresh');
+
+  }
+}
+
 function setCovers(covers) {
 
     $('#covers-list').empty();
@@ -75,24 +131,33 @@ function setCovers(covers) {
           icon_name = "hand";
         }
 
-        cover_content = '<li style="background: url(images/icons/' + icon_name + '-icon.png) no-repeat center left; padding: 10px 10px 10px 35px; background-size: 32px 32px; background-color:white; white-space:normal;">';
-
         if (value.type === undefined || value.type === "local") {
             cover_location = device_app_path + "www/images/covers/" + value.location;
         } else {
             cover_location = value.location;
         }
 
+        cover_content = '<li style="background: url(images/icons/' + icon_name + '-icon.png) no-repeat center left; padding: 10px 10px 10px 35px; background-size: 32px 32px; background-color:white; white-space:normal;">';
+        //cover_content += ' class="clickable" album_id="' + value.id + '" cover_loc="' + cover_location + '">';
+
+        /*
         if (value.type === "remote" && value.id !== undefined && value.id !== "") {
             cover_content += '<button class="ui-btn ui-icon-edit ui-btn-icon-notext ui-corner-all ui-mini ui-btn-inline" id="btn_edit_cover" style="float:right" onclick="edit_cover(\'' + value.id + '\')"></button>';
         }
+        */
+        cover_content += '<button class="ui-btn ui-icon-edit ui-btn-icon-notext ui-corner-all ui-mini ui-btn-inline" id="btn_edit_cover" style="float:right" onclick="edit_cover(\'' + value.id + '\')"></button>';
 
         if (value.spotifyAlbumUrl !== "" && value.spotifyAlbumUrl !== undefined) {
             cover_content += '<button class="ui-btn ui-icon-audio ui-btn-icon-notext ui-corner-all ui-mini ui-btn-inline" id="btn_edit_cover" style="float:right" onclick="window.open(\'' + value.spotifyAlbumUrl + '\', \'_system\')"></button>';
         }
 
-        cover_content += '<button class="ui-btn ui-icon-camera ui-btn-icon-notext ui-corner-all ui-mini ui-btn-inline" id="btn_show_cover" style="float:right" onclick="poster(\'' + cover_location + '\')"></button>';
-        cover_content += value.name + '<br/>';
+        if (value.reviews !== null) {
+            cover_content += '<button class="ui-btn ui-icon-comment ui-btn-icon-notext ui-corner-all ui-mini ui-btn-inline" id="btn_edit_cover" style="float:right" onclick="setComments(\'' + value.id +  '\')"></button>';
+        }
+
+        //cover_content += '<button class="ui-btn ui-icon-camera ui-btn-icon-notext ui-corner-all ui-mini ui-btn-inline" id="btn_show_cover" style="float:right" onclick="poster(\'' + cover_location + '\')"></button>';
+
+        cover_content += '<div class="clickable" album_id="' + value.id + '" cover_loc="' + cover_location + '">' + value.name + '<br/>';
         if (value.year !== 0 && value.year !== "") {
             cover_content += '<span style="color:#000099; font-style:italic; font-size:11px;">' + value.author + ' (' + value.year + ')</span>';
         } else {
@@ -102,6 +167,8 @@ function setCovers(covers) {
         if (value.created !== undefined && sort_type === "created") {
             cover_content += '<br/><span style="color:#C60419; font-style:italic; font-size:10px;">' + value.created + '</span>';
         }
+
+        cover_content += "</div>"
 
         cover_content += '</li>';
         $('#covers-list').append(cover_content);
@@ -282,6 +349,9 @@ function edit_cover(id) { // eslint-disable-line no-unused-vars
     $("#spoty_search").val("");
     $('#tracks-list').empty();
     $('#search-list').empty();
+    $("#vote").val(5).slider("refresh");
+    $("#review").val('');
+    $("#pic").removeAttr('disabled');
 
     if (spotify_url_received !== undefined) {
       $("#spoty_url").val(spotify_url_received);
@@ -303,11 +373,22 @@ function edit_cover(id) { // eslint-disable-line no-unused-vars
         $("#title").val(result.name);
         $("#author").val(result.author);
         $("#year").val(result.year);
+
+        if (result.reviews !== null && result.reviews[icarusi_user] !== null) {
+          $("#vote").val(result.reviews[icarusi_user].vote).slider("refresh");
+          $("#review").val(result.reviews[icarusi_user].review);
+        }
+
         $("#spotify_api_url").val(result.spotifyUrl);
         $("#spotify_album_url").val(result.spotifyAlbumUrl);
         $("#spoty_url").val(result.spotifyUrl);
         if (result.location !== "") {
+          if (result.type === "local") {
+            $("#cover_img").attr("src", device_app_path + "www/images/covers/" + result.location);
+            $("#pic").attr('disabled','disabled');
+          } else {
             $("#cover_img").attr("src", result.location);
+          }
         }
         if (result.spotifyUrl !== "") {
           get_spotify({
@@ -798,6 +879,11 @@ function onDeviceReady() { // eslint-disable-line no-unused-vars
       $("#tracks_list_panel").trigger("updatelayout");
       $("#cover_page").trigger("updatelayout");
       $("#tracks_list_panel").panel("open");
+    });
+
+    $(document).on("click", ".clickable", function () {
+      //edit_cover($(this).attr('album_id'));
+      poster($(this).attr('cover_loc'));
     });
 
     $(document).on("click", "#spoty_btn", function () {

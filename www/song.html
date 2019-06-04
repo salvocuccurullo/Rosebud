@@ -99,7 +99,7 @@
         <form id="cover_form" method="POST" enctype="multipart/form-data">
           <input type="hidden" name="username2" id="username2" />
           <input type="hidden" name="kanazzi" id="kanazzi" />
-          <input type="hidden" name="id" id="id" />
+          <input type="text" name="id" id="id" />
           <input type="hidden" name="spotify_api_url" id="spotify_api_url" />
           <input type="hidden" name="spotify_album_url" id="spotify_album_url" />
           <input type="text" name="title" id="title" data-mini="true" placeholder="Set album title (required)" data-clear-btn="true" />
@@ -107,12 +107,21 @@
           <input type="number" pattern="[0-9]*" name="year" id="year" data-mini="true" placeholder="Set album release year (optional)" data-clear-btn="true" />
           <input type="file" name="pic" id="pic" accept="image/*" data-mini="true">
           <input type="hidden" name="spoti_img_url" id="spoti_img_url" />
-          <a href="#" id="send_album_btn" data-role="button" data-icon="check" data-inline="true" data-iconpos="right" data-mini="true">Send...</a>
+
+          <label for="vote">Your vote</label>
+          <input type="range" name="vote" id="vote" value="5" min="0" max="10" step="0.5" data-highlight="true" />
+
+          <label for="review">Your review:</label>
+          <textarea name="review" id="review" data-mini="true" maxlength="280" rows="4" placeholder="Review (280 chars)"></textarea>
+
+          <a href="#" id="send_album_btn" data-role="button" data-icon="check" data-inline="true" data-iconpos="right" data-mini="true">Save...</a>
           <div id="upload_result"></div>
         </form>
 
         <div id="shared_spotify_url" style:"font-size:8px; color:light-gray">
         </div>
+
+
 
         <div class="ui-grid-a" id="custom-grid-spoti">
           <div class="ui-block-a">
@@ -146,6 +155,19 @@
     </div>
   </div> <!-- END COVER PAGE -->
 
+  <div data-role="page" id="comments_page">
+    <!-- COMMENTS PAGE -->
+    <div class="ui-corner-all custom-corners">
+      <div class="ui-bar ui-bar-a" style="height:60px">
+        <a href="#" data-rel="back" data-role="button" data-theme="a" data-icon="arrow-l" data-mini="true" data-iconpos="notext" class="ui-btn-left">Close</a>
+        <div id="top_title_comments" style="margin-left:50px; margin-top:10px; margin-bottom:10px; text-align:justify"></div>
+      </div>
+      <div id="div_comments" style="text-align:center; margin-top:15px">
+        <ul data-role="listview" data-theme="a" data-inset="true" data-filter="false" id="album_comments"></ul>
+      </div>
+
+    </div>
+  </div> <!-- END COMMENTS PAGE -->
 
 </body>
 
