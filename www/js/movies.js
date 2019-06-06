@@ -1018,7 +1018,7 @@ function setComments(id, src) { // eslint-disable-line no-unused-vars
     if (DEBUG) { console.info("Rosebud App============> " + item.title + " ** " + item.media + " ** " + item.username + " ** " + item.avg_vote); }
     currentId = id;
 
-    $("#top_title_comments").html('Users\' reviews on <br/><span style="color:#8B0000; font-style:italic">' + item.title + '</span>');
+    $("#top_title_comments").html(item.title);
 
     if (DEBUG) { console.info("Rosebud App============> " + JSON.stringify(item.u_v_dict)); }
 
@@ -1036,13 +1036,14 @@ function setComments(id, src) { // eslint-disable-line no-unused-vars
         } else {
             content += '<b>' + value.us_username + '</b> <span style="color:red; float:right">' + value.us_vote + '</span>';
             content += '<br/><p style="white-space:normal; font-style:italic; font-size:12px">' + value.comment + '</p>';
+            content += '<span style="color:#C60419; font-style:italic; font-size:10px; float:right">' + value.us_date + '</span>';
         }
         content += '</li>';
         $('#movie_comments').append(content);
     });
 
     header_content = '<li data-role="list-divider" data-theme="b" style="text-align:center">';
-    header_content += '<span style="color:yellow">' + comments_count + ' comments...</span></li>';
+    header_content += '<span style="color:yellow">' + comments_count + ' comment(s)</span></li>';
     $('#movie_comments').prepend(header_content);
     $('#movie_comments').listview('refresh');
 }

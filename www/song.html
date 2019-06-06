@@ -50,7 +50,7 @@
           <button class="ui-btn ui-icon-tag ui-btn-icon-notext ui-corner-all ui-mini ui-btn-inline ui-btn-b" style="float:left" onclick="sort_covers('name')"></button>
           <button class="ui-btn ui-icon-user ui-btn-icon-notext ui-corner-all ui-mini ui-btn-inline ui-btn-b" style="float:left" onclick="sort_covers('author')"></button>
           <button class="ui-btn ui-icon-clock ui-btn-icon-notext ui-corner-all ui-mini ui-btn-inline ui-btn-b" style="float:left" onclick="sort_covers('year')"></button>
-          <button class="ui-btn ui-icon-calendar ui-btn-icon-notext ui-corner-all ui-mini ui-btn-inline ui-btn-b" style="float:left" onclick="sort_covers('created')"></button>
+          <button class="ui-btn ui-icon-calendar ui-btn-icon-notext ui-corner-all ui-mini ui-btn-inline ui-btn-b" style="float:left" onclick="sort_covers('update_ts')"></button>
           <button class="ui-btn ui-icon-plus ui-btn-icon-notext ui-corner-all ui-mini ui-btn-inline ui-btn-b" style="float:right" onclick="new_cover()"></button>
           <button class="ui-btn ui-icon-refresh ui-btn-icon-notext ui-corner-all ui-mini ui-btn-inline ui-btn-b" style="float:right" onclick="get_covers()"></button>
           <br /><br />
@@ -74,12 +74,6 @@
           <li><a href="movies.html" data-icon="video" id="movies_btn_fo" class="ui-nodisc-icon" data-ajax="false" rel="external">Movies</a></li>
           <li><a href="carusi.html" data-icon="location" id="geo_btn_fo" class="ui-nodisc-icon" data-ajax="false" rel="external">GeoFriends</a></li>
           <li><a href="song.html" data-icon="audio" id="covers_btn_fo" class="ui-btn-active ui-state-persist ui-nodisc-icon" data-ajax="false" rel="external">Albums</a></li>
-          <!--
-            <li><a href="index.html"  data-icon="custom" id="home_btn_fo" class="ui-btn-active ui-state-persist ui-nodisc-icon" data-ajax="false" rel="external">Home</a></li>
-            <li><a href="movies.html"  data-icon="custom" id="movies_btn_fo" class="ui-nodisc-icon" data-ajax="false" rel="external">Movies</a></li>
-            <li><a href="carusi.html"  data-icon="custom" id="geo_btn_fo" class="ui-nodisc-icon" data-ajax="false" rel="external">GeoFriends</a></li>
-            <li><a href="song.html"  data-icon="custom" id="covers_btn_fo" class="ui-nodisc-icon" data-ajax="false" rel="external">Covers</a></li>
-          -->
         </ul>
       </div>
     </div>
@@ -99,7 +93,7 @@
         <form id="cover_form" method="POST" enctype="multipart/form-data">
           <input type="hidden" name="username2" id="username2" />
           <input type="hidden" name="kanazzi" id="kanazzi" />
-          <input type="text" name="id" id="id" />
+          <input type="hidden" name="id" id="id" />
           <input type="hidden" name="spotify_api_url" id="spotify_api_url" />
           <input type="hidden" name="spotify_album_url" id="spotify_album_url" />
           <input type="text" name="title" id="title" data-mini="true" placeholder="Set album title (required)" data-clear-btn="true" />
@@ -120,8 +114,6 @@
 
         <div id="shared_spotify_url" style:"font-size:8px; color:light-gray">
         </div>
-
-
 
         <div class="ui-grid-a" id="custom-grid-spoti">
           <div class="ui-block-a">
@@ -157,15 +149,16 @@
 
   <div data-role="page" id="comments_page">
     <!-- COMMENTS PAGE -->
+
+    <a href="#song_page" style="text-decoration:none;">
+      <img src="images/icons/back-icon.png" style="width:36px; height:36px; padding: 10px" />
+    </a>
+    <span id="top_title_comments" style="font-weight: bold; position:absolute; margin-top:20px; margin-left:75px; color:#8B0000; font-style:italic"></span>
+
     <div class="ui-corner-all custom-corners">
-      <div class="ui-bar ui-bar-a" style="height:60px">
-        <a href="#" data-rel="back" data-role="button" data-theme="a" data-icon="arrow-l" data-mini="true" data-iconpos="notext" class="ui-btn-left">Close</a>
-        <div id="top_title_comments" style="margin-left:50px; margin-top:10px; margin-bottom:10px; text-align:justify"></div>
-      </div>
-      <div id="div_comments" style="text-align:center; margin-top:15px">
+      <div id="div_comments" style="text-align:center; margin-top:15px; margin-left:10px; margin-right:10px">
         <ul data-role="listview" data-theme="a" data-inset="true" data-filter="false" id="album_comments"></ul>
       </div>
-
     </div>
   </div> <!-- END COMMENTS PAGE -->
 

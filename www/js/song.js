@@ -18,7 +18,7 @@ var storage = window.localStorage,
     swipe_right_target = "carusi.html", // eslint-disable-line no-unused-vars
     DEBUG = false,
     device_app_path = "",
-    sort_type = "created",
+    sort_type = "update_ts",
     sort_order = -1,
     current_covers = "",
     curr_file_size = 0,
@@ -54,7 +54,8 @@ function setComments(id) { // eslint-disable-line no-unused-vars
       }),
       comments_count,
       content,
-      header_content;
+      header_content,
+      upd_human_date;
 
       if (DEBUG) {
           console.info("==========================");
@@ -74,7 +75,7 @@ function setComments(id) { // eslint-disable-line no-unused-vars
     if (DEBUG) { console.info("Rosebud App============> " + item.name + " ** " + item.author + " ** "); }
     //currentId = id;
 
-    $("#top_title_comments").html('Users\' reviews on <br/><span style="color:#8B0000; font-style:italic">' + item.name + '</span>');
+    $("#top_title_comments").html(item.name);
 
     if (DEBUG) { console.info("Rosebud App============> " + JSON.stringify(item.reviews)); }
 
@@ -82,12 +83,16 @@ function setComments(id) { // eslint-disable-line no-unused-vars
 
     comments_count = 0;
     $.each(item.reviews, function (index, value) { // eslint-disable-line no-unused-vars
+
+        upd_human_date = fancyDate(new Date(Date.parse(value.updated)));
+
         content = '<li style="white-space:normal;">';
         if (value.review !== "") {
             comments_count += 1;
         }
         content += '<b>' + value.username + '</b> <span style="color:red; float:right">' + value.vote + '</span>';
         content += '<br/><p style="white-space:normal; font-style:italic; font-size:12px">' + value.review + '</p>';
+        content += '<span style="color:#C60419; font-style:italic; font-size:10px; float:right">' + upd_human_date + '</span>';
         content += '</li>';
         $('#album_comments').append(content);
     });
@@ -121,9 +126,10 @@ function setCovers(covers) {
 
     $.each(covers, function (index, value) {
 
-        var cover_content,
-            cover_location = '',
-            icon_name;
+        var cover_location = '',
+            cover_content,
+            icon_name,
+            upd_human_date;
 
         if (value.spotifyUrl !== "") {
           icon_name = "spoti";
@@ -164,13 +170,14 @@ function setCovers(covers) {
             cover_content += '<span style="color:#000099; font-style:italic; font-size:11px;">' + value.author + '</span>';
         }
 
-        if (value.created !== undefined && sort_type === "created") {
-            cover_content += '<br/><span style="color:#C60419; font-style:italic; font-size:10px;">' + value.created + '</span>';
+        if (value.update_ts !== undefined && sort_type === "update_ts") {
+            upd_human_date = fancyDate(new Date(Date.parse(value.update_ts)));
+            cover_content += '<br/><span style="color:#C60419; font-style:italic; font-size:10px;">' + upd_human_date + '</span>';
         }
 
-        cover_content += "</div>"
-
+        cover_content += "</div>";
         cover_content += '</li>';
+
         $('#covers-list').append(cover_content);
     });
     $('#covers-list').listview('refresh');
@@ -290,7 +297,7 @@ function getCoversSuccess(data) { // eslint-disable-line no-unused-vars
     setCacheInfo();
     current_covers = covers;
     sort_type = "";
-    sort_covers("created");
+    sort_covers("update_ts");
 }
 
 function getCoversFailure(err) { // eslint-disable-line no-unused-vars
@@ -385,7 +392,7 @@ function edit_cover(id) { // eslint-disable-line no-unused-vars
         if (result.location !== "") {
           if (result.type === "local") {
             $("#cover_img").attr("src", device_app_path + "www/images/covers/" + result.location);
-            $("#pic").attr('disabled','disabled');
+            $("#pic").attr('disabled', 'disabled');
           } else {
             $("#cover_img").attr("src", result.location);
           }
@@ -742,7 +749,7 @@ function onDeviceReady() { // eslint-disable-line no-unused-vars
 
         if (icarusi_user !== "" && covers_storage !== "" && covers_storage !== undefined && covers_storage !== null) {
             console.info("Rosebud App============> NO NETWORK -> Cached Covers loading");
-            sort_covers("created");
+            sort_covers("update_ts");
         }
 
     } else {
@@ -757,7 +764,7 @@ function onDeviceReady() { // eslint-disable-line no-unused-vars
 
             if (icarusi_user !== "" && diff_sec < 86400 && covers_storage !== "" && covers_storage !== undefined && covers_storage !== null) {
                 if (DEBUG) { console.info("Rosebud App============> CACHE AVAILABLE AND NOT EXPIRED -> Cached Covers loading"); }
-                sort_covers("created");
+                sort_covers("update_ts");
             } else {
                 get_covers();
             }

@@ -286,12 +286,14 @@
 
   <div data-role="page" id="comments_page">
     <!-- COMMENTS PAGE -->
+
+    <a href="#movies_page" style="text-decoration:none;">
+      <img src="images/icons/back-icon.png" style="width:36px; height:36px; padding: 10px" />
+    </a>
+    <span id="top_title_comments" style="font-weight: bold; position:absolute; margin-top:20px; margin-left:45px; color:#8B0000; font-style:italic"></span>
+
     <div class="ui-corner-all custom-corners">
-      <div class="ui-bar ui-bar-a" style="height:60px">
-        <a href="#" data-rel="back" data-role="button" data-theme="a" data-icon="arrow-l" data-mini="true" data-iconpos="notext" class="ui-btn-left">Close</a>
-        <div id="top_title_comments" style="margin-left:50px; margin-top:10px; margin-bottom:10px; text-align:justify"></div>
-      </div>
-      <div id="div_comments" style="text-align:center; margin-top:15px">
+      <div id="div_comments" style="text-align:center;margin-top:15px; margin-left:10px; margin-right:10px">
         <ul data-role="listview" data-theme="a" data-inset="true" data-filter="false" id="movie_comments"></ul>
       </div>
 
