@@ -52,11 +52,14 @@
           <button class="ui-btn ui-icon-clock ui-btn-icon-notext ui-corner-all ui-mini ui-btn-inline ui-btn-b" style="float:left" onclick="sort_covers('year')"></button>
           <button class="ui-btn ui-icon-calendar ui-btn-icon-notext ui-corner-all ui-mini ui-btn-inline ui-btn-b" style="float:left" onclick="sort_covers('update_ts')"></button>
           <button class="ui-btn ui-icon-plus ui-btn-icon-notext ui-corner-all ui-mini ui-btn-inline ui-btn-b" style="float:right" onclick="new_cover()"></button>
-          <button class="ui-btn ui-icon-refresh ui-btn-icon-notext ui-corner-all ui-mini ui-btn-inline ui-btn-b" style="float:right" onclick="get_covers()"></button>
+          <button class="ui-btn ui-icon-refresh ui-btn-icon-notext ui-corner-all ui-mini ui-btn-inline ui-btn-b" style="float:right" onclick="get_covers(15)"></button>
           <br /><br />
           <!--<input type="text" data-type="search" name="cover_search" id="cover_search" value="" data-mini="true" placeholder="search (min 4 chars)"></input>-->
-          <input type="text" data-type="search" name="cover_search_online" id="cover_search_online" value="" data-mini="true" placeholder="online search (min 4 chars)"></input>
+          <input type="text" data-type="search" name="cover_search_online" id="cover_search_online" value="" data-mini="true" placeholder="online search (min 3 valid chars)"></input>
           <ul data-role="listview" data-theme="a" data-inset="true" data-filter="false" id="covers-list"></ul>
+          <div id="album_list_footer" style="display:block">
+            <a href="#" class="ui-btn ui-icon-arrow-d ui-mini ui-btn-icon-right ui-corner-all ui-btn-inline" id="btn_show_more_album">Show more...</a>
+          </div>
         </div>
 
         <div id="song_content" style="text-align:center">
@@ -159,6 +162,17 @@
       <div id="div_comments" style="text-align:center; margin-top:15px; margin-left:10px; margin-right:10px">
         <ul data-role="listview" data-theme="a" data-inset="true" data-filter="false" id="album_comments"></ul>
       </div>
+<!--
+      <label for="vote">Your vote</label>
+      <input type="range" name="vote" id="vote" value="5" min="0" max="10" step="0.5" data-highlight="true" />
+
+      <label for="review">Your review:</label>
+      <textarea name="review" id="review" data-mini="true" maxlength="280" rows="4" placeholder="Review (280 chars)"></textarea>
+
+      <input type="text" name="username2" id="username2" />
+      <input type="text" name="kanazzi" id="kanazzi" />
+      <input type="text" name="id" id="id" />
+-->
     </div>
   </div> <!-- END COMMENTS PAGE -->
 

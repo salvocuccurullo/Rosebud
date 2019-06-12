@@ -14,6 +14,7 @@
 var storage = window.localStorage,
     icarusi_user = "",
     kanazzi,
+    rosebud_uid = "",
     swipe_left_target = "index.html", // eslint-disable-line no-unused-vars
     swipe_right_target = "carusi.html", // eslint-disable-line no-unused-vars
     DEBUG = false,
@@ -23,6 +24,8 @@ var storage = window.localStorage,
     current_covers = "",
     curr_file_size = 0,
     curr_cover_id = "",
+    current_page = 1,
+//    append_mode = false,
     covers_storage = [];
 
 document.addEventListener('deviceready', this.onDeviceReady.bind(this), false);
@@ -291,20 +294,26 @@ function sort_covers(s_type) {
 */
 
 function getCoversSuccess(data) { // eslint-disable-line no-unused-vars
-    var covers = JSON.parse(data);
-    storage.setItem("covers_storage", JSON.stringify(covers));      // SAVE ON LOCALSTORAGE
+    var response = JSON.parse(data);
+    storage.setItem("covers_storage", JSON.stringify(response.payload.covers));      // SAVE ON LOCALSTORAGE
     storage.setItem("covers_ts", new Date().getTime());
     setCacheInfo();
-    current_covers = covers;
+    current_covers = response.payload.covers;
+
+    if (response.payload.hasMore) {
+      $("#album_list_footer").show();
+    }
+
     sort_type = "";
     sort_covers("update_ts");
+
 }
 
 function getCoversFailure(err) { // eslint-disable-line no-unused-vars
     if (DEBUG) { console.error("Rosebud App============> " + err.responseText); }
 }
 
-function get_covers() { // eslint-disable-line no-unused-vars
+function get_covers(limit) { // eslint-disable-line no-unused-vars
 
   if (icarusi_user === undefined || icarusi_user === "" || icarusi_user === null) {
       alert("You must be logged in for accessing covers!!");
@@ -313,12 +322,19 @@ function get_covers() { // eslint-disable-line no-unused-vars
 
   if (DEBUG) { console.info("Rosebud App============> Starting covers retrieving..."); }
 
-  var limit = "15",
-      data = {
+  $("#album_list_footer").hide();
+
+  if (limit === 15) {
+    current_page = 1;
+  }
+
+  $("#cover_search_online").val("");
+
+  var data = {
       "username": icarusi_user,
       "limit": limit,
       "method": "POST",
-      "url": "/getcovers",
+      "url": "/getcovers2",
       "cB": generic_json_request_new,
       "successCb": getCoversSuccess,
       "failureCb": getCoversFailure
@@ -381,7 +397,7 @@ function edit_cover(id) { // eslint-disable-line no-unused-vars
         $("#author").val(result.author);
         $("#year").val(result.year);
 
-        if (result.reviews !== null && result.reviews[icarusi_user] !== null) {
+        if (result.reviews !== undefined && result.reviews !== null && result.reviews[icarusi_user] !== undefined && result.reviews[icarusi_user] !== null) {
           $("#vote").val(result.reviews[icarusi_user].vote).slider("refresh");
           $("#review").val(result.reviews[icarusi_user].review);
         }
@@ -502,7 +518,7 @@ function uploadCover() { // eslint-disable-line no-unused-vars
             }
 
             if (DEBUG) { console.info("Reloading covers..."); }
-            get_covers();
+            get_covers(15);
 
             $("#title").val("");
             $("#author").val("");
@@ -691,14 +707,48 @@ function search_spotify(fn_data) {
     if (DEBUG) { console.info("Rosebud App============> " + JSON.stringify(data)); }
     encrypt_and_execute(getX(), "kanazzi", data);
 }
+
+/*
+ * SHOW ME MORE
+ */
+
+function show_me_more() {
+
+    $("#album_list_footer").hide();
+
+    //var search = $("#cover_search_online").val().trim();
+    var search = $("#cover_search_online").val();
+    current_page += 1;
+
+    if (search.trim() === "" || search.trim().length < 3) {
+      //append_mode = true;   // not used
+      get_covers(15 * current_page);
+    } else {
+      // SEARCH CASE
+      var data = {
+        "username": icarusi_user,
+        "rosebud_uid": rosebud_uid,
+        "search": search,
+        "limit": 15 * current_page,
+        "method": "POST",
+        "url": "/localsearch2",
+        "cB": generic_json_request_new,
+        "successCb": getCoversSuccess,
+        "failureCb": getCoversFailure
+      };
+      encrypt_and_execute(getX(), "kanazzi", data);
+  }
+}
+
+
   /*
   * CORDOVA ON DEVICE onDeviceReady
   */
 
-
 function onDeviceReady() { // eslint-disable-line no-unused-vars
 
     icarusi_user = storage.getItem("icarusi_user");
+    rosebud_uid = storage.getItem("rosebud_uid");
     covers_storage = storage.getItem("covers_storage");
     device_app_path = cordova.file.applicationDirectory;
     var spotify_url_received = get_ls("spotify_url_received");
@@ -766,10 +816,10 @@ function onDeviceReady() { // eslint-disable-line no-unused-vars
                 if (DEBUG) { console.info("Rosebud App============> CACHE AVAILABLE AND NOT EXPIRED -> Cached Covers loading"); }
                 sort_covers("update_ts");
             } else {
-                get_covers();
+                get_covers(15);
             }
         } else {
-            get_covers();
+            get_covers(15);
         }
     }
 
@@ -839,8 +889,8 @@ function onDeviceReady() { // eslint-disable-line no-unused-vars
         var search = $("#cover_search_online").val(),
             result;
 
-        if (search.length < 4) {
-            return false;
+        if (search.trim() === "" || search.trim().length < 3) {
+          return false;
         }
 
         if (networkState === Connection.NONE) {
@@ -856,11 +906,13 @@ function onDeviceReady() { // eslint-disable-line no-unused-vars
 
         } else {
 
+          $("#album_list_footer").hide();   // Hide more button TO BE FIXED
+
           var data = {
             "username": icarusi_user,
             "search": search,
             "method": "POST",
-            "url": "/localsearch",
+            "url": "/localsearch2",
             "cB": generic_json_request_new,
             "successCb": getCoversSuccess,
             "failureCb": getCoversFailure
@@ -868,8 +920,6 @@ function onDeviceReady() { // eslint-disable-line no-unused-vars
           encrypt_and_execute(getX(), "kanazzi", data);
       }
     });
-
-
 
     $("#popupPhotoPortrait").bind({
         popupafterclose: function (event, ui) { // eslint-disable-line no-unused-vars
@@ -880,6 +930,10 @@ function onDeviceReady() { // eslint-disable-line no-unused-vars
 
     $(document).on("click", "#send_album_btn", function () {
         encryptText2(getX(), "uploadCover");
+    });
+
+    $(document).on("click", "#btn_show_more_album", function () {
+        show_me_more();
     });
 
     $(document).on("click", "#tracks-button", function () {

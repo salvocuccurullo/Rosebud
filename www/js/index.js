@@ -10,6 +10,7 @@
 
 var DEBUG = false,
     icarusi_user = "",
+    rosebud_uid = "",
     storage = window.localStorage,
     kanazzi,
     swipe_left_target = "movies.html", // eslint-disable-line no-unused-vars
@@ -196,7 +197,6 @@ function get_remote_random_cover_2() { // eslint-disable-line no-unused-vars
 
             if (cover !== undefined) {
                 if (DEBUG) { console.debug("Rosebud App============> Fetched remote random cover data: " + cover.name); }
-                console.debug("-------------> " + cover.type);
                 storage.setItem("remote_cover_url", cover.location);
                 storage.setItem("random_cover_spotify_url", cover.spotifyAlbumUrl);
                 if (cover.spotifyAlbumUrl !== "" && cover.spotifyAlbumUrl !== undefined) {
@@ -389,7 +389,10 @@ function submit() { // eslint-disable-line no-unused-vars
                 if (DEBUG) { console.info("========> Rosebud : " + response.payload.username); }
                 if (DEBUG) { console.info("========> Rosebud : " + response.payload.message); }
                 storage.setItem("icarusi_user", response.payload.username);
+                storage.setItem("rosebud_uid", response.payload.rosebud_uid);
                 icarusi_user = response.payload.username;
+                rosebud_uid = response.payload.rosebud_uid;
+                //console.info(rosebud_uid);
                 $("#logged").html('Logged in as <span style="color:green">' + storage.getItem("icarusi_user") + '</span>');
                 $("#popupLogin").popup("close");
                 $("#login_message").html(response.payload.message);
@@ -436,8 +439,9 @@ function get_configurations() { // eslint-disable-line no-unused-vars
 
     var data = {
       "username": icarusi_user,
+      "rosebud_uid": rosebud_uid,
       "method": "POST",
-      "url": "/getconfigs",
+      "url": "/getconfigs2",
       "cB": generic_json_request_new,
       "successCb": set_be_list,
       "failureCb": configsFailure
@@ -477,6 +481,8 @@ function onDeviceReady() {  // eslint-disable-line no-unused-vars
     if (DEBUG) { console.info("Localstorage status END ==============="); }
 
     icarusi_user = storage.getItem("icarusi_user");
+    rosebud_uid = storage.getItem("rosebud_uid");
+
     if (!icarusi_user) {
         if (DEBUG) { console.info("====Username is not set: " + icarusi_user + ". Setting it to blank value."); }
         icarusi_user = "";
@@ -777,7 +783,7 @@ function onDeviceReady() {  // eslint-disable-line no-unused-vars
     listDir(cordova.file.applicationDirectory + "www/images/covers/");
     show_post_login_features();     // User can be already logged in from previous session
 
-
+    /*
     function hash_success(key) {
       if (DEBUG) { console.info("Rosebud App============> PBKDF2 Hasher: " + key); }
     }
@@ -787,6 +793,7 @@ function onDeviceReady() {  // eslint-disable-line no-unused-vars
     }
 
     pbkdf2_hasher({}, hash_success, hash_failure);
+    */
 
     get_remote_covers_stats_legacy();
 

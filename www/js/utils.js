@@ -2,6 +2,8 @@
 /*eslint no-global-assign: "error"*/
 /*globals kanazzi:true*/
 /*exported kanazzi */
+/*globals rosebud_uid:true*/
+/*exported rosebud_uid */
 /*eslint no-console: ["error", { allow: ["info","warn", "error"] }] */
 
 "use strict";
@@ -106,7 +108,7 @@ function encrypt_and_execute(pText, encKeyName, data) { // eslint-disable-line n
         function (crypted) {
             data[encKeyName] = crypted;
             if (data.cB && data.successCb && data.failureCb) {
-                data.cB(data, data.successCb, data.failureCb);
+              data.cB(data, data.successCb, data.failureCb);
             } else {
                 data.cB(data);
             }
@@ -151,6 +153,12 @@ function generic_json_request_new(data, successCb, failureCb) { // eslint-disabl
             if (DEBUG) {
                 console.info("Request to " + data.url + " completed");
                 console.info("Payload received " + JSON.stringify(response));
+            }
+
+            if (response.new_token !== undefined && response.new_token !== "") {
+              console.debug("New Token received!");
+              storage.setItem("rosebud_uid", response.new_token);
+              rosebud_uid = response.new_token;
             }
 
             /*
