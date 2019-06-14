@@ -58,34 +58,41 @@
     width: 20% !important;
 }
 
+/*
+ * BLOCK 2
+ */
+
 #custom-grid-movies .ui-block-a {
-    width: 20% !important;
+    width: 25% !important;
     padding-top: 10px;
 }
 
 #custom-grid-movies .ui-block-b {
-    width: 80% !important;
+    width: 75% !important;
 }
 
+/*
+ * BLOCK 4
+ */
+
 #custom-grid-movies-4 .ui-block-a {
-    width: 20% !important;
+    width: 25% !important;
     padding-top: 10px;
 }
 
 #custom-grid-movies-4 .ui-block-b {
-    width: 20% !important;
+    width: 25% !important;
 }
 
 #custom-grid-movies-4 .ui-block-c {
-    width: 30% !important;
+    width: 25% !important;
     padding-top: 10px;
 		padding-left: 10px;
 }
 
 #custom-grid-movies-4 .ui-block-d {
-    width: 30% !important;
+    width: 25% !important;
 }
-
 
 #custom-grid-spoti .ui-block-a {
     width: 80% !important;

@@ -57,7 +57,7 @@
           <!--<input type="text" data-type="search" name="cover_search" id="cover_search" value="" data-mini="true" placeholder="search (min 4 chars)"></input>-->
           <input type="text" data-type="search" name="cover_search_online" id="cover_search_online" value="" data-mini="true" placeholder="online search (min 3 valid chars)"></input>
           <ul data-role="listview" data-theme="a" data-inset="true" data-filter="false" id="covers-list"></ul>
-          <div id="album_list_footer" style="display:block">
+          <div id="album_list_footer" style="display:none">
             <a href="#" class="ui-btn ui-icon-arrow-d ui-mini ui-btn-icon-right ui-corner-all ui-btn-inline" id="btn_show_more_album">Show more...</a>
           </div>
         </div>
@@ -162,17 +162,21 @@
       <div id="div_comments" style="text-align:center; margin-top:15px; margin-left:10px; margin-right:10px">
         <ul data-role="listview" data-theme="a" data-inset="true" data-filter="false" id="album_comments"></ul>
       </div>
-<!--
-      <label for="vote">Your vote</label>
-      <input type="range" name="vote" id="vote" value="5" min="0" max="10" step="0.5" data-highlight="true" />
 
-      <label for="review">Your review:</label>
-      <textarea name="review" id="review" data-mini="true" maxlength="280" rows="4" placeholder="Review (280 chars)"></textarea>
+      <div id="send_comment" style="text-align:center; margin-top:15px; margin-left:10px; margin-right:10px; display:none">
+        <form id="comment_form" method="POST" enctype="multipart/form-data">
+          <label for="vote">Your vote</label>
+          <input type="range" name="votex" id="votex" value="5" min="0" max="10" step="0.5" data-highlight="true" />
 
-      <input type="text" name="username2" id="username2" />
-      <input type="text" name="kanazzi" id="kanazzi" />
-      <input type="text" name="id" id="id" />
--->
+          <label for="review">Your review:</label>
+          <textarea name="review" id="reviewx" data-mini="true" maxlength="280" rows="4" placeholder="Review (280 chars)"></textarea>
+
+          <input type="hidden" name="username2x" id="username2x" />
+          <input type="hidden" name="idx" id="idx" />
+
+          <a href="#" id="send_comment_btn" data-role="button" data-icon="check" data-inline="true" data-iconpos="right" data-mini="true">Send...</a>
+        </form>
+      </div>
     </div>
   </div> <!-- END COMMENTS PAGE -->
 

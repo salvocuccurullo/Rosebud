@@ -42,9 +42,41 @@ function setCacheInfo() {
         covers_storage_ts = storage.getItem("covers_ts");
 
         if (covers_storage !== "" && covers_storage !== undefined && covers_storage !== null) {
-            $("#cache_info").html("Covers cached " + covers_storage.length + " element(s) --- last update " + fancyDate(covers_storage_ts));
+            $("#cache_info").html("Covers cached " + covers_storage.covers.length + " element(s) --- last update " + fancyDate(covers_storage_ts));
         }
     }
+}
+
+/*
+*   UPLOAD COMMENT
+*/
+
+function sendCommentSuccess(data) { // eslint-disable-line no-unused-vars
+}
+
+function sendCommentFailure(err) { // eslint-disable-line no-unused-vars
+}
+
+function send_comment() { // eslint-disable-line no-unused-vars
+
+    if (DEBUG) { console.info("Send comment called..."); }
+
+    $("#kanazzi").val(kanazzi);
+
+    var username = icarusi_user,
+        the_form = $("#comment_form"),
+        formData = new FormData(comment_form[0]),
+        data = {
+          "username": icarusi_user,
+          "search": search,
+          "method": "POST",
+          "url": "/savecovercomment",
+          "cB": generic_json_request_new,
+          "successCb": sendCommentSuccess,
+          "failureCb": sendCommentFailure
+        };
+    encrypt_and_execute(getX(), "kanazzi", data);
+
 }
 
 function setComments(id) { // eslint-disable-line no-unused-vars
@@ -52,10 +84,10 @@ function setComments(id) { // eslint-disable-line no-unused-vars
   console.info("Retrieving comments of album with id " + id);
 
   if (id !== 0) {
-      var item = $.grep(current_covers, function (element, index) { // eslint-disable-line no-unused-vars
+      var item = $.grep(current_covers.covers, function (element, index) { // eslint-disable-line no-unused-vars
           return (element.id === id);
       }),
-      comments_count,
+      comments_count = 0,
       content,
       header_content,
       upd_human_date;
@@ -72,7 +104,30 @@ function setComments(id) { // eslint-disable-line no-unused-vars
         return false;
       }
 
-    // NEW
+      /*    TO BE RESTORED FOR LET TO REVIEW AN ALBUM FROM COMMENTS PAGE
+      if (item.length > 0) {
+
+        // NEW
+        $(':mobile-pagecontainer').pagecontainer('change', '#comments_page');
+
+        item = item[0];
+        //alert(item.id);
+        $("#idx").val(item.id);
+        $("#username2x").val(icarusi_user);
+
+        if (item.reviews !== undefined && item.reviews !== null && item.reviews[icarusi_user] !== undefined && item.reviews[icarusi_user] !== null) {
+          $("#votex").val(item.reviews[icarusi_user].vote).slider("refresh");
+          $("#reviewx").val(item.reviews[icarusi_user].review);
+        } else {
+          $("#votex").val(5).slider("refresh");
+          $("#reviewx").val("");
+        }
+
+      } else {
+        return false;
+      }
+      */
+
     $(':mobile-pagecontainer').pagecontainer('change', '#comments_page');
 
     if (DEBUG) { console.info("Rosebud App============> " + item.name + " ** " + item.author + " ** "); }
@@ -84,7 +139,6 @@ function setComments(id) { // eslint-disable-line no-unused-vars
 
     $('#album_comments').empty();
 
-    comments_count = 0;
     $.each(item.reviews, function (index, value) { // eslint-disable-line no-unused-vars
 
         upd_human_date = fancyDate(new Date(Date.parse(value.updated)));
@@ -93,6 +147,7 @@ function setComments(id) { // eslint-disable-line no-unused-vars
         if (value.review !== "") {
             comments_count += 1;
         }
+
         content += '<b>' + value.username + '</b> <span style="color:red; float:right">' + value.vote + '</span>';
         content += '<br/><p style="white-space:normal; font-style:italic; font-size:12px">' + value.review + '</p>';
         content += '<span style="color:#C60419; font-style:italic; font-size:10px; float:right">' + upd_human_date + '</span>';
@@ -101,7 +156,7 @@ function setComments(id) { // eslint-disable-line no-unused-vars
     });
 
     header_content = '<li data-role="list-divider" data-theme="b" style="text-align:center">';
-    header_content += '<span style="color:yellow">' + comments_count + ' comment(s)...</span></li>';
+    header_content += '<span style="color:yellow">' + comments_count + ' comment(s) / ' + Array(item.reviews).length + ' vote(s)</span></li>';
     $('#album_comments').prepend(header_content);
     $('#album_comments').listview('refresh');
 
@@ -119,7 +174,7 @@ function setCovers(covers) {
     }
 
     var covers_header = '<li data-role="list-divider" data-theme="b" style="text-align:center">';
-    covers_header += 'Found/Latest <span style="color:yellow">' + covers.length + '</span> covers';
+    covers_header += 'Found/Latest <span style="color:yellow">' + covers.length + '</span> of <span style="color:yellow">' + current_covers.total + '</span> covers';
     covers_header += '</li>';
     $('#covers-list').append(covers_header);
 
@@ -132,7 +187,8 @@ function setCovers(covers) {
         var cover_location = '',
             cover_content,
             icon_name,
-            upd_human_date;
+            upd_human_date,
+            comments_count = 0;
 
         if (value.spotifyUrl !== "") {
           icon_name = "spoti";
@@ -161,9 +217,9 @@ function setCovers(covers) {
         }
 
         if (value.reviews !== null) {
-            cover_content += '<button class="ui-btn ui-icon-comment ui-btn-icon-notext ui-corner-all ui-mini ui-btn-inline" id="btn_edit_cover" style="float:right" onclick="setComments(\'' + value.id +  '\')"></button>';
+          comments_count = Object.keys(value.reviews).length;
+          cover_content += '<button class="ui-btn ui-corner-all ui-mini ui-btn-inline" style="float:right; color:#8B0000; border-radius: 50%" id="btn_edit_cover" onclick="setComments(\'' + value.id +  '\')">' + comments_count + '</button>';
         }
-
         //cover_content += '<button class="ui-btn ui-icon-camera ui-btn-icon-notext ui-corner-all ui-mini ui-btn-inline" id="btn_show_cover" style="float:right" onclick="poster(\'' + cover_location + '\')"></button>';
 
         cover_content += '<div class="clickable" album_id="' + value.id + '" cover_loc="' + cover_location + '">' + value.name + '<br/>';
@@ -247,6 +303,18 @@ function get_song() { // eslint-disable-line no-unused-vars
 
 function sort_covers(s_type) {
 
+    var covers;
+
+    if (current_covers === undefined || current_covers === "") {
+      current_covers = JSON.parse(storage.getItem("covers_storage"));
+    }
+
+    if (current_covers === undefined || current_covers === "") {
+      return false;
+    }
+
+    //console.info(current_covers);
+
     if (DEBUG) { console.info("Sort type current: " + sort_type + " --- Sort type passe: " + s_type); }
 
     if (sort_type !== s_type) {
@@ -259,34 +327,29 @@ function sort_covers(s_type) {
 
     sort_type = s_type;
     $("#cover_search").val("");
-    var covers = storage.getItem("covers_storage");     // GET FROM LOCALSTORAGE
 
-    if (covers !== "" && covers !== undefined && covers !== null) {
-        covers = JSON.parse(covers);
-        current_covers = covers;
-        if (sort_type === "avg_vote") {
-            covers.sort(function (a, b) {
-                if (parseFloat(a[sort_type]) > parseFloat(b[sort_type])) {
-                    return (sort_order * -1);
-                }
-                if (parseFloat(a[sort_type]) < parseFloat(b[sort_type])) {
-                    return sort_order;
-                }
-                return 0;
-            });
-        } else {
-            covers.sort(function (a, b) {
-                if (a[sort_type] > b[sort_type]) {
-                    return (sort_order * -1);
-                }
-                if (a[sort_type] < b[sort_type]) {
-                    return sort_order;
-                }
-                return 0;
-            });
-        }
-        setCovers(covers);
+    if (sort_type === "avg_vote") {
+        current_covers.covers.sort(function (a, b) {
+            if (parseFloat(a[sort_type]) > parseFloat(b[sort_type])) {
+                return (sort_order * -1);
+            }
+            if (parseFloat(a[sort_type]) < parseFloat(b[sort_type])) {
+                return sort_order;
+            }
+            return 0;
+        });
+    } else {
+        current_covers.covers.sort(function (a, b) {
+            if (a[sort_type] > b[sort_type]) {
+                return (sort_order * -1);
+            }
+            if (a[sort_type] < b[sort_type]) {
+                return sort_order;
+            }
+            return 0;
+        });
     }
+    setCovers(current_covers.covers);
 }
 
 /*
@@ -295,10 +358,11 @@ function sort_covers(s_type) {
 
 function getCoversSuccess(data) { // eslint-disable-line no-unused-vars
     var response = JSON.parse(data);
-    storage.setItem("covers_storage", JSON.stringify(response.payload.covers));      // SAVE ON LOCALSTORAGE
+    storage.setItem("covers_storage", JSON.stringify(response.payload));      // SAVE ON LOCALSTORAGE
     storage.setItem("covers_ts", new Date().getTime());
     setCacheInfo();
-    current_covers = response.payload.covers;
+    //current_covers = response.payload.covers;
+    current_covers = response.payload;
 
     if (response.payload.hasMore) {
       $("#album_list_footer").show();
@@ -381,7 +445,7 @@ function edit_cover(id) { // eslint-disable-line no-unused-vars
     }
 
     if (id !== 0) {
-        var result = $.grep(current_covers, function (element, index) { // eslint-disable-line no-unused-vars
+        var result = $.grep(current_covers.covers, function (element, index) { // eslint-disable-line no-unused-vars
             return (element.id === id);
         });
         console.info(JSON.stringify(result));
@@ -805,7 +869,10 @@ function onDeviceReady() { // eslint-disable-line no-unused-vars
     } else {
 
         encryptText2(getX(), "get_song");
+        get_covers(15);
 
+        /* Disabling cache in case of connection */
+        /*
         if (old_ts !== "" && old_ts !== null && old_ts !== undefined) {
 
             new_ts = new Date().getTime();
@@ -821,6 +888,7 @@ function onDeviceReady() { // eslint-disable-line no-unused-vars
         } else {
             get_covers(15);
         }
+        */
     }
 
     /*
@@ -853,7 +921,7 @@ function onDeviceReady() { // eslint-disable-line no-unused-vars
 
     $("#cover_search").bind("input", function () {
         var search = $("#cover_search").val(),
-            result = current_covers;
+            result = current_covers.covers;
 
         if (search.length === 0) {
             sort_order = -1;
@@ -906,6 +974,7 @@ function onDeviceReady() { // eslint-disable-line no-unused-vars
 
         } else {
 
+          current_page = 1;
           $("#album_list_footer").hide();   // Hide more button TO BE FIXED
 
           var data = {
@@ -930,6 +999,10 @@ function onDeviceReady() { // eslint-disable-line no-unused-vars
 
     $(document).on("click", "#send_album_btn", function () {
         encryptText2(getX(), "uploadCover");
+    });
+
+    $(document).on("click", "#send_comment_btn", function () {
+        encryptText2(getX(), "send_comment");
     });
 
     $(document).on("click", "#btn_show_more_album", function () {

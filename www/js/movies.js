@@ -108,6 +108,7 @@ function resetPopupElements() {
     $('#users_votes').empty();
     $("#top_title").html('Add a new movie/serie...');
     $("#btn_link").show();
+    $('#miniseries').prop("checked", false).flipswitch('refresh');
 }
 
 
@@ -209,7 +210,8 @@ function setTvShows(tvshows, votes_user) {
                 season = '',
                 users_votes_keys,
                 comment = '',
-                link = '';
+                link = '',
+                season_label = '';
 /*
                 li {
                   background: url(images/bullet.gif) no-repeat left top;
@@ -257,8 +259,14 @@ function setTvShows(tvshows, votes_user) {
             content_nw += '</li>';
             // END NW SECTION
 
+            if (value.tvshow_type === "serie" && value.miniseries) {
+              season_label = "Miniseries";
+            } else if (value.tvshow_type === "serie") {
+              season_label = "Season " + value.serie_season;
+            }
+
             if (value.tvshow_type === "serie") {
-                content += '<br/><span style="text-align:right; font-size:11px;">Season ' + value.serie_season + '</span>';
+                content += '<br/><span style="text-align:right; font-size:11px;">' + season_label + '</span>';
             }
             content += '<br/><span style="text-align:right; font-size:10px;">Added on ' + value.datetime + ' by </span>';
             content += '<span style="color:#000099; font-style:italic; font-size:10px;">' +  value.username + '</span>';
@@ -287,7 +295,7 @@ function setTvShows(tvshows, votes_user) {
 
             // COMMENT ICON
             if (comment_count > 0) {
-                content += '<button class="ui-btn  ui-mini ui-corner-all ui-btn-inline" data-theme="e" onclick="setComments(\'' + value.id + '\',\'c\')">' + comment_count + '</button>';
+                content += '<button class="ui-btn  ui-mini ui-corner-all ui-btn-inline" data-theme="e" style="color:#8B0000; border-radius: 50%" onclick="setComments(\'' + value.id + '\',\'c\')">' + comment_count + '</button>';
             }
 
             content += '</span><br/>';
@@ -944,6 +952,7 @@ function setPopupData(id, src) { // eslint-disable-line no-unused-vars
     $("#season").val(item.serie_season);
     $("#comment").val(comment);
     $("#curr_link").val(item.link);
+    $('#miniseries').prop("checked", item.miniseries).flipswitch('refresh');
 
     if (item.link === "") {
         $("#btn_link").hide();

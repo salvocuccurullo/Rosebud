@@ -148,16 +148,23 @@
   </div> <!-- END TVSHOW PAGE -->
 
   <div data-role="page" id="detail_page">
+
+    <a href="#movies_page" style="text-decoration:none;">
+      <img src="images/icons/back-icon.png" style="width:36px; height:36px; padding: 10px" />
+    </a>
+    <span id="top_title" style="font-weight: bold; position:absolute; margin-top:20px; margin-left:35px; color:#8B0000; font-style:italic"></span>
+
     <!--
       <a href="#movies_page" class="ui-btn ui-corner-all ui-shadow ui-btn-inline ui-icon-home ui-btn-icon-center ui-btn-a" data-mini="true" data-direction="reverse" data-transition="slide" style="float:center">Back</a>
-      -->
+
     <div class="ui-corner-all custom-corners">
       <div class="ui-bar ui-bar-a" style="height:40px">
         <a href="#" data-rel="back" data-role="button" data-theme="a" data-icon="arrow-l" data-mini="true" data-iconpos="notext" class="ui-btn-left">Close</a>
         <div id="top_title" style="margin-left:50px; margin-top:10px"></div>
       </div>
+    -->
       <div class="ui-body ui-body-a" id="movie-page">
-        <div style="padding:10px 20px;">
+        <div style="padding:10px 10px;">
           <form id="movie_form" method="POST" enctype="multipart/form-data">
 
             <div class="ui-grid-a" id="custom-grid-movies">
@@ -188,7 +195,7 @@
             <input type="hidden" name="curr_pic" id="curr_pic" value="" />
             <input type="hidden" name="curr_link" id="curr_link" value="" />
 
-            <div class="ui-grid-a" id="custom-grid-movies">
+            <div class="ui-grid-a" id="custom-grid-movies-4">
               <div class="ui-block-a">
                 <label for="media">Media</label>
               </div>
@@ -197,13 +204,10 @@
                   <option value="">&mdash;</option>
                 </select>
               </div>
-            </div>
-
-            <div class="ui-grid-a" id="custom-grid-movies">
-              <div class="ui-block-a">
+              <div class="ui-block-c">
                 <label for="tvshow_type">Type</label>
               </div>
-              <div class="ui-block-b">
+              <div class="ui-block-d">
                 <select id="tvshow_type" name="tvshow_type" data-type="horizontal" data-mini="true">
                   <option value="">&mdash;</option>
                   <option value="movie">Movie</option>
@@ -220,16 +224,29 @@
                 <input type="number" pattern="[0-9]*" name="serie_season" id="serie_season" data-mini="true" value="1" />
               </div>
               <div class="ui-block-c">
-                <label for="serie_season">Clone Serie</label>
+                <label for="clone_season">Clones</label>
               </div>
               <div class="ui-block-d">
                 <input type="number" pattern="[0-9]*" name="clone_season" id="clone_season" data-mini="true" value="0" placeholder="Max 10" />
               </div>
             </div>
 
-            <div class="ui-field-contain">
-              <label for="vote">Vote</label>
-              <input type="range" name="vote" id="vote" value="5" min="0" max="10" step="0.5" data-highlight="true" />
+            <div class="ui-grid-a" id="custom-grid-movies">
+              <div class="ui-block-a">
+                <label for="miniseries">Miniseries</label>
+              </div>
+              <div class="ui-block-b">
+                <input type="checkbox" data-role="flipswitch" name="miniseries" id="miniseries" data-on-text="Yes" data-off-text="No" data-mini="true"/>
+              </div>
+            </div>
+
+            <div class="ui-grid-a" id="custom-grid-movies">
+              <div class="ui-block-a">
+                <label for="vote">Vote</label>
+              </div>
+              <div class="ui-block-b">
+                <input type="range" name="vote" id="vote" value="5" min="0" max="10" step="0.5" data-highlight="true" />
+              </div>
             </div>
 
             <div class="ui-grid-a" id="custom-grid-movies">
