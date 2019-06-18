@@ -156,7 +156,7 @@ function setComments(id) { // eslint-disable-line no-unused-vars
     });
 
     header_content = '<li data-role="list-divider" data-theme="b" style="text-align:center">';
-    header_content += '<span style="color:yellow">' + comments_count + ' comment(s) / ' + Array(item.reviews).length + ' vote(s)</span></li>';
+    header_content += '<span style="color:yellow">' + comments_count + ' comment(s) / ' + Object.keys(item.reviews).length + ' vote(s)</span></li>';
     $('#album_comments').prepend(header_content);
     $('#album_comments').listview('refresh');
 

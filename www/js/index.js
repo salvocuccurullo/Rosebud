@@ -433,6 +433,8 @@ function configsFailure(err) {
 
 function get_configurations() { // eslint-disable-line no-unused-vars
 
+    var app_version = storage.getItem("app_version");
+
     if (!icarusi_user) {
         return false;
     }
@@ -440,6 +442,7 @@ function get_configurations() { // eslint-disable-line no-unused-vars
     var data = {
       "username": icarusi_user,
       "rosebud_uid": rosebud_uid,
+      "app_version": app_version,
       "method": "POST",
       "url": "/getconfigs2",
       "cB": generic_json_request_new,

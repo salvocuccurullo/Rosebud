@@ -109,6 +109,7 @@ function resetPopupElements() {
     $("#top_title").html('Add a new movie/serie...');
     $("#btn_link").show();
     $('#miniseries').prop("checked", false).flipswitch('refresh');
+    $('#miniseries').flipswitch('disable');
 }
 
 
@@ -958,6 +959,10 @@ function setPopupData(id, src) { // eslint-disable-line no-unused-vars
         $("#btn_link").hide();
     }
 
+    if (item.tvshow_type == "serie") {
+      $('#miniseries').flipswitch('enable');
+    }
+
     if (icarusi_user === "" || icarusi_user === undefined || icarusi_user === null) {
         $("#send_movie_btn").addClass("ui-btn ui-state-disabled");
         $("#delete_movie_btn").addClass("ui-btn ui-state-disabled");
@@ -1265,9 +1270,14 @@ function onDeviceReady() { // eslint-disable-line no-unused-vars
         if ( $('#tvshow_type').val() === "serie" ) {
           $('#clone_season').textinput('enable');
           $('#serie_season').textinput('enable');
+          $('#miniseries').flipswitch('enable');
         } else {
+          $('#serie_season').val("1");
+          $('#clone_season').val("0");
+          $('#miniseries').prop("checked", false).flipswitch('refresh');
           $('#serie_season').textinput('disable');
           $('#clone_season').textinput('disable');
+          $('#miniseries').flipswitch('disable');
         }
     });
     /*

@@ -51,21 +51,14 @@
             <img src="images/loading_spinner.gif" alt="Photo portrait" id="poster_pic">
           </div>
 
-          <!-- <div data-role="popup" id="popupMovie" data-theme="a" data-overlay-theme="b" class="ui-corner-all" data-dismissible="false"> -->
+          <a href="#" class="ui-btn ui-btn-b ui-icon-clock ui-btn-icon-notext ui-mini ui-btn-icon-right ui-corner-all ui-btn-inline" id="btn_d_sort" ></a>
+          <a href="#" class="ui-btn ui-btn-b ui-icon-tag ui-btn-icon-notext ui-mini ui-btn-icon-right ui-corner-all ui-btn-inline" id="btn_t_sort" style="float:left"></a>
+          <a href="#" class="ui-btn ui-btn-b ui-icon-star ui-btn-icon-notext ui-mini ui-btn-icon-right ui-corner-all ui-btn-inline" id="btn_v_sort" style="float:left"></a>
+          <a href="#" class="ui-btn ui-btn-b ui-icon-video ui-btn-icon-notext ui-mini ui-btn-icon-right ui-corner-all ui-btn-inline" id="btn_m_sort" style="float:left"></a>
 
-          <!-- </div> -->
-          <!-- end popup new movie -->
+          <a href="#" class="ui-btn ui-btn-b ui-icon-refresh ui-btn-icon-notext ui-mini ui-btn-icon-right ui-corner-all ui-btn-inline" id="btn_d_reload" style="float:right"></a>
+          <a href="javascript:newMoviePage()" id="new_movie_btn" data-rel="popup" data-position-to="window" class="ui-btn ui-btn-b ui-icon-plus ui-btn-icon-notext ui-corner-all ui-btn-inline" style="float:right"></a>
 
-          <a href="javascript:newMoviePage()" id="new_movie_btn" data-rel="popup" data-position-to="window" class="ui-btn ui-icon-plus ui-btn-icon-notext ui-corner-all ui-btn-inline"></a>
-          <a href="#" class="ui-btn ui-icon-refresh ui-btn-icon-notext ui-mini ui-btn-icon-right ui-corner-all ui-btn-inline" id="btn_d_reload"></a>
-
-          <span style="float:right" id="sort_span">
-            Sort
-            <a href="#" class="ui-btn ui-icon-clock ui-btn-icon-notext ui-mini ui-btn-icon-right ui-corner-all ui-btn-inline" id="btn_d_sort"></a>
-            <a href="#" class="ui-btn ui-icon-tag ui-btn-icon-notext ui-mini ui-btn-icon-right ui-corner-all ui-btn-inline" id="btn_t_sort"></a>
-            <a href="#" class="ui-btn ui-icon-star ui-btn-icon-notext ui-mini ui-btn-icon-right ui-corner-all ui-btn-inline" id="btn_v_sort"></a>
-            <a href="#" class="ui-btn ui-icon-video ui-btn-icon-notext ui-mini ui-btn-icon-right ui-corner-all ui-btn-inline" id="btn_m_sort"></a>
-          </span>
           <div data-role="tabs" id="movie_type_tabs" name="movie_type_tabs">
             <div data-role="navbar">
               <ul>
@@ -152,7 +145,7 @@
     <a href="#movies_page" style="text-decoration:none;">
       <img src="images/icons/back-icon.png" style="width:36px; height:36px; padding: 10px" />
     </a>
-    <span id="top_title" style="font-weight: bold; position:absolute; margin-top:20px; margin-left:35px; color:#8B0000; font-style:italic"></span>
+    <span id="top_title" style="font-weight: bold; position:absolute; margin-top:20px; margin-left:45px; color:#8B0000; font-style:italic"></span>
 
     <!--
       <a href="#movies_page" class="ui-btn ui-corner-all ui-shadow ui-btn-inline ui-icon-home ui-btn-icon-center ui-btn-a" data-mini="true" data-direction="reverse" data-transition="slide" style="float:center">Back</a>
