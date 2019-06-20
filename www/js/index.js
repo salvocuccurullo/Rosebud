@@ -533,6 +533,7 @@ function onDeviceReady() {  // eslint-disable-line no-unused-vars
      * IF SUCCESS: IT WILL BE SAVED ON BOTH LOCALSTORAGE AND SERVER SIDE
      */
 
+        // FIREBASE DISABLED
     if (icarusi_user !== "") {
         window.FirebasePlugin.getToken(function (token) {
             // save this server-side and use it to push notifications to this device
@@ -555,21 +556,25 @@ function onDeviceReady() {  // eslint-disable-line no-unused-vars
         });
     }
 
+
     /*
      * FIREBASE MESSAGING ON NOTIFICATION EVENT MANAGEMENT
      * CURRENTLY JUST PRINT SOMETHING ON CONSOLE
      */
 
+         // FIREBASE DISABLED
     window.FirebasePlugin.onNotificationOpen(function (notification) {
         console.info("======= FCM NOTIFICATION OPEN EVENT ======> " + JSON.stringify(notification));
     }, function (error) {
         console.error("======= FCM NOTIFICATION OPEN EVENT ERROR ======> " + error);
     });
 
+
     /*
      * FIREBASE MESSAGING: IF THE "ENABLE PUSH NOTIFICATION" IS ON THEN SUBSCRIBE TO FCM TOPIC "iCarusiNotification"
     */
 
+         // FIREBASE DISABLED
     if (enable_notif !== "" && enable_notif !== undefined && enable_notif) {
         if (DEBUG) { console.info("Rosebud App============> Enabling Push notification : " + enable_notif); }
         window.FirebasePlugin.subscribe("iCarusiNotifications");
@@ -678,6 +683,7 @@ function onDeviceReady() {  // eslint-disable-line no-unused-vars
     $('#enable-notifications').on('change', function () {
         var val = $('#enable-notifications').prop("checked");
         if (DEBUG) { console.info("Rosebud App============> Flip Enable Notifications : " + val); }
+             // FIREBASE DISABLED
         if (val) {
             window.FirebasePlugin.subscribe("iCarusiNotifications");
         } else {

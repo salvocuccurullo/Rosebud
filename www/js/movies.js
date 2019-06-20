@@ -225,7 +225,7 @@ function setTvShows(tvshows, votes_user) {
 
             jsonTvShows[value.id] = value;
 
-            content += '<span style="font-weight:bold" class="clickable" poster="' + value.poster + '">' + value.title + '</span>';
+            content += '<span style="font-weight:bold" class="clickable" poster="' + value.poster + '" movie_id="' + value.id + '">' + value.title + '</span>';
 
             if (value.avg_vote === 0) {
                 content += '<span style="color:#C60419; float:right"> [ N/A ]</span>';
@@ -529,53 +529,6 @@ function getTvShows(use_cache) {
     }
 }
 
-/*
-function getTvShowsGo() { // eslint-disable-line no-unused-vars
-
-    loading(true, 'Loading movies...');
-
-    $("#movies-list").empty();
-    $("#series-list").empty();
-    $("#movies-list_nw").empty();
-    $("#top-list-movies").empty();
-    $("#top-list-voters").empty();
-    $("#ct-movies").empty();
-
-    //if (DEBUG) console.info("Rosebud App============> ----------------> " + kanazzi + " <---------------");
-
-    $.ajax({
-        url: BE_URL + "/getTvShows",
-        method: "POST",
-        dataType: "json",
-        data: {
-            username: icarusi_user,
-            kanazzi: kanazzi,
-        },
-    })
-        .done(function (data) {
-
-            var response = JSON.parse(data.payload),
-                tvshows = response.tvshows,
-                votes_user = response.votes_user;
-
-            storage.setItem("tv_shows", JSON.stringify(tvshows));       // SAVE ON LOCALSTORAGE
-            storage.setItem("tv_shows_count_ts", new Date().getTime());
-            storage.setItem("votes_user", JSON.stringify(votes_user));
-
-            setCacheInfo();
-
-            setTvShows(tvshows, votes_user);
-        })
-        .fail(function (err) {
-            if (DEBUG) { console.error("error " + err.responseText); }
-            $("#movies_content").html('<br/><span style="color:red; text-align:center">Error during song loading...<br/>Tiricci Pippo !!</span>');
-        })
-        .always(function () {
-            loading(false, '');
-            //if (DEBUG) console.info("Rosebud App============> ajax call completed");
-        });
-}
-*/
 
 /***
 CT MOVIES
@@ -1027,7 +980,25 @@ function setComments(id, src) { // eslint-disable-line no-unused-vars
     var item = jsonTvShows[id],
         comments_count,
         content,
-        header_content;
+        header_content,
+        media_icon = "images/icons/" + item.media + "-icon.png";
+
+    console.log("==============> " + item.media)
+    console.log("==============> " + media_icon)
+
+    if (src === 'm') {
+
+      $("#media_img").attr("src", media_icon);
+
+      if (item.avg_vote === 0) {
+          content = '<span style="font-weight:bold">Rosebud Average vote: </span> <span style="color:#C60419;"> [ N/A ]</span>';
+      } else {
+          content = '<span style="font-weight:bold">Rosebud Average vote: </span> <span style="color:#C60419;"> [ ' + item.avg_vote + ' ]</span>';
+      }
+      content += '<img style="height:75%; margin: 0 auto; margin-top:10px" src="' + base_url_poster + item.poster + '"/>';
+      $("#movie_data").html(content);
+      content = '';
+    }
 
     if (DEBUG) { console.info("Rosebud App============> " + item.title + " ** " + item.media + " ** " + item.username + " ** " + item.avg_vote); }
     currentId = id;
@@ -1057,7 +1028,7 @@ function setComments(id, src) { // eslint-disable-line no-unused-vars
     });
 
     header_content = '<li data-role="list-divider" data-theme="b" style="text-align:center">';
-    header_content += '<span style="color:yellow">' + comments_count + ' comment(s)</span></li>';
+    header_content += '<span style="color:yellow">' + comments_count + ' review(s) / ' + Object.keys(item.u_v_dict).length + ' vote(s)</span></li>';
     $('#movie_comments').prepend(header_content);
     $('#movie_comments').listview('refresh');
 }
@@ -1401,6 +1372,12 @@ function onDeviceReady() { // eslint-disable-line no-unused-vars
     });
 
     $(document).on("click", ".clickable", function () {
+      var movie_id = $(this).attr('movie_id');
+      setComments(movie_id, 'm');
+    });
+
+    /*
+    $(document).on("click", ".clickable", function () {
       var curr_poster = $(this).attr('poster');
       if (curr_poster !== "" && curr_poster !== undefined) {
         poster(curr_poster);
@@ -1409,7 +1386,7 @@ function onDeviceReady() { // eslint-disable-line no-unused-vars
       }
 
     });
-
+    */
     /*
     window.onscroll = function() {
 
