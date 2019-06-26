@@ -60,6 +60,7 @@
           <a href="javascript:newMoviePage()" id="new_movie_btn" data-rel="popup" data-position-to="window" class="ui-btn ui-btn-b ui-icon-plus ui-btn-icon-notext ui-corner-all ui-btn-inline" style="float:right"></a>
 
           <div data-role="tabs" id="movie_type_tabs" name="movie_type_tabs">
+
             <div data-role="navbar">
               <ul>
                 <li><a href="#movies_content" class="ui-btn-active ui-state-persist" id="movies_link">Loading...</a></li>
@@ -143,7 +144,7 @@
   <div data-role="page" id="detail_page">
 
     <a href="#movies_page" style="text-decoration:none;">
-      <img src="images/icons/back-icon.png" style="width:36px; height:36px; padding: 10px" />
+      <img src="images/icons/back-icon.png" style="width:24px; height:24px; padding: 10px" />
     </a>
     <span id="top_title" style="font-weight: bold; position:absolute; margin-top:20px; margin-left:45px; color:#8B0000; font-style:italic"></span>
 
@@ -279,7 +280,7 @@
               <textarea name="comment" id="comment" data-mini="true" maxlength="280" rows="4" placeholder="Comment (280 chars)"></textarea>
 
               <div data-role="collapsible" id="the_votes_d" data-theme="a" data-content-theme="a" data-collapsed="true">
-                <h4>How iCarusi voted...</h4>
+                <h4>Votes &amp; Reviews</h4>
                 <ul data-role="listview" data-theme="a" data-inset="true" data-filter="false" id="users_votes"></ul>
               </div>
             </div>
@@ -298,13 +299,15 @@
     <!-- COMMENTS PAGE -->
 
     <a href="#movies_page" style="text-decoration:none;">
-      <img src="images/icons/back-icon.png" style="width:36px; height:36px; padding: 10px" />
+      <img src="images/icons/back-icon.png" style="width:36px; height:36px; padding:10px" />
+      <img src="images/loading.gif" id="media_img" name="media_img" style="width:36px; height:36px; padding:10px; float:right" />
     </a>
-    <span id="top_title_comments" style="font-weight: bold; position:absolute; margin-top:20px; margin-left:45px; color:#8B0000; font-style:italic"></span>
+    <span id="top_title_comments" style="font-weight: bold; position:absolute; margin-top:20px; margin-left:15px; margin-right:15px; color:#8B0000; font-style:italic"></span>
 
     <div class="ui-corner-all custom-corners">
-      <div id="div_comments" style="text-align:center;margin-top:15px; margin-left:10px; margin-right:10px">
-        <ul data-role="listview" data-theme="a" data-inset="true" data-filter="false" id="movie_comments"></ul>
+      <div id="div_comments" style="text-align:center;margin-top:5px; margin-left:10px; margin-right:10px">
+        <div id="movie_data" name="movie_data" style="margin-bottom:20px"></div>
+        <ul data-role="listview" data-theme="a" data-inset="true" data-filter="false" id="movie_comments" style="margin-bottom:20px"></ul>
       </div>
 
     </div>

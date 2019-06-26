@@ -135,3 +135,9 @@
 	 background-color: #ffffff;
 }
 */
+
+.ui-icon-myicon:after {
+    background-image: url("../images/icons/spoti-icon.png");
+    /* Make your icon fit */
+    background-size: 18px 18px;
+}

@@ -67,6 +67,11 @@
           <ul data-role="listview" data-theme="a" data-inset="true" data-filter="false" id="lyrics-list"></ul>
         </div>
 
+        <div data-role="panel" data-position="left" data-display="overlay" id="tracks_list_panel" data-theme="a" class="ui-corner-all" data-swipe-close="false" style="font-size:11px; min-width: 280px;">
+          <!--<div id="movie-table-custom"></div>-->
+          <ol data-role="listview" data-theme="a" data-inset="true" data-filter="false" id="tracks-list" style="min-width: 250px;"></ol>
+        </div>
+
       </div>
     </div>
 
@@ -84,11 +89,11 @@
 
   <div data-role="page" id="cover_page" name="cover_page" style="min-height: auto !important;">
     <!-- COVER PAGE -->
-    <a href="#song_page" style="text-decoration:none;">
-      <img src="images/icons/back-icon.png" style="width:36px; height:36px; padding: 10px" />
+    <a href="#comments_page" style="text-decoration:none;">
+      <img src="images/icons/back-icon.png" style="width:24px; height:24px; padding: 10px" />
     </a>
     <span style="font-weight: bold; position:absolute; margin-top:20px; margin-left:100px;">New/Edit Cover</span>
-    <img src="images/icons/cd-off.png" id="tracks-button" name="tracks-button" style="width:36px; height:36px; float:right; padding: 10px 10px" />
+    <!--<img src="images/icons/cd-off.png" id="tracks-button" name="tracks-button" style="width:36px; height:36px; float:right; padding: 10px 10px" />-->
 
     <div class="ui-corner-all custom-corners" style="min-height:600px; text-align:center">
       <div class="ui-body ui-body-a" id="switch-page">
@@ -141,28 +146,27 @@
         </div>
 
         <ul data-role="listview" data-theme="a" data-inset="true" data-filter="false" id="search-list" style="min-width: 250px;"></ul>
-
-        <div data-role="panel" data-position="left" data-display="overlay" id="tracks_list_panel" data-theme="a" class="ui-corner-all" data-swipe-close="false" style="font-size:11px; min-width: 280px;">
-          <!--<div id="movie-table-custom"></div>-->
-          <ol data-role="listview" data-theme="a" data-inset="true" data-filter="false" id="tracks-list" style="min-width: 250px;"></ol>
-        </div>
       </div>
     </div>
   </div> <!-- END COVER PAGE -->
 
-  <div data-role="page" id="comments_page">
-    <!-- COMMENTS PAGE -->
-
+  <div data-role="page" id="comments_page">     <!-- ALBUM READONLY PAGE -->
     <a href="#song_page" style="text-decoration:none;">
-      <img src="images/icons/back-icon.png" style="width:36px; height:36px; padding: 10px" />
+      <img src="images/icons/back-icon.png" style="width:24px; height:24px; padding: 10px" />
     </a>
-    <span id="top_title_comments" style="font-weight: bold; position:absolute; margin-top:20px; margin-left:75px; color:#8B0000; font-style:italic"></span>
+
+    <img src="images/icons/spoti-icon.png" id="spoti_img" name="spoti_img" style="width:24px; height:24px; padding:10px; float:right" />
+    <!--<img src="images/icons/cd-off.png" id="tracks-button-2" name="tracks-button-2" style="width:24px; height:24px; float:right; padding: 10px 10px" />-->
+    <img src="images/icons/edit-icon.png" id="edit-button" name="edit-button" style="width:24px; height:24px; float:right; padding: 10px 10px" />
 
     <div class="ui-corner-all custom-corners">
+      <div id="top_title_comments" style="font-weight: bold; text-align:center margin-top:20px; margin-left:25px; color:#8B0000; font-style:italic"></div>
       <div id="div_comments" style="text-align:center; margin-top:15px; margin-left:10px; margin-right:10px">
+        <div id="album_data" name="album_data" style="margin-bottom:20px"></div>
         <ul data-role="listview" data-theme="a" data-inset="true" data-filter="false" id="album_comments"></ul>
       </div>
 
+      <!--
       <div id="send_comment" style="text-align:center; margin-top:15px; margin-left:10px; margin-right:10px; display:none">
         <form id="comment_form" method="POST" enctype="multipart/form-data">
           <label for="vote">Your vote</label>
@@ -177,8 +181,9 @@
           <a href="#" id="send_comment_btn" data-role="button" data-icon="check" data-inline="true" data-iconpos="right" data-mini="true">Send...</a>
         </form>
       </div>
+      -->
     </div>
-  </div> <!-- END COMMENTS PAGE -->
+  </div> <!-- END ALBUM READONLY PAGE -->
 
 </body>
 
