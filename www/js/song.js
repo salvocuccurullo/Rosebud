@@ -133,7 +133,7 @@ function setComments(id) { // eslint-disable-line no-unused-vars
     if (DEBUG) { console.info("Rosebud App============> " + item.name + " ** " + item.author + " ** "); }
 
     if (item.type === "local") {
-      content = '<img style="padding:10px; width:400px" id="album_p" src="' + device_app_path + "www/images/covers/" + item.location + '" onerror="set_fallback_image()"/>';
+      content = '<img style="padding:10px; width:85%" id="album_p" src="' + device_app_path + "www/images/covers/" + item.location + '" onerror="set_fallback_image()"/>';
     } else {
       content = '<img style="padding:10px; width:85%" id="album_p" src="' + item.location + '" onerror="set_fallback_image()"/>';
     }
@@ -144,7 +144,7 @@ function setComments(id) { // eslint-disable-line no-unused-vars
       $("#spoti_img").attr("src", 'images/icons/spoti-icon.png');
     } else {
       $("#spoti_img").attr("onclick", "");
-      $("#spoti_img").attr("src", "play_song('" + item.spotifyAlbumUrl + "')");
+      $("#spoti_img").attr("src", "images/icons/spoti-icon-gray.png");
     }
 
     $("#edit-button").attr("onclick", "edit_cover('" + item.id + "')");
@@ -247,8 +247,10 @@ function setCovers(covers) {
         }
         */
 
-        cover_content += '<button style="float:right; border: none; padding:0; background:none" onclick="tracks_me(\'' + value.spotifyUrl + '\')">';
-        cover_content += '<img src="images/icons/cd-on.png" style="width:24px; height:24px"/></button>';
+        if (value.spotifyUrl !== "" && value.spotifyUrl !== undefined) {
+          cover_content += '<button style="float:right; border: none; padding:0; background:none" onclick="tracks_me(\'' + value.spotifyUrl + '\')">';
+          cover_content += '<img src="images/icons/cd-on.png" style="width:24px; height:24px; margin-top:5px"/></button>';
+        }
 
         //cover_content += '<button class="ui-btn ui-icon-camera ui-btn-icon-notext ui-corner-all ui-mini ui-btn-inline" id="btn_show_cover" style="float:right" onclick="poster(\'' + cover_location + '\')"></button>';
 
