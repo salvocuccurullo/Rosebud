@@ -92,9 +92,10 @@ function resetPopupElements() {
     $('#tvshow_type').selectmenu('refresh', true);
     $("#the_votes_d").hide();
     $("#vote").val(5).slider("refresh");
-    $("#send_movie_btn").text("Send...");
-    $("#delete_movie_btn").addClass("ui-btn ui-state-disabled");
-    $("#send_movie_btn").removeClass("ui-state-disabled");
+    //$("#delete_movie_btn").addClass("ui-btn ui-state-disabled");
+    //$("#send_movie_btn").removeClass("ui-state-disabled");
+    $("#send_movie_btn").show();
+    $("#delete_movie_btn").hide();
     $("#pic").removeClass("ui-btn ui-state-disabled");
     $("#nw").prop("checked", false).checkboxradio("refresh");
     $("#giveup").prop("checked", false).checkboxradio("refresh");
@@ -890,7 +891,7 @@ function setPopupData(id, src) { // eslint-disable-line no-unused-vars
         if (DEBUG) { console.info("Rosebud App============> Vote for user " + icarusi_user + " = " + vote + " (Now watching: " + nw + ")"); }
     }
 
-    $("#top_title").html('<span style="text-align:center; vertical-align:middle">' + item.title + '</span>');
+    $("#top_title").html('Edit or Vote: ' + item.title);
     $("#title").val(item.title);
     $("#link").val(item.link);
     $("#serie_season").val(item.serie_season);
@@ -917,8 +918,11 @@ function setPopupData(id, src) { // eslint-disable-line no-unused-vars
     }
 
     if (icarusi_user === "" || icarusi_user === undefined || icarusi_user === null) {
-        $("#send_movie_btn").addClass("ui-btn ui-state-disabled");
-        $("#delete_movie_btn").addClass("ui-btn ui-state-disabled");
+//        $("#send_movie_btn").addClass("ui-btn ui-state-disabled");
+//        $("#delete_movie_btn").addClass("ui-btn ui-state-disabled");
+        $("#send_movie_btn").hide();
+        $("#delete_movie_btn").hide();
+
     }
 
     collapse_vote = $("#the_votes_d").collapsible("option", "collapsed");
@@ -943,13 +947,14 @@ function setPopupData(id, src) { // eslint-disable-line no-unused-vars
         $('#tvshow_type').selectmenu('disable');
         $('#media').prop("readonly", true);
         $('#tvshow_type').prop("readonly", true);
-        $("#send_movie_btn").text("Vote...");
         //$("#pic").addClass("ui-btn ui-state-disabled");       // new feature to allow not movier owner to upload the poster
-        $("#delete_movie_btn").addClass("ui-btn ui-state-disabled");
+        //$("#delete_movie_btn").addClass("ui-btn ui-state-disabled");
+        $("#delete_movie_btn").hide();
     } else {
-        $("#send_movie_btn").text("Update...");
-        $("#send_movie_btn").removeClass("ui-state-disabled");
-        $("#delete_movie_btn").removeClass("ui-state-disabled");
+        //$("#send_movie_btn").removeClass("ui-state-disabled");
+        //$("#delete_movie_btn").removeClass("ui-state-disabled");
+        $("#send_movie_btn").show();
+        $("#delete_movie_btn").show();
     }
 
     $('#users_votes').empty();

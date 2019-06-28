@@ -143,10 +143,12 @@
 
   <div data-role="page" id="detail_page">
 
-    <a href="#movies_page" style="text-decoration:none;">
-      <img src="images/icons/back-icon.png" style="width:24px; height:24px; padding: 10px" />
-    </a>
-    <span id="top_title" style="font-weight: bold; position:absolute; margin-top:20px; margin-left:45px; color:#8B0000; font-style:italic"></span>
+      <a href="#movies_page" style="text-decoration:none;">
+        <img src="images/icons/back-icon.png" style="width:24px; height:24px; margin-top: 10px; margin-left:10px;" />
+      </a>
+      <span id="top_title" style=" font-weight: bold; color:#8B0000; font-style:italic; margin-left:20px; white-space: normal;"></span>
+      <img id="send_movie_btn" src="images/icons/save-icon.png" style="width:24px; height:24px; float:right; margin-top: 10px; margin-right:10px;"/>
+      <img id="delete_movie_btn" src="images/icons/delete-icon.png" style="width:24px; height:24px; float:right;margin-top: 10px; margin-right:10px;"/>
 
     <!--
       <a href="#movies_page" class="ui-btn ui-corner-all ui-shadow ui-btn-inline ui-icon-home ui-btn-icon-center ui-btn-a" data-mini="true" data-direction="reverse" data-transition="slide" style="float:center">Back</a>
@@ -285,11 +287,12 @@
               </div>
             </div>
           </form>
-
+          <!--
           <div style="text-align: center">
             <a href="#" id="send_movie_btn" data-role="button" data-icon="check" data-inline="true" data-iconpos="right" data-mini="true">Send...</a>
             <a href="#" id="delete_movie_btn" data-role="button" data-icon="forbidden" data-inline="true" data-iconpos="right" data-mini="true">Delete...</a>
           </div>
+          -->
         </div>
       </div>
     </div>
