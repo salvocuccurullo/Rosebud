@@ -19,3 +19,8 @@ Plugins List (version number may change, please ignore it):
 - cordova-plugin-splashscreen 5.0.2 "Splashscreen"
 - cordova-plugin-whitelist 1.3.3 "Whitelist"
 - cordova-universal-links-plugin-v2 2.0.0 "Universal Links Plugin"
+
+
+cordova plugin add cordova-plugin-firebase-lib --save
+cordova plugin add cordova-android-firebase-gradle-release --variable FIREBASE_VERSION=17.+ --save
+cordova plugin add cordova-android-play-services-gradle-release --variable PLAY_SERVICES_VERSION=16.+ --save

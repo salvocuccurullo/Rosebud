@@ -106,11 +106,13 @@ function resetPopupElements() {
     $("#curr_link").val('');
     $("#upload_result").html('');
     $("#pic").val(null);
-    $('#users_votes').empty();
+    //$('#users_votes').empty();
+    $("#top_title").css("color", "#FFFFFF");
     $("#top_title").html('Add a new movie/serie...');
     $("#btn_link").show();
     $('#miniseries').prop("checked", false).flipswitch('refresh');
     $('#miniseries').flipswitch('disable');
+    $('#episode').textinput('disable');
 }
 
 
@@ -236,7 +238,7 @@ function setTvShows(tvshows, votes_user) {
 
             // NW SECTION
             content_nw = '<li style="white-space:normal; background-color:white;">';
-            content_nw += '<a data-transition="slide" style="background: url(images/icons/' + value.media + '-icon.png) no-repeat center left; padding: 10px 10px 10px 50px; background-size: 48px 48px;" href="javascript:setPopupData(' + value.id + ',\'nw\')">';
+            content_nw += '<a data-transition="slide" style="background: url(images/icons/' + value.media + '-icon.png) no-repeat center left; padding: 10px 10px 10px 50px; background-size: 48px 48px;" href="javascript:setComments(' + value.id + ',\'m\')">';
             content_nw += '<b>' + value.title + '</b> <br/>';
             content_nw += '<span style="color:#000099; font-style:italic; font-size:11px;">';
 
@@ -277,30 +279,37 @@ function setTvShows(tvshows, votes_user) {
                 content += '<br/><span style="color:#000099; font-style:italic; font-size:10px;">Watched on: <b>' +  value.media + '</b></span>';
             }
             // ICONS BLOCK -------------------------
-            content += '<span style="color:#C60419; float:right">';
 
-            // PICTURE ICON
+            //content += '<span style="color:#C60419; float:right">';
+
             /*
+            // PICTURE ICON
+
             if (value.poster !== "") {
                 content += '<button class="ui-btn ui-icon-camera ui-btn-icon-notext ui-corner-all ui-mini ui-btn-inline" id="btn_show_poster" onclick="poster(\'' + value.poster + '\')"></button>';
             }
             */
 
             // EDIT ICON
-            content += '<button class="ui-btn ui-icon-edit ui-btn-icon-notext ui-mini ui-corner-all ui-btn-inline" id="btn_show_poster" onclick="setPopupData(\'' + value.id + '\',\'a\')"></button>';
+            //content += '<button class="ui-btn ui-icon-edit ui-btn-icon-notext ui-mini ui-corner-all ui-btn-inline" id="btn_show_poster" onclick="setPopupData(\'' + value.id + '\',\'a\')"></button>';
 
             // LINK ICON
+            /*
             if (value.link !== "") {
                 link = value.link.replace(/'/g, "\\'");
                 content += '<button class="ui-btn ui-btn-icon-notext ui-icon-forward ui-mini ui-corner-all ui-btn-inline" data-theme="a" id="btn_link" onclick="javascript:open_link(\'' + link + '\')"></button>';
             }
+            */
 
             // COMMENT ICON
+            /*
             if (comment_count > 0) {
                 content += '<button class="ui-btn  ui-mini ui-corner-all ui-btn-inline" data-theme="e" style="color:#8B0000; border-radius: 50%" onclick="setComments(\'' + value.id + '\',\'c\')">' + comment_count + '</button>';
             }
 
+
             content += '</span><br/>';
+            */
             // END ICONS BLOCK ---------------------------
 
             content += '</li>';
@@ -784,7 +793,7 @@ function saveMovieNew() { // eslint-disable-line no-unused-vars
 ***/
 
 $(document).on("click", "#delete_movie_btn", function () {
-    if (confirm("Are you sure?")) {
+    if (confirm("The movie/serie will be deleted.\n\nAre you sure?")) {
         encryptText2(getX(), "deleteMovie");
     }
 });
@@ -891,12 +900,15 @@ function setPopupData(id, src) { // eslint-disable-line no-unused-vars
         if (DEBUG) { console.info("Rosebud App============> Vote for user " + icarusi_user + " = " + vote + " (Now watching: " + nw + ")"); }
     }
 
-    $("#top_title").html('Edit or Vote: ' + item.title);
+    $("#top_title").css("color", "yellow");
+    $("#top_title").html(item.title);
     $("#title").val(item.title);
     $("#link").val(item.link);
     $("#serie_season").val(item.serie_season);
     if (item.tvshow_type === "serie") {
         $('#serie_season').textinput('enable');
+    } else {
+      $('#episode').textinput('disable');
     }
     $('#media').val(item.media).selectmenu('refresh', true);
     $('#tvshow_type').val(item.tvshow_type).selectmenu('refresh', true);
@@ -957,6 +969,7 @@ function setPopupData(id, src) { // eslint-disable-line no-unused-vars
         $("#delete_movie_btn").show();
     }
 
+    /*
     $('#users_votes').empty();
     $.each(item.u_v_dict, function (index, value) { // eslint-disable-line no-unused-vars
         var content = '<li style="white-space:normal;">';
@@ -970,6 +983,7 @@ function setPopupData(id, src) { // eslint-disable-line no-unused-vars
         $('#users_votes').append(content);
     });
     $('#users_votes').listview('refresh');
+    */
 }
 
 /***
@@ -992,12 +1006,13 @@ function setComments(id, src) { // eslint-disable-line no-unused-vars
         header_content,
         media_icon = "images/icons/" + item.media + "-icon.png";
 
-    console.log("==============> " + item.media)
-    console.log("==============> " + media_icon)
+    //console.log("==============> " + item.media)
+    //console.log("==============> " + media_icon)
 
     if (src === 'm') {
 
       $("#media_img").attr("src", media_icon);
+      $("#edit_button").attr("onclick", "setPopupData('" + item.id + "','a')");
 
       if (item.avg_vote === 0) {
           content = '<span style="font-weight:bold">Rosebud Average vote: </span> <span style="color:#C60419;"> [ N/A ]</span>';
@@ -1251,6 +1266,7 @@ function onDeviceReady() { // eslint-disable-line no-unused-vars
           $('#clone_season').textinput('enable');
           $('#serie_season').textinput('enable');
           $('#miniseries').flipswitch('enable');
+          $('#episode').textinput('enable');
         } else {
           $('#serie_season').val("1");
           $('#clone_season').val("0");
@@ -1258,6 +1274,7 @@ function onDeviceReady() { // eslint-disable-line no-unused-vars
           $('#serie_season').textinput('disable');
           $('#clone_season').textinput('disable');
           $('#miniseries').flipswitch('disable');
+          $('#episode').textinput('disable');
         }
     });
     /*
