@@ -4,7 +4,7 @@
   <title>Rosebud - GeoFriends</title>
 
   <link rel="stylesheet" href="css/jquery.mobile-1.4.5.min.css" />
-  <link rel="stylesheet" href="css/icarusi.css" />
+  <link rel="stylesheet" href="css/rosebud.css" />
   <script src="js/jquery-1.12.4.min.js" type="text/javascript"></script>
   <script src="js/jquery.mobile-1.4.5.min.js"></script>
   <script type="text/javascript" src="cordova.js"></script>
@@ -13,12 +13,12 @@
   <script type="text/javascript" src="js/shared.js"></script>
   <script type="text/javascript" src="js/config.js"></script>
   <script type="text/javascript" src="js/utils.js"></script>
-  <script type="text/javascript" src="js/carusi.js"></script>
+  <script type="text/javascript" src="js/geofriends.js"></script>
   <script type="text/javascript" src="js/pulltorefresh.min.js"></script>
 </head>
 
 <body>
-  <div data-role="page" id="carusi_page">
+  <div data-role="page" id="geofriends_page">
 
     <!-- navbar -->
     <div data-role="header" data-nobackbtn="true" data-theme="b">
@@ -31,18 +31,23 @@
     <div id="cache_info" style="font-size:11px; font-style:italic; text-align:center; background-color:#000099; color:white;"></div>
     <div id="geoloc_info" style="font-size:11px; font-style:italic; text-align:center; background-color:#C60419; color:white;"></div>
 
-    <div role="main" class="ui-content" style="text-align:center;">
-      <div class="ui-grid-b">
-        <div class="ui-block-a" style="width:33%">
-          <a href="#" id="locate_me" data-role="button" data-icon="location" data-inline="true" data-iconpos="right" data-mini="true">Me</a>
-        </div>
-        <div class="ui-block-b" style="width:33%">
-          <a href="#" id="get_locations" data-role="button" data-icon="location" data-inline="true" data-iconpos="right" data-mini="true">Friends</a>
-        </div>
-        <div class="ui-block-c" style="width:33%">
-          <select id="carusi_loc_buttons" name="carusi_loc_buttons" data-type="horizontal" data-mini="true" data-icon="user"></select>
-        </div>
+    <div role="main" class="ui-content" style="text-align:center; ">
+
+      <div id="buttons_div" style="margin-bottom:10px; text-align:center">
+          <a href="#" id="locate_me" data-role="button" data-inline="true" data-iconpos="right" data-mini="true">
+            <img src="images/icons/geolocation-icon.png" style="width:24px; height:24px" />
+            <img src="images/icons/me-icon.png" style="width:24px; height:24px" />
+          </a>
+
+          <select id="friends_loc_buttons" name="friends_loc_buttons" class="ui-nodisc-icon"  data-native-menu="false" data-inline="true">
+          </select>
+
+          <a href="#" id="get_locations" data-role="button" data-inline="true" data-iconpos="right" data-mini="true">
+            <img src="images/icons/geolocation-icon.png" style="width:24px; height:24px" />
+            <img src="images/icons/friends-icon.png" style="width:24px; height:24px" />
+          </a>
       </div>
+
       <div id="distance_info" style="font-size:12px; font-style:italic; text-align:center; background-color:#ffffff; color:green;"></div>
       <div id="map_canvas" name="map_canvas"></div>
     </div>
@@ -52,14 +57,8 @@
         <ul>
           <li><a href="index.html" data-icon="home" id="home_btn_fo" class="ui-nodisc-icon" data-ajax="false" rel="external">Home</a></li>
           <li><a href="movies.html" data-icon="video" id="movies_btn_fo" class="ui-nodisc-icon" data-ajax="false" rel="external">Movies</a></li>
-          <li><a href="carusi.html" data-icon="location" id="geo_btn_fo" class="ui-btn-active ui-state-persist ui-nodisc-icon" data-ajax="false" rel="external">GeoFriends</a></li>
+          <li><a href="geofriends.html" data-icon="location" id="geo_btn_fo" class="ui-btn-active ui-state-persist ui-nodisc-icon" data-ajax="false" rel="external">GeoFriends</a></li>
           <li><a href="song.html" data-icon="audio" id="covers_btn_fo" class="ui-nodisc-icon" data-ajax="false" rel="external">Albums</a></li>
-          <!--
-  <li><a href="index.html"  data-icon="custom" id="home_btn_fo" class="ui-btn-active ui-state-persist ui-nodisc-icon" data-ajax="false" rel="external">Home</a></li>
-  <li><a href="movies.html"  data-icon="custom" id="movies_btn_fo" class="ui-nodisc-icon" data-ajax="false" rel="external">Movies</a></li>
-  <li><a href="carusi.html"  data-icon="custom" id="geo_btn_fo" class="ui-nodisc-icon" data-ajax="false" rel="external">GeoFriends</a></li>
-  <li><a href="song.html"  data-icon="custom" id="covers_btn_fo" class="ui-nodisc-icon" data-ajax="false" rel="external">Covers</a></li>
-  -->
         </ul>
       </div>
     </div>

@@ -141,3 +141,11 @@
     /* Make your icon fit */
     background-size: 18px 18px;
 }
+
+.ui-icon-eur {
+	background-image: url("../images/icons/geolocation-icon.png");
+	background-repeat: no-repeat;
+	background-size: 18px 18px;
+	background-position: left;
+	margin-right: 25px;
+}

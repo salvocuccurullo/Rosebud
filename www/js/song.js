@@ -16,7 +16,7 @@ var storage = window.localStorage,
     kanazzi,
     rosebud_uid = "",
     swipe_left_target = "index.html", // eslint-disable-line no-unused-vars
-    swipe_right_target = "carusi.html", // eslint-disable-line no-unused-vars
+    swipe_right_target = "geofriends.html", // eslint-disable-line no-unused-vars
     DEBUG = false,
     device_app_path = "",
     sort_type = "update_ts",
@@ -283,59 +283,62 @@ function play_song(url) { // eslint-disable-line no-unused-vars
   window.open(url, '_system');
 }
 
+
+function getSongSuccess(data) {
+
+  $("#lyrics-list").empty();
+
+  if (data.message === "song not found" || data.message === "not valid id") {
+      $('#lyrics-list').append('<li style="white-space:normal;">Song not found ;(</li>');
+      return;
+  }
+
+  //if (DEBUG) { console.info("Retrieved song data:" + JSON.stringify(data)); }
+  var song = data.message,
+      song_header = '';
+
+  if (DEBUG) { console.info("Retrieved song data:" + song.title + " - " + song.author); }
+  song_header = '<li data-role="list-divider" data-theme="b" style="text-align:center">';
+  if (song.spotify !== undefined) {
+    song_header += '<a href="#" id="spoty_album_go" data-role="button" data-inline="true" data-iconpos="right" data-mini="true" onclick="play_song(\'' + song.spotify + '\')">';
+    song_header += '<img src="images/icons/spoti-icon.png" style="width:24px; heigh:24px; float:right; margin-top:5px; margin-left:10px"/>';
+    song_header += '</a>';
+  }
+  song_header += '<button class="ui-btn ui-icon-refresh ui-btn-icon-notext ui-corner-all ui-mini ui-btn-inline ui-btn-b" style="margin-top:5px; float:right" onclick="get_song()"></button>';
+  song_header += '<span style="color:yellow">' + song.title + '</span><br/>' + song.author + '</li>';
+  $('#lyrics-list').append(song_header);
+
+  if (song.lyrics.length === 0) {
+      $('#lyrics-list').append('<li style="white-space:normal;">No lyrics available for this song</li>');
+  }
+
+  $.each(song.lyrics, function (index, value) {
+      $('#lyrics-list').append('<li style="white-space:normal;">' + value.text + '</li>');
+  });
+
+  $('#lyrics-list').listview('refresh');
+
+}
+
+
+function getSongFailure(data) {
+  console.info("Error while retrieving random song");
+  $("#song_content").html("Error during song loading... Please, retry later...");
+}
+
+
 function get_song() { // eslint-disable-line no-unused-vars
 
-    $("#lyrics-list").empty();
+    var data = {
+        "username": icarusi_user,
+        "method": "POST",
+        "url": "/randomSong",
+        "cB": generic_json_request_new,
+        "successCb": getSongSuccess,
+        "failureCb": getSongFailure
+      };
+    encrypt_and_execute(getX(), "kanazzi", data);
 
-    loading(true, "Loading random song...");
-
-    $.ajax({
-        url: BE_URL + "/randomSong",
-        method: "POST",
-        data: {
-            username : icarusi_user,
-            kanazzi : kanazzi
-        },
-        dataType: "json"
-    })
-        .done(function (data) {
-
-            if (data.message === "song not found" || data.message === "not valid id") {
-                $('#lyrics-list').append('<li style="white-space:normal;">Song not found ;(</li>');
-                return;
-            }
-
-            //if (DEBUG) { console.info("Retrieved song data:" + JSON.stringify(data)); }
-            var song = data.message,
-                song_header = '';
-
-            if (DEBUG) { console.info("Retrieved song data:" + song.title + " - " + song.author); }
-            song_header = '<li data-role="list-divider" data-theme="b" style="text-align:center">';
-            if (song.spotify !== undefined) {
-              song_header += '<button class="ui-btn ui-icon-audio ui-btn-icon-notext ui-corner-all ui-mini ui-btn-inline ui-btn-b" style="float:right" onclick="play_song(\'' + song.spotify + '\')"></button>';
-            }
-            song_header += '<button class="ui-btn ui-icon-refresh ui-btn-icon-notext ui-corner-all ui-mini ui-btn-inline ui-btn-b" style="float:right" onclick="get_song()"></button>';
-            song_header += '<span style="color:yellow">' + song.title + '</span><br/>' + song.author + '</li>';
-            $('#lyrics-list').append(song_header);
-
-            if (song.lyrics.length === 0) {
-                $('#lyrics-list').append('<li style="white-space:normal;">No lyrics available for this song</li>');
-            }
-
-            $.each(song.lyrics, function (index, value) {
-                $('#lyrics-list').append('<li style="white-space:normal;">' + value.text + '</li>');
-            });
-
-            $('#lyrics-list').listview('refresh');
-
-        })
-        .fail(function () {
-            console.info("Error while retrieving random song");
-            $("#song_content").html("Error during song loading... i Kani Anassiri!!!");
-        })
-        .always(function () {
-            loading(false, "");
-        });
 }
 
 function sort_covers(s_type) {

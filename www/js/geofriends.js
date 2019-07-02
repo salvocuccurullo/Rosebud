@@ -30,8 +30,8 @@ function zoomTo(username) {
 
     //TO BE CHANGED USING A DICTIONARY WITH USERNAME AS KEY
     if (DEBUG) { console.info("------------ ZOOM TO -------------"); }
-    if (DEBUG) { console.info("Current caruso location " + JSON.stringify(curr_caruso_pos)); }
-    if (DEBUG) { console.info("All carusi " + curr_positions.length + " locations: " + JSON.stringify(curr_positions)); }
+    if (DEBUG) { console.info("Current friend location " + JSON.stringify(curr_caruso_pos)); }
+    if (DEBUG) { console.info("All friends " + curr_positions.length + " locations: " + JSON.stringify(curr_positions)); }
     if (DEBUG) { console.info("----------------------------------"); }
 
     $.each(curr_positions, function (index, value) { // eslint-disable-line no-unused-vars
@@ -70,7 +70,7 @@ function zoomTo(username) {
 }
 
 /*
- * SET SELECT FOR ZOOMING I CARUSI
+ * SET SELECT FOR ZOOMING ON FRIENDS POSITION
  */
 
 function setMarkers(positions) {
@@ -189,21 +189,22 @@ function setMarkers2() {
 
 
 /*
- * SET SELECT FOR ZOOMING I CARUSI
+ * SET SELECT FOR ZOOMING ON FRIENDS POSITION
  */
 
 function setButtons(positions) {
-    $('#carusi_loc_buttons').empty();
+    $('#friends_loc_buttons').empty();
+    $('#friends_loc_buttons').append('<option value="">-</option>');
     if (!$.isEmptyObject(curr_caruso_pos)) {
-        $('#carusi_loc_buttons').append('<option value="' + icarusi_user + '">' + icarusi_user + '</option>');
+        $('#friends_loc_buttons').append('<option value="' + icarusi_user + '">' + icarusi_user + '</option>');
     }
     $.each(positions, function (index, value) {
         if (value.name !== icarusi_user) {
             var content = '<option value="' + value.name + '">' + value.name + '</option>';
-            $('#carusi_loc_buttons').append(content);
+            $('#friends_loc_buttons').append(content);
         }
     });
-    $('#carusi_loc_buttons').selectmenu('refresh');
+    $('#friends_loc_buttons').selectmenu('refresh');
     $('#select_zoom_div').show();
 }
 
@@ -408,18 +409,18 @@ function onDeviceReady() { // eslint-disable-line no-unused-vars
 
     function onErrorLocation(error) {
         console.info("GeoLocation ERROR! " + error.message);
-        loading(false, "Retrieving your positions...\nCicaledda?");
+        loading(false, "Retrieving your positions...");
         if (geoloc_state === 0) {
             geoloc_state = 1;
-            loading(true, "Retrieving your position using network....Cicaledda?");
+            loading(true, "Retrieving your position using network....");
             navigator.geolocation.getCurrentPosition(onSuccessLocation, onErrorLocation, {
                 timeout: 30000,
                 enableHighAccuracy: false
             });
         } else {
             geoloc_state = 0;
-            loading(false, "Retrieving your position...\nCicaledda?");
-            alert('Non sarai mica a Pantalica dentro una grotta? \n code: ' + error.code + '\n' + 'message: ' + error.message); // eslint-disable-line no-useless-concat
+            loading(false, "Retrieving your position...");
+            alert('Most likely you\'re inside a cave... Pantalica? \n code: ' + error.code + '\n' + 'message: ' + error.message); // eslint-disable-line no-useless-concat
             $('#locate_me').prop('disabled', false).removeClass('ui-state-disabled');
         }
     }
@@ -434,7 +435,7 @@ function onDeviceReady() { // eslint-disable-line no-unused-vars
 
         if (DEBUG) { console.info("Google Maps is ready!"); }
 
-        loading(true, "Retrieving your position using GPS... Cicaledda?");
+        loading(true, "Retrieving your position using GPS...");
 
         navigator.geolocation.getCurrentPosition(onSuccessLocation, onErrorLocation, {
             timeout: 30000,
@@ -455,13 +456,15 @@ function onDeviceReady() { // eslint-disable-line no-unused-vars
         encryptText2(getX(), "geoLocation");
     });
 
-    $(document).on("change", "#carusi_loc_buttons", function () {
-        zoomTo(this.value);
+    $(document).on("change", "#friends_loc_buttons", function () {
+        if (this.value !== "") {
+          zoomTo(this.value);
+        }
     });
 
     $(document).on("click", "#locate_me", function () {
         $('#locate_me').prop('disabled', true).addClass('ui-state-disabled');
-        loading(true, "Retrieving your position using GPS... Cicaledda?");
+        loading(true, "Retrieving your position using GPS...");
         navigator.geolocation.getCurrentPosition(onSuccessLocation, onErrorLocation, {
             timeout: 30000,
             enableHighAccuracy: true
@@ -469,8 +472,8 @@ function onDeviceReady() { // eslint-disable-line no-unused-vars
     });
 
     // SWIPE RUDIMENTALE
-    $("#carusi_page").on("swipeleft", swipeleftHandler);
-    $("#carusi_page").on("swiperight", swipeRightHandler);
+    $("#geofriends_page").on("swipeleft", swipeleftHandler);
+    $("#geofriends_page").on("swiperight", swipeRightHandler);
     // FINE SWIPE RUDIMENTALE
 
 } // CORDOVA

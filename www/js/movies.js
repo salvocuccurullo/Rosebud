@@ -20,7 +20,7 @@ var storage = window.localStorage,
     top_movies_count = 15,
     sort_type = "datetime_sec",
     sort_order = 1,
-    swipe_left_target = "carusi.html",
+    swipe_left_target = "geofriends.html",
     swipe_right_target = "index.html",
     device_app_path = "",
     tv_shows_storage,
@@ -1014,10 +1014,15 @@ function setComments(id, src) { // eslint-disable-line no-unused-vars
       $("#media_img").attr("src", media_icon);
       $("#edit_button").attr("onclick", "setPopupData('" + item.id + "','a')");
 
+      content = ''
+      if (item.tvshow_type === "serie") {
+        content += '<span style="color:#00000">Season ' + item.serie_season+ '</span><br/>';
+      }
+
       if (item.avg_vote === 0) {
-          content = '<span style="font-weight:bold">Rosebud Average vote: </span> <span style="color:#C60419;"> [ N/A ]</span>';
+          content += '<span style="font-weight:bold">Rosebud Average vote: </span> <span style="color:#C60419;"> [ N/A ]</span>';
       } else {
-          content = '<span style="font-weight:bold">Rosebud Average vote: </span> <span style="color:#C60419;"> [ ' + item.avg_vote + ' ]</span>';
+          content += '<span style="font-weight:bold">Rosebud Average vote: </span> <span style="color:#C60419;"> [ ' + item.avg_vote + ' ]</span>';
       }
 
       if (screen.orientation.type === "portrait-primary") {
@@ -1032,7 +1037,8 @@ function setComments(id, src) { // eslint-disable-line no-unused-vars
     if (DEBUG) { console.info("Rosebud App============> " + item.title + " ** " + item.media + " ** " + item.username + " ** " + item.avg_vote); }
     currentId = id;
 
-    $("#top_title_comments").html(item.title);
+    content = item.title;
+    $("#top_title_comments").html(content);
 
     if (DEBUG) { console.info("Rosebud App============> " + JSON.stringify(item.u_v_dict)); }
 
@@ -1057,7 +1063,7 @@ function setComments(id, src) { // eslint-disable-line no-unused-vars
     });
 
     header_content = '<li data-role="list-divider" data-theme="b" style="text-align:center">';
-    header_content += '<span style="color:yellow">' + comments_count + ' review(s) / ' + Object.keys(item.u_v_dict).length + ' vote(s)</span></li>';
+    header_content += '<span style="color:yellow">' + comments_count + ' review(s) - ' + Object.keys(item.u_v_dict).length + ' vote(s) / #nw</span></li>';
     $('#movie_comments').prepend(header_content);
     $('#movie_comments').listview('refresh');
 }
