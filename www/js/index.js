@@ -386,10 +386,11 @@ function submit() { // eslint-disable-line no-unused-vars
             }
             if (response.result === "success" && response.payload.logged === "yes") {
                 if (DEBUG) { console.info("========> Rosebud : Login successful"); }
-                if (DEBUG) { console.info("========> Rosebud : " + response.payload.username); }
-                if (DEBUG) { console.info("========> Rosebud : " + response.payload.message); }
+                if (DEBUG) { console.info("========> Rosebud : " + JSON.stringify(response.payload)); }
                 storage.setItem("icarusi_user", response.payload.username);
                 storage.setItem("rosebud_uid", response.payload.rosebud_uid);
+                storage.setItem("poweruser", response.payload.extra_info.poweruser);
+                storage.setItem("geoloc_enabled", response.payload.extra_info.geoloc_enabled);
                 icarusi_user = response.payload.username;
                 rosebud_uid = response.payload.rosebud_uid;
                 //console.info(rosebud_uid);

@@ -72,6 +72,7 @@ function poster(img_name) { // eslint-disable-line no-unused-vars
 
 function resetPopupElements() {
     currentId = 0;
+    $('#back-nav-movie').attr("href", "#movies_page");
     $('#clone_season').textinput('disable');
     $('#serie_season').textinput('disable');
     $('#clone_season').val('0');
@@ -854,8 +855,6 @@ function newMoviePage() { // eslint-disable-line no-unused-vars
 ***/
 
 function setPopupData(id, src) { // eslint-disable-line no-unused-vars
-    //OLD
-    //$("#popupMovie").popup("open");
 
     // NEW
     $(':mobile-pagecontainer').pagecontainer('change', '#detail_page');
@@ -864,6 +863,7 @@ function setPopupData(id, src) { // eslint-disable-line no-unused-vars
 
     $("#nw").prop("checked", false).checkboxradio("refresh");
     $('#giveup').checkboxradio('enable');
+    $('#back-nav-movie').attr("href", "#comments_page");
 
     currentId = id;
 
@@ -1019,7 +1019,12 @@ function setComments(id, src) { // eslint-disable-line no-unused-vars
       } else {
           content = '<span style="font-weight:bold">Rosebud Average vote: </span> <span style="color:#C60419;"> [ ' + item.avg_vote + ' ]</span>';
       }
-      content += '<br/><img style="height:75%; margin: 0 auto; margin-top:10px" id="movie_p" src="' + base_url_poster + item.poster + '" onerror="set_fallback_image()"/>';
+
+      if (screen.orientation.type === "portrait-primary") {
+        content += '<br/><img style="max-width:85%; margin-top:10px" id="movie_p" src="' + base_url_poster + item.poster + '" onerror="set_fallback_image()"/>';
+      } else {
+        content += '<br/><img style="height:75%; margin: 0 auto; margin-top:10px" id="movie_p" src="' + base_url_poster + item.poster + '" onerror="set_fallback_image()"/>';
+      }
       $("#movie_data").html(content);
       content = '';
     }
