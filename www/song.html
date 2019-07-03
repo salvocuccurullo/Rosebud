@@ -67,9 +67,11 @@
           <ul data-role="listview" data-theme="a" data-inset="true" data-filter="false" id="lyrics-list"></ul>
         </div>
 
+        <!--
         <div data-role="panel" data-position="left" data-position-fixed="true" data-display="overlay" id="tracks_list_panel" data-theme="a" class="ui-corner-all" data-swipe-close="false" style="min-width: 300px;">
           <ol data-role="listview" data-theme="a" data-inset="true" data-filter="false" id="tracks-list" style="min-width: 250px;"></ol>
         </div>
+        -->
 
       </div>
     </div>
@@ -181,7 +183,7 @@
     </a>
 
     <img src="images/icons/spoti-icon.png" id="spoti_img" name="spoti_img" style="width:24px; height:24px; padding:10px; float:right" />
-    <!--<img src="images/icons/cd-off.png" id="tracks-button-2" name="tracks-button-2" style="width:24px; height:24px; float:right; padding: 10px 10px" />-->
+    <img src="images/icons/cd-on.png" id="tracks-button-edit" name="tracks-button-edit" style="width:24px; height:24px; float:right; padding: 10px 10px" />
     <img src="images/icons/edit-icon.png" id="edit-button" name="edit-button" style="width:24px; height:24px; float:right; padding: 10px 10px" />
 
     <div class="ui-corner-all custom-corners">
@@ -210,6 +212,17 @@
     </div>
   </div> <!-- END ALBUM READONLY PAGE -->
 
-</body>
+  <div data-role="page" id="list_page">     <!-- TRACKS LIST PAGE -->
+    <a href="#comments_page" style="text-decoration:none;" id="back_button_list_page">
+      <img src="images/icons/back-icon.png" style="width:24px; height:24px; padding: 10px" />
+    </a>
+    <span id="top_title_tracks_album" style="text-align: center; font-weight: bold; color:#8B0000; font-style:italic; margin-top:10px;"></span>
 
+    <div style="text-align:center; padding:10px">
+      <ul data-role="listview" data-theme="a" data-inset="true" data-filter="false" id="spoti-list" style=""></ul>
+    </div>
+
+  </div> <!-- END TRACKS LIST PAGE -->
+
+</body>
 </html>

@@ -17,9 +17,9 @@ var storage = window.localStorage,
     curr_latitude = "",
     curr_longitude = "",
     curr_positions = [],
-    curr_caruso_pos = {},
+    curr_friend_pos = {},
 //    curr_picture = '',
-    caruso_photo_url = "",
+    friend_photo_url = "",
     map,
     enable_geoloc = false,
     geoloc_state = 0;
@@ -30,7 +30,7 @@ function zoomTo(username) {
 
     //TO BE CHANGED USING A DICTIONARY WITH USERNAME AS KEY
     if (DEBUG) { console.info("------------ ZOOM TO -------------"); }
-    if (DEBUG) { console.info("Current friend location " + JSON.stringify(curr_caruso_pos)); }
+    if (DEBUG) { console.info("Current friend location " + JSON.stringify(curr_friend_pos)); }
     if (DEBUG) { console.info("All friends " + curr_positions.length + " locations: " + JSON.stringify(curr_positions)); }
     if (DEBUG) { console.info("----------------------------------"); }
 
@@ -75,11 +75,11 @@ function zoomTo(username) {
 
 function setMarkers(positions) {
 
-    var caruso_pos = {};
+    var friend_pos = {};
 
     if (enable_geoloc === false) {
-        positions.push(curr_caruso_pos);
-        caruso_pos = curr_caruso_pos;
+        positions.push(curr_friend_pos);
+        friend_pos = curr_friend_pos;
     }
 
     if (DEBUG) {
@@ -91,9 +91,9 @@ function setMarkers(positions) {
         $.each(positions, function (index, value) {
 
             if (value.name === icarusi_user) {
-                caruso_pos = value;
+                friend_pos = value;
                 if (!value.photo) {
-                    value.photo = caruso_photo_url;
+                    value.photo = friend_photo_url;
                 }
             }
 
@@ -119,12 +119,12 @@ function setMarkers(positions) {
         });
     });
 
-    if (DEBUG) { console.info("Locations caruso: " + JSON.stringify(caruso_pos)); }
+    if (DEBUG) { console.info("Locations friend: " + JSON.stringify(friend_pos)); }
 
     // Zoom to mypos
     map.setCameraTarget({
-        "lat": caruso_pos.latitude,
-        "lng": caruso_pos.longitude
+        "lat": friend_pos.latitude,
+        "lng": friend_pos.longitude
     });
 
     if (curr_action === "SET") {
@@ -142,10 +142,10 @@ function setMarkers2() {
 
     map.clear().then(function () {
 
-        var caruso_pos = {};
+        var friend_pos = {};
 
         if (enable_geoloc === false) {
-            curr_positions.push(curr_caruso_pos);
+            curr_positions.push(curr_friend_pos);
         }
 
         if (DEBUG) { console.info("Locations array size: " + curr_positions.length); }
@@ -154,9 +154,9 @@ function setMarkers2() {
         $.each(curr_positions, function (index, value) {
 
             if (value.name === icarusi_user) {
-                caruso_pos = value;
+                friend_pos = value;
                 if (!value.photo) {
-                    value.photo = caruso_photo_url;
+                    value.photo = friend_photo_url;
                 }
             }
 
@@ -183,7 +183,7 @@ function setMarkers2() {
                 }
             );
         });
-        if (DEBUG) { console.info("Locations caruso: " + JSON.stringify(caruso_pos)); }
+        if (DEBUG) { console.info("Locations friend: " + JSON.stringify(friend_pos)); }
     });
 }
 
@@ -195,7 +195,7 @@ function setMarkers2() {
 function setButtons(positions) {
     $('#friends_loc_buttons').empty();
     $('#friends_loc_buttons').append('<option value="">-</option>');
-    if (!$.isEmptyObject(curr_caruso_pos)) {
+    if (!$.isEmptyObject(curr_friend_pos)) {
         $('#friends_loc_buttons').append('<option value="' + icarusi_user + '">' + icarusi_user + '</option>');
     }
     $.each(positions, function (index, value) {
@@ -230,7 +230,7 @@ function geoLocation() { // eslint-disable-line no-unused-vars
             action: curr_action,
             latitude: curr_latitude,
             longitude: curr_longitude,
-            photo: caruso_photo_url,
+            photo: friend_photo_url,
             username: icarusi_user,
             kanazzi: kanazzi,
         },
@@ -270,7 +270,7 @@ function onDeviceReady() { // eslint-disable-line no-unused-vars
 
     icarusi_user = storage.getItem("icarusi_user");
     enable_geoloc = get_ls_bool("enable-geoloc");
-    caruso_photo_url = storage.getItem("google_photo_url");
+    friend_photo_url = storage.getItem("google_photo_url");
     //storage.setItem("spotify_url_received", "");
 
     window.plugins.intent.setNewIntentHandler(function (intent) {
@@ -366,22 +366,22 @@ function onDeviceReady() { // eslint-disable-line no-unused-vars
 
         if (icarusi_user === "" || icarusi_user === null) {
             positions.push({
-                "name": "Not logged Caruso",
+                "name": "Not logged user",
                 "latitude": position.coords.latitude,
                 "longitude": position.coords.longitude
             });
         } else {
-            curr_positions.pop(curr_caruso_pos);
+            curr_positions.pop(curr_friend_pos);
 
-            curr_caruso_pos = {
+            curr_friend_pos = {
                 "name": icarusi_user,
                 "latitude": position.coords.latitude,
                 "longitude": position.coords.longitude,
-                "caruso_photo_url": caruso_photo_url,
+                "friend_photo_url": friend_photo_url,
                 "last_locate": new Date()
             };
 
-            curr_positions.push(curr_caruso_pos);
+            curr_positions.push(curr_friend_pos);
         }
 
         if (DEBUG) { console.info("Current positions: " + JSON.stringify(curr_positions)); }
@@ -397,7 +397,7 @@ function onDeviceReady() { // eslint-disable-line no-unused-vars
             curr_action = "SET";
             curr_latitude = position.coords.latitude;
             curr_longitude = position.coords.longitude;
-            //curr_picture = caruso_photo_url;
+            //curr_picture = friend_photo_url;
         } else {
             curr_action = "DELETE";
         }

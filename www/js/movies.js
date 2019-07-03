@@ -1016,7 +1016,11 @@ function setComments(id, src) { // eslint-disable-line no-unused-vars
 
       content = ''
       if (item.tvshow_type === "serie") {
-        content += '<span style="color:#00000">Season ' + item.serie_season+ '</span><br/>';
+        if (item.miniseries) {
+          content += '<span style="color:#00000">Miniseries</span><br/>';
+        } else {
+          content += '<span style="color:#00000">Season <b>' + item.serie_season+ '</b></span><br/>';
+        }
       }
 
       if (item.avg_vote === 0) {

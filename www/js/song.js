@@ -153,8 +153,10 @@ function setComments(id) { // eslint-disable-line no-unused-vars
     }
 
     $("#edit-button").attr("onclick", "edit_cover('" + item.id + "')");
+    $("#tracks-button-edit").attr("onclick", "tracks_me('" + item.spotifyUrl + "', \'edit_page\')");
 
     $("#top_title_comments").html(item.name + "<br/>" + item.author + " (" + item.year + ")");
+    $("#top_title_tracks_album").html(item.name + " - " + item.author + " (" + item.year + ")");
 
     if (DEBUG) { console.info("Rosebud App============> " + JSON.stringify(item.reviews)); }
 
@@ -253,7 +255,7 @@ function setCovers(covers) {
         */
 
         if (value.spotifyUrl !== "" && value.spotifyUrl !== undefined) {
-          cover_content += '<button style="float:right; border: none; padding:0; background:none" onclick="tracks_me(\'' + value.spotifyUrl + '\')">';
+          cover_content += '<button style="float:right; border: none; padding:0; background:none" onclick="tracks_me(\'' + value.spotifyUrl + '\', \'albums_page\')">';
           cover_content += '<img src="images/icons/cd-on.png" style="width:24px; height:24px; margin-top:5px"/></button>';
         }
 
@@ -477,8 +479,7 @@ function edit_cover(id) { // eslint-disable-line no-unused-vars
     $("#spoty_url").val("");
     $("#upload_result").html("");
     $("#spoty_search").val("");
-    $('#tracks-list').empty();
-    $('#search-list').empty();
+    $('#spoti-list').empty();
     $("#vote").val(5).slider("refresh");
     $("#review").val('');
     $("#pic").removeAttr('disabled');
@@ -523,7 +524,7 @@ function edit_cover(id) { // eslint-disable-line no-unused-vars
         }
         if (result.spotifyUrl !== "") {
           get_spotify({
-              "action": "tracks-only",
+              "action": "album-onlyt",
               "url": result.spotifyUrl
             });
         }
@@ -655,9 +656,14 @@ function no_image() { // eslint-disable-line no-unused-vars
 * SPOTIFY FUNCTIONS
 */
 
-function setTracks(tracks, tracks_list_obj) {
+function setTracks(tracks, tracks_list_obj, source) {
+
+    if (source === "xxx") {
+      $(':mobile-pagecontainer').pagecontainer('change', '#list_page');
+    }
 
     $('#' + tracks_list_obj).empty();
+    $("#top_title_tracks_album").html("");
 
     if (tracks.items.length === 0) {
         if (DEBUG) { console.info("Rosebud App============> No tracks found on Spotify."); }
@@ -681,11 +687,17 @@ function setTracks(tracks, tracks_list_obj) {
     });
     $('#' + tracks_list_obj).listview('refresh');
     $("#cover_page").trigger("updatelayout");
-    $("#tracks_list_panel").panel("open");
+    //$("#tracks_list_panel").panel("open");
 }
 
 
-function tracks_me(spotifyUrl){
+function tracks_me(spotifyUrl, source){
+
+  if (source === "albums_page") {
+   $("#back_button_list_page").attr("href", "#song_page");
+  } else {
+   $("#back_button_list_page").attr("href", "#comments_page");
+  }
 
   if (spotifyUrl !== "") {
     get_spotify({
@@ -696,7 +708,7 @@ function tracks_me(spotifyUrl){
 
 }
 
-function setSpotifySong(data) {
+function setSpotifyAlbum(data) {
     data = JSON.parse(data);
     if (DEBUG) { console.info("Rosebud App============> " + data.images[0].url); }
     $("#id").val("0");
@@ -708,17 +720,26 @@ function setSpotifySong(data) {
     $("#spotify_api_url").val(data.href);
     $("#spotify_album_url").val(data.external_urls.spotify);
     $("#cover_img").show();
+
+    $("#back_button_list_page").attr("href","#cover_page")
+    $(':mobile-pagecontainer').pagecontainer('change', '#cover_page');
+
 }
 
 function setSpotifyTracks(data) {
     data = JSON.parse(data);
-    setTracks(data.tracks, "tracks-list");
+    setTracks(data.tracks, "spoti-list", "xxx");
 }
 
 function setBothTracksAlbums(data) {
     data = JSON.parse(data);
-    setSpotifySong(data);
-    setTracks(data.tracks, "tracks-list");
+    setSpotifyAlbum(data);
+    setTracks(data.tracks, "spoti-list", "yyy");
+}
+
+function setAlbumOnly(data) {
+    data = JSON.parse(data);
+    setSpotifyAlbum(data);
 }
 
 function saveAlbumData(data){
@@ -734,7 +755,7 @@ function get_spotify(fn_data) {
     if (DEBUG) { console.info("Rosebud App============> " + JSON.stringify(fn_data)); }
 
     var data,
-        successCB = setSpotifySong,
+        successCB = setSpotifyAlbum,
         spoty_url;
 
     if (fn_data.url === "" || fn_data.url === undefined) {
@@ -753,6 +774,9 @@ function get_spotify(fn_data) {
       spoty_url = fn_data.url;
     } else if (fn_data.action === 'both') {
       successCB = setBothTracksAlbums;
+      spoty_url = fn_data.url;
+    } else if (fn_data.action === 'album-only') {
+      successCB = setAlbumOnly;
       spoty_url = fn_data.url;
     }
 
@@ -774,12 +798,13 @@ function set_album(url) {  // eslint-disable-line no-unused-vars
   get_spotify({
       'action':'album_only'
   });
-  $("#album_list_panel").panel("close");
 }
 
 function spotySearchSuccess(data) {
 
-  $('#search-list').empty();
+  $(':mobile-pagecontainer').pagecontainer('change', '#list_page');
+  $("#back_button_list_page").attr("href", "#cover_page")
+  $('#spoti-list').empty();
 
   if (data.payload.length === 0) {
       if (DEBUG) { console.info("Rosebud App============> No tracks found on Spotify."); }
@@ -789,10 +814,10 @@ function spotySearchSuccess(data) {
   var tracks_header = '<li data-role="list-divider" data-theme="b" style="text-align:center">';
   tracks_header += 'Found <span style="color:yellow">' + data.payload.length + '</span> albums on Spotify';
   tracks_header += '</li>';
-  $('#search-list').append(tracks_header);
+  $('#spoti-list').append(tracks_header);
 
   if (data.payload.length === 0) {
-      $('#search-list').append('<li style="white-space:normal;">No results</li>');
+      $('#spoti-list').append('<li style="white-space:normal;">No results</li>');
   }
 
   $.each(data.payload, function (index, value) {
@@ -808,17 +833,18 @@ function spotySearchSuccess(data) {
 
       album_item += '</div>';
       album_item += '</li>';
-      $('#search-list').append(album_item);
+      $('#spoti-list').append(album_item);
   });
-  $('#search-list').listview('refresh');
-  $("#album_list_panel").panel("open");
+  $('#spoti-list').listview('refresh');
+  //$("#album_list_panel").panel("open");
+
 }
 
 function search_spotify(fn_data) {
     if (DEBUG) { console.info("Rosebud App============> " + JSON.stringify(fn_data)); }
 
     var data,
-        //successCB = setSpotifySong,
+        //successCB = setSpotifyAlbum,
         spoty_search;
 
     spoty_search = $("#spoty_search").val();

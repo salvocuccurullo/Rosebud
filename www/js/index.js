@@ -334,6 +334,13 @@ function listDir(path) {
 
 }
 
+function refresh_power_users() {
+  var isPowerUser = get_ls_bool_default("poweruser", false);
+  if (isPowerUser && !power_user.includes(icarusi_user)) {
+    power_user.push(icarusi_user);
+  }
+
+}
 
 /*
  * DO SOMETHING AFTER THE SUCCESSFUL LOGIN
@@ -343,6 +350,7 @@ function show_post_login_features() {
 
     //encryptText2(getX(), 'get_remote_covers_stats_legacy');
     get_remote_covers_stats_legacy();
+    refresh_power_users();
 
     if (power_user.includes(icarusi_user)) {
         $("#sabba_info").html(BE_URL);
@@ -760,7 +768,6 @@ function onDeviceReady() {  // eslint-disable-line no-unused-vars
 
     $("#info_user").html(icarusi_user);
     $("#info_network").html(networkState);
-
 
     if (networkState === Connection.NONE) {
         $("#connection").html("No network... Pantalica mode...");
