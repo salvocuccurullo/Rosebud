@@ -1,4 +1,4 @@
-/*global $, document, window, DEBUG, BE_URL, alert */
+/*global $, cordova, document, window, DEBUG, BE_URL, alert */
 /*global loading, get_ls_bool, fancyDate, PhotoViewer, device, FormData, encryptText2, getX, power_user */
 /*global device, Connection, storage, navigator, cordova, swipeleftHandler, swipeRightHandler, generic_json_request_new */
 /*global encrypt_and_execute, get_ls */
@@ -51,10 +51,12 @@ function setCacheInfo() {
 *   UPLOAD COMMENT
 */
 
+/*
 function sendCommentSuccess(data) { // eslint-disable-line no-unused-vars
 }
 
 function sendCommentFailure(err) { // eslint-disable-line no-unused-vars
+  console.log(err);
 }
 
 function send_comment() { // eslint-disable-line no-unused-vars
@@ -63,8 +65,7 @@ function send_comment() { // eslint-disable-line no-unused-vars
 
     $("#kanazzi").val(kanazzi);
 
-    var username = icarusi_user,
-        the_form = $("#comment_form"),
+    var the_form = $("#comment_form"),
         formData = new FormData(comment_form[0]),
         data = {
           "username": icarusi_user,
@@ -76,12 +77,10 @@ function send_comment() { // eslint-disable-line no-unused-vars
           "failureCb": sendCommentFailure
         };
     encrypt_and_execute(getX(), "kanazzi", data);
-
 }
+*/
 
 function setComments(id) { // eslint-disable-line no-unused-vars
-
-  console.info("Retrieving comments of album with id " + id);
 
   if (id !== 0) {
       var item = $.grep(current_covers.covers, function (element, index) { // eslint-disable-line no-unused-vars
@@ -94,6 +93,7 @@ function setComments(id) { // eslint-disable-line no-unused-vars
 
       if (DEBUG) {
           console.info("==========================");
+          console.info("Retrieving comments of album with id " + id);
           console.info(JSON.stringify(item));
           console.info("==========================");
       }
@@ -132,6 +132,8 @@ function setComments(id) { // eslint-disable-line no-unused-vars
 
     $("#spoti_img").attr("onclick", "");
     $("#spoti_img").attr("src", "images/icons/spoti-icon-gray.png");
+    $("#tracks-button-edit").attr("onclick", "");
+    $("#tracks-button-edit").attr("src", "images/icons/cd-off.png");
 
     if (DEBUG) { console.info("Rosebud App============> " + item.name + " ** " + item.author + " ** "); }
 
@@ -153,7 +155,10 @@ function setComments(id) { // eslint-disable-line no-unused-vars
     }
 
     $("#edit-button").attr("onclick", "edit_cover('" + item.id + "')");
-    $("#tracks-button-edit").attr("onclick", "tracks_me('" + item.spotifyUrl + "', \'edit_page\')");
+    if (item.spotifyUrl !== "" && item.spotifyUrl !== undefined) {
+      $("#tracks-button-edit").attr("onclick", "tracks_me('" + item.spotifyUrl + "', 'edit_page')");
+      $("#tracks-button-edit").attr("src", "images/icons/cd-on.png");
+    }
 
     $("#top_title_comments").html(item.name + "<br/>" + item.author + " (" + item.year + ")");
     $("#top_title_tracks_album").html(item.name + " - " + item.author + " (" + item.year + ")");
@@ -162,7 +167,14 @@ function setComments(id) { // eslint-disable-line no-unused-vars
 
     $('#album_comments').empty();
 
-    $.each(item.reviews, function (index, value) { // eslint-disable-line no-unused-vars
+    console.info(" ------> " + item.reviews);
+
+    var my_reviews = [];
+    if (item.reviews !== null && item.reviews !== undefined) {
+      my_reviews = item.reviews;
+    }
+
+    $.each(my_reviews, function (index, value) { // eslint-disable-line no-unused-vars
 
         upd_human_date = fancyDate(new Date(Date.parse(value.updated)));
 
@@ -171,7 +183,11 @@ function setComments(id) { // eslint-disable-line no-unused-vars
             comments_count += 1;
         }
 
-        content += '<b>' + value.username + '</b> <span style="color:red; float:right">' + value.vote + '</span>';
+        if (value.vote === -1) {
+          content += '<b>' + value.username + '</b> <span style="color:red; float:right">no vote</span>';
+        } else {
+          content += '<b>' + value.username + '</b> <span style="color:red; float:right">' + value.vote + '</span>';
+        }
         content += '<br/><p style="white-space:normal; font-style:italic; font-size:12px">' + value.review + '</p>';
         content += '<span style="color:#C60419; font-style:italic; font-size:10px; float:right">' + upd_human_date + '</span>';
         content += '</li>';
@@ -179,7 +195,7 @@ function setComments(id) { // eslint-disable-line no-unused-vars
     });
 
     header_content = '<li data-role="list-divider" data-theme="b" style="text-align:center">';
-    header_content += '<span style="color:yellow">' + comments_count + ' comment(s) / ' + Object.keys(item.reviews).length + ' vote(s)</span></li>';
+    header_content += '<span style="color:yellow">' + comments_count + ' comment(s) / ' + Object.keys(my_reviews).length + ' vote(s)</span></li>';
     $('#album_comments').prepend(header_content);
     $('#album_comments').listview('refresh');
 
@@ -209,17 +225,7 @@ function setCovers(covers) {
 
         var cover_location = '',
             cover_content,
-            icon_name,
-            upd_human_date,
-            comments_count = 0;
-
-        /*
-        if (value.spotifyUrl !== "") {
-          icon_name = "spoti";
-        } else {
-          icon_name = "hand";
-        }
-        */
+            upd_human_date;
 
         if (value.type === undefined || value.type === "local") {
             cover_location = device_app_path + "www/images/covers/" + value.location;
@@ -227,39 +233,14 @@ function setCovers(covers) {
             cover_location = value.location;
         }
 
-        cover_content = '<li style="background: url(' + cover_location + ') no-repeat center left ; padding: 10px 10px 10px 65px; background-size: 48px 48px; background-position: 5px 5px; background-color:white; white-space:normal;" >';
-        //cover_content = '<li style="background: url(images/icons/' + icon_name + '-icon.png) no-repeat center left; padding: 10px 10px 10px 35px; background-size: 32px 32px; background-color:white; white-space:normal;">';
-        //cover_content += ' class="clickable" album_id="' + value.id + '" cover_loc="' + cover_location + '">';
-
-        /*
-        if (value.type === "remote" && value.id !== undefined && value.id !== "") {
-            cover_content += '<button class="ui-btn ui-icon-edit ui-btn-icon-notext ui-corner-all ui-mini ui-btn-inline" id="btn_edit_cover" style="float:right" onclick="edit_cover(\'' + value.id + '\')"></button>';
-        }
-        */
-
-        /*
-        cover_content += '<button class="ui-btn ui-icon-edit ui-btn-icon-notext ui-corner-all ui-mini ui-btn-inline" id="btn_edit_cover" style="float:right" onclick="edit_cover(\'' + value.id + '\')"></button>';
-        */
-
-        /*
-        if (value.spotifyAlbumUrl !== "" && value.spotifyAlbumUrl !== undefined) {
-            cover_content += '<button class="ui-btn ui-btn-icon-notext ui-corner-all ui-mini ui-btn-inline ui-icon-myicon" style="float:right" onclick="window.open(\'' + value.spotifyAlbumUrl + '\', \'_system\')"></button>';
-        }
-        */
-
-        /*
-        if (value.reviews !== null) {
-          comments_count = Object.keys(value.reviews).length;
-          cover_content += '<button class="ui-btn ui-corner-all ui-mini ui-btn-inline" style="float:right; color:#8B0000; border-radius: 50%" id="btn_edit_cover" onclick="setComments(\'' + value.id +  '\')">' + comments_count + '</button>';
-        }
-        */
+        cover_content = '<li style="background-image: url(' + cover_location + '), url(' + cordova.file.applicationDirectory + 'www/images/loading.gif);';
+        cover_content += ' background-repeat: no-repeat; background-position: center left; padding: 10px 10px 10px 65px;';
+        cover_content += ' background-size: 48px 48px; background-position: 5px 5px; background-color:white; white-space:normal;" >';
 
         if (value.spotifyUrl !== "" && value.spotifyUrl !== undefined) {
           cover_content += '<button style="float:right; border: none; padding:0; background:none" onclick="tracks_me(\'' + value.spotifyUrl + '\', \'albums_page\')">';
           cover_content += '<img src="images/icons/cd-on.png" style="width:24px; height:24px; margin-top:5px"/></button>';
         }
-
-        //cover_content += '<button class="ui-btn ui-icon-camera ui-btn-icon-notext ui-corner-all ui-mini ui-btn-inline" id="btn_show_cover" style="float:right" onclick="poster(\'' + cover_location + '\')"></button>';
 
         cover_content += '<div class="clickable" album_id="' + value.id + '" cover_loc="' + cover_location + '">' + value.name + '<br/>';
         if (value.year !== 0 && value.year !== "") {
@@ -323,8 +304,8 @@ function getSongSuccess(data) {
 }
 
 
-function getSongFailure(data) {
-  console.info("Error while retrieving random song");
+function getSongFailure(err) {
+  console.info("Error while retrieving random song: " + err);
   $("#song_content").html("Error during song loading... Please, retry later...");
 }
 
@@ -344,8 +325,6 @@ function get_song() { // eslint-disable-line no-unused-vars
 }
 
 function sort_covers(s_type) {
-
-    var covers;
 
     if (current_covers === undefined || current_covers === "") {
       current_covers = JSON.parse(storage.getItem("covers_storage"));
@@ -454,7 +433,9 @@ function get_covers(limit) { // eslint-disable-line no-unused-vars
 
 function edit_cover(id) { // eslint-disable-line no-unused-vars
 
-    var spotify_url_received = get_ls("spotify_url_received");
+    var spotify_url_received = get_ls("spotify_url_received"),
+        vote = 0,
+        review = "";
 
     $(':mobile-pagecontainer').pagecontainer('change', '#cover_page');
 
@@ -462,11 +443,25 @@ function edit_cover(id) { // eslint-disable-line no-unused-vars
     $("#cover_img").attr("src", "");
     $("#back-button-edit-page").attr("href", "#comments_page");
     $("#top_title_edit_album").html("New Album");
+    $("#tooltip-new-cover").hide();
+    $("#spoty_btn_search").prop('disabled', true).addClass('ui-disabled');
+    $("#spoty_search").prop("readonly", "readonly");
+    $("#spoty_btn").hide();
+    $("#top_title_tracks_album").html("");
+    $("#spoty_url").val("");
+
     if (id === 0) {
         $("#cover_img").hide();
+        $("#tooltip-new-cover").show();
         $("#back-button-edit-page").attr("href", "#song_page");
+        $("#spoty_btn_search").prop('disabled', false).removeClass('ui-disabled');
+        $("#spoty_search").removeProp("readonly");
+        $("#spoty_btn").show();
+        if (spotify_url_received !== undefined) {
+          $("#spoty_url").val(spotify_url_received);
+        }
+
     }
-    $("#spoty_url").val("");
     //$("#tracks-button").attr("src", "images/icons/cd-off.png");
     $("#title").val("");
     $("#author").val("");
@@ -476,17 +471,13 @@ function edit_cover(id) { // eslint-disable-line no-unused-vars
     $("#spoti_img_url").val("");
     $("#spotify_api_url").val("");
     $("#spotify_album_url").val("");
-    $("#spoty_url").val("");
     $("#upload_result").html("");
     $("#spoty_search").val("");
     $('#spoti-list').empty();
     $("#vote").val(5).slider("refresh");
     $("#review").val('');
     $("#pic").removeAttr('disabled');
-
-    if (spotify_url_received !== undefined) {
-      $("#spoty_url").val(spotify_url_received);
-    }
+    $("#nl").prop("checked", false).checkboxradio("refresh");
 
     if (id !== 0) {
         var result = $.grep(current_covers.covers, function (element, index) { // eslint-disable-line no-unused-vars
@@ -506,9 +497,19 @@ function edit_cover(id) { // eslint-disable-line no-unused-vars
         $("#year").val(result.year);
         $("#top_title_edit_album").html('<span style="color:#000000">Edit: </span>' + result.name);
 
-        if (result.reviews !== undefined && result.reviews !== null && result.reviews[icarusi_user] !== undefined && result.reviews[icarusi_user] !== null) {
-          $("#vote").val(result.reviews[icarusi_user].vote).slider("refresh");
+
+
+        if (result.reviews !== undefined && result.reviews !== null && result.reviews[icarusi_user] !== undefined) {
+          vote = result.reviews[icarusi_user].vote;
+          review = result.reviews[icarusi_user];
           $("#review").val(result.reviews[icarusi_user].review);
+
+          if (vote === -1) {
+            $("#nl").prop("checked", true).checkboxradio("refresh");
+          } else {
+            $("#vote").val(result.reviews[icarusi_user].vote).slider("refresh");
+          }
+
         }
 
         $("#spotify_api_url").val(result.spotifyUrl);
@@ -522,16 +523,18 @@ function edit_cover(id) { // eslint-disable-line no-unused-vars
             $("#cover_img").attr("src", result.location);
           }
         }
+        /*
         if (result.spotifyUrl !== "") {
           get_spotify({
-              "action": "album-onlyt",
+              "action": "album-only",
               "url": result.spotifyUrl
             });
         }
+        */
         if (DEBUG) { console.info("cover img src: " + $("#cover_img").attr("src")); }
         curr_cover_id = result.id;
     } else {
-        $("#id").val("");
+        $("#id").val("0");
     }
 }
 
@@ -564,6 +567,10 @@ function uploadCover() { // eslint-disable-line no-unused-vars
 
     $("#username2").val(icarusi_user);
     $("#kanazzi").val(kanazzi);
+
+    if ($("#nl").prop("checked")) {
+      $("#vote").val("-1");
+    }
 
     var username = icarusi_user,
         title = $("#title").val(),
@@ -658,12 +665,17 @@ function no_image() { // eslint-disable-line no-unused-vars
 
 function setTracks(tracks, tracks_list_obj, source) {
 
+    if (tracks.items.length === 0) {
+        alert("No tracks found on Spotify!");
+        return false;
+    }
+
     if (source === "xxx") {
       $(':mobile-pagecontainer').pagecontainer('change', '#list_page');
     }
 
     $('#' + tracks_list_obj).empty();
-    $("#top_title_tracks_album").html("");
+    //$("#top_title_tracks_album").html("");
 
     if (tracks.items.length === 0) {
         if (DEBUG) { console.info("Rosebud App============> No tracks found on Spotify."); }
@@ -691,7 +703,7 @@ function setTracks(tracks, tracks_list_obj, source) {
 }
 
 
-function tracks_me(spotifyUrl, source){
+function tracks_me(spotifyUrl, source) { // eslint-disable-line no-unused-vars
 
   if (source === "albums_page") {
    $("#back_button_list_page").attr("href", "#song_page");
@@ -721,7 +733,7 @@ function setSpotifyAlbum(data) {
     $("#spotify_album_url").val(data.external_urls.spotify);
     $("#cover_img").show();
 
-    $("#back_button_list_page").attr("href","#cover_page")
+    $("#back_button_list_page").attr("href", "#cover_page");
     $(':mobile-pagecontainer').pagecontainer('change', '#cover_page');
 
 }
@@ -740,10 +752,6 @@ function setBothTracksAlbums(data) {
 function setAlbumOnly(data) {
     data = JSON.parse(data);
     setSpotifyAlbum(data);
-}
-
-function saveAlbumData(data){
-  storage.setItem("album_data", JSON.stringify(data));
 }
 
 function spotyFailure(err) {
@@ -775,10 +783,10 @@ function get_spotify(fn_data) {
     } else if (fn_data.action === 'both') {
       successCB = setBothTracksAlbums;
       spoty_url = fn_data.url;
-    } else if (fn_data.action === 'album-only') {
+    } /* else if (fn_data.action === 'album-only') {
       successCB = setAlbumOnly;
       spoty_url = fn_data.url;
-    }
+    } */
 
     data = {
       "username": icarusi_user,
@@ -802,14 +810,15 @@ function set_album(url) {  // eslint-disable-line no-unused-vars
 
 function spotySearchSuccess(data) {
 
-  $(':mobile-pagecontainer').pagecontainer('change', '#list_page');
-  $("#back_button_list_page").attr("href", "#cover_page")
-  $('#spoti-list').empty();
-
   if (data.payload.length === 0) {
       if (DEBUG) { console.info("Rosebud App============> No tracks found on Spotify."); }
+      alert("No albums found on Spotiy! Change your search query and try again...")
       return false;
   }
+
+  $(':mobile-pagecontainer').pagecontainer('change', '#list_page');
+  $("#back_button_list_page").attr("href", "#cover_page");
+  $('#spoti-list').empty();
 
   var tracks_header = '<li data-role="list-divider" data-theme="b" style="text-align:center">';
   tracks_header += 'Found <span style="color:yellow">' + data.payload.length + '</span> albums on Spotify';
@@ -914,24 +923,24 @@ function onDeviceReady() { // eslint-disable-line no-unused-vars
     rosebud_uid = storage.getItem("rosebud_uid");
     covers_storage = storage.getItem("covers_storage");
     device_app_path = cordova.file.applicationDirectory;
-    var spotify_url_received = get_ls("spotify_url_received");
-    if (spotify_url_received !== undefined) {
-      $("#spoty_url").val(spotify_url_received);
-    }
 
-
-    window.plugins.intent.setNewIntentHandler(function (intent) {
+    window.plugins.intent.setNewIntentHandler(function (intent) { // eslint-disable-line no-unused-vars
         console.info(JSON.stringify(intent));
-        //if (intent !== undefined) {
+        if (intent.clipItems !== undefined) {
            storage.setItem("spotify_url_received", intent.clipItems[0].text);
-        //}
+        } else {
+          storage.setItem("spotify_url_received", "");
+          $("#spoty_url").val("");
+        }
     });
 
     var networkState = navigator.connection.type,
+    /*
         old_ts  = parseInt(storage.getItem("covers_ts"), 10),
         new_ts,
         diff,
         diff_sec,
+    */
         be_selector = get_ls("be-selector");
 
     if (be_selector !== "") {

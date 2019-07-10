@@ -11,6 +11,7 @@ var storage = window.localStorage,
     DEBUG = false,
     icarusi_user = "",
     kanazzi,
+    rosebud_uid,
 //    swipe_left_target = "song.html",
 //    swipe_right_target = "movies.html",
     curr_action = "GET",
@@ -212,57 +213,59 @@ function setButtons(positions) {
  * GET/SET REMOTE DATA
  */
 
-function geoLocation() { // eslint-disable-line no-unused-vars
+function geolocationSuccessCB(data) {
+
+  console.info(JSON.stringify(data));
+  $('#get_locations').prop('disabled', false).removeClass('ui-state-disabled');
+
+  if (DEBUG) { console.info("Response from server =====> " + JSON.stringify(data)); }
+
+  if (data.result === "failure") {
+      alert(data.message);
+      return false;
+  }
+
+  $("#distance_info").html("As the crow flies...<br/> from your last location you moved about " + data.distance + " km.");
+
+  if (curr_action === "GET") {
+      curr_positions = data.body;
+      //$("#distance_info").html("As the crow flies...<br/> from your last location you moved about " + data.distance + " km.");
+      //storage.setItem("location_string", data.location_string);
+      setMarkers2();
+      setButtons(curr_positions);
+  }
+}
+
+function geolocationFailureCB(err) {
+  console.error(JSON.stringify(err));
+  alert("Server error! Try again, please.");
+}
+
+function geoLocation(geoloc_params) { // eslint-disable-line no-unused-vars
 
     if (icarusi_user === "" || icarusi_user === undefined || icarusi_user === null) {
         alert("Please login for share your location and/or getting info on your friends location");
         return false;
     }
 
-    loading(true, "GeoLocation...");
-
     if (DEBUG) { console.info("GeoLocation remote action: " + curr_action + " for user: " + icarusi_user); }
 
-    $.ajax({
-        url: BE_URL + "/geolocation",
-        method: "POST",
-        data: {
-            action: curr_action,
-            latitude: curr_latitude,
-            longitude: curr_longitude,
-            photo: friend_photo_url,
-            username: icarusi_user,
-            kanazzi: kanazzi,
-        },
-    })
-        .done(function (data) {
+    var data = {
+      "method": "POST",
+      "url": "/geolocation",
+      "action": curr_action,
+      "latitude": curr_latitude,
+      "longitude": curr_longitude,
+      "notification_on" : geoloc_params.notification_on,
+      "photo": friend_photo_url,
+      "username": icarusi_user,
+      "rosebud_uid": rosebud_uid,
+      "cB": generic_json_request_new,
+      "successCb": geolocationSuccessCB,
+      "failureCb": geolocationFailureCB,
+    }
+    encrypt_and_execute(getX(), "kanazzi", data);
 
-            var response = data;
-            if (DEBUG) { console.info("Response from server =====> " + JSON.stringify(response)); }
-
-            if (response.result === "failure") {
-                alert(response.message);
-                return false;
-            }
-
-            $("#distance_info").html("As the crow flies...<br/> from your last location you moved about " + response.distance + " km.");
-
-            if (curr_action === "GET") {
-                curr_positions = response.body;
-                $("#distance_info").html("As the crow flies...<br/> from your last location you moved about " + response.distance + " km.");
-                setMarkers2();
-                setButtons(curr_positions);
-            }
-        })
-        .fail(function (err) {
-            console.error(err);
-            loading(false, "GeoLocation...");
-            alert("Server error! Die Hunde mussen sein!");
-        })
-        .always(function () {
-            loading(false, "GeoLocation...");
-            $('#get_locations').prop('disabled', false).removeClass('ui-state-disabled');
-        });
 }
 
 // CORDOVA
@@ -271,6 +274,8 @@ function onDeviceReady() { // eslint-disable-line no-unused-vars
     icarusi_user = storage.getItem("icarusi_user");
     enable_geoloc = get_ls_bool("enable-geoloc");
     friend_photo_url = storage.getItem("google_photo_url");
+    rosebud_uid = storage.getItem("rosebud_uid");
+    storage.setItem("notification_on", false);
     //storage.setItem("spotify_url_received", "");
 
     window.plugins.intent.setNewIntentHandler(function (intent) {
@@ -295,6 +300,7 @@ function onDeviceReady() { // eslint-disable-line no-unused-vars
     if (icarusi_user === undefined || icarusi_user === "" || icarusi_user === null) {
         $('#get_locations').prop('disabled', true).addClass('ui-state-disabled');
         $('#locate_me').prop('disabled', true).addClass('ui-state-disabled');
+        $('#locate_me_notif').prop('disabled', true).addClass('ui-state-disabled');
         alert("You must be logged in for accessing Rosebud page!!");
         return false;
     }
@@ -342,6 +348,7 @@ function onDeviceReady() { // eslint-disable-line no-unused-vars
 
     $('#get_locations').prop('disabled', true).addClass('ui-state-disabled');
     $('#locate_me').prop('disabled', true).addClass('ui-state-disabled');
+    $('#locate_me_notif').prop('disabled', true).addClass('ui-state-disabled');
 
     /*
      * GEOLOCATION CALLBACKS
@@ -359,10 +366,13 @@ function onDeviceReady() { // eslint-disable-line no-unused-vars
         'Timestamp:<b>'         + position.timestamp                + '</b><br/>');
         */
 
+        var geoloc_params = {};
         geoloc_state = 0;
 
         loading(false, "");
         $('#locate_me').prop('disabled', false).removeClass('ui-state-disabled');
+        $('#locate_me_notif').prop('disabled', false).removeClass('ui-state-disabled');
+        $('#get_locations').prop('disabled', false).removeClass('ui-state-disabled');
 
         if (icarusi_user === "" || icarusi_user === null) {
             positions.push({
@@ -402,7 +412,10 @@ function onDeviceReady() { // eslint-disable-line no-unused-vars
             curr_action = "DELETE";
         }
 
-        encryptText2(getX(), 'geoLocation');
+        geoloc_params = {
+          "notification_on": storage.getItem("notification_on")
+        }
+        geoLocation(geoloc_params);
     }
 
     // onError Callback receives a PositionError object
@@ -422,6 +435,7 @@ function onDeviceReady() { // eslint-disable-line no-unused-vars
             loading(false, "Retrieving your position...");
             alert('Most likely you\'re inside a cave... Pantalica? \n code: ' + error.code + '\n' + 'message: ' + error.message); // eslint-disable-line no-useless-concat
             $('#locate_me').prop('disabled', false).removeClass('ui-state-disabled');
+            $('#locate_me_notif').prop('disabled', false).removeClass('ui-state-disabled');
         }
     }
 
@@ -453,7 +467,11 @@ function onDeviceReady() { // eslint-disable-line no-unused-vars
     $(document).on("click", "#get_locations", function () {
         curr_action = "GET";
         $('#get_locations').prop('disabled', true).addClass('ui-state-disabled');
-        encryptText2(getX(), "geoLocation");
+
+        geoloc_params = {
+          "notification_on": storage.getItem("notification_on")
+        }
+        geoLocation(geoloc_params);
     });
 
     $(document).on("change", "#friends_loc_buttons", function () {
@@ -464,11 +482,35 @@ function onDeviceReady() { // eslint-disable-line no-unused-vars
 
     $(document).on("click", "#locate_me", function () {
         $('#locate_me').prop('disabled', true).addClass('ui-state-disabled');
+        $('#locate_me_notif').prop('disabled', true).addClass('ui-state-disabled');
+        storage.setItem("notification_on", false);
         loading(true, "Retrieving your position using GPS...");
         navigator.geolocation.getCurrentPosition(onSuccessLocation, onErrorLocation, {
             timeout: 30000,
             enableHighAccuracy: true
         });
+    });
+
+    $(document).on("click", "#locate_me_notif", function () {
+      var message = "Do you want to notify your friend about your curren location?";
+          //user_loc = storage.getItem("location_string");
+
+      /*
+      if (user_loc !== "" && user_loc !== undefined) {
+        message += "\n" + user_loc;
+      }
+      */
+
+      if (confirm(message)) {
+        $('#locate_me_notif').prop('disabled', true).addClass('ui-state-disabled');
+        $('#locate_me').prop('disabled', true).addClass('ui-state-disabled');
+        storage.setItem("notification_on", true);
+        loading(true, "Retrieving your position using GPS...");
+        navigator.geolocation.getCurrentPosition(onSuccessLocation, onErrorLocation, {
+            timeout: 30000,
+            enableHighAccuracy: true
+        });
+      }
     });
 
     // SWIPE RUDIMENTALE

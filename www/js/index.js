@@ -1,7 +1,7 @@
-/*global $, cordova, device, window, document, storage_keys, get_ls, loading, alert, generic_json_request_new, encrypt_and_execute, getX*/
+/*global $, cordova, device, window, document, storage_keys, get_ls, alert, generic_json_request_new, encrypt_and_execute, getX*/
 /*global idTokenSuccess, idTokenFailure, encryptText2, navigator, Connection, BE_URL, BE_LIST, PullToRefresh, getServerVersion, show_image*/
 /*global swipeleftHandler, swipeRightHandler, power_user, get_ls_bool, get_ls_bool_default, authenticateWithGoogle, json_request, refreshIdToken */
-/*global listDir, pbkdf2_hasher*/
+/*global listDir, googleAuthSuccess, googleAuthFailure, submit */
 /*eslint no-console: ["error", { allow: ["info","warn", "error", "debug"] }] */
 /*eslint no-global-assign: "error"*/
 /*globals BE_URL:true*/
@@ -74,46 +74,6 @@ function idTokenFailure(data) {
     }
 }
 
-function iCaruiLoginSuccess(data) {
-
-    var g_photo = storage.getItem("google_photo_url"),
-        g_name = storage.getItem("google_display_name");
-
-    $("#logged").html('Logged in as <span style="color:green">' + g_name + '</span> (Google)');
-    $("#cover_img").attr("src", g_photo);
-    storage.setItem("icarusi_user", data.payload.username);
-
-    getServerVersion();
-
-}
-
-function iCaruiLoginFailure(data) {
-    alert(data.message);
-}
-
-function googleAuthSuccess() {
-
-    var id_token = storage.getItem("firebase_id_token"),
-    email = storage.getItem("google_email"),
-    app_version = storage.getItem("app_version"),
-    data = {
-            "username": icarusi_user,
-            "firebase_id_token": id_token,
-            "email": email,
-            "app_vesion": app_version,
-            "method": "POST",
-            "url": "/login2",
-            "successCb": iCaruiLoginSuccess,
-            "failureCb": iCaruiLoginFailure
-        };
-
-    json_request(data);
-
-}
-
-function googleAuthFailure() {
-    alert("Error google auth!");
-}
 
 /*
  *      SET IMAGE
@@ -148,7 +108,8 @@ function setImage(tot_imgs) {
     if (networkState !== Connection.NONE && remote_url !== "" && dld_imgs !== "" && dld_imgs && remote_covers_count !== undefined && remote_covers_count > 0) {
         if (DEBUG) { console.info("Rosebud App============> Considering remote images..."); }
         $("#cover_img").attr("images/covers/loading_spinner.gif");
-        encryptText2(getX(), 'get_remote_random_cover_2');
+        //encryptText2(getX(), 'get_remote_random_cover_2');
+        get_remote_random_cover();
         return false;
     }
 
@@ -177,43 +138,54 @@ function set_fallback_image() { // eslint-disable-line no-unused-vars
 }
 
 /*
- *      COVERS FUNCTIONS
+ * RANDOM ALBUM
  */
 
-function get_remote_random_cover_2() { // eslint-disable-line no-unused-vars
+function randomCoverSuccessCB(data) {
 
-    $.ajax({
-        url: BE_URL + "/getrandomcover",
-        method: "POST",
-        data: {
-            username: icarusi_user,
-            kanazzi: kanazzi
-        },
-        dataType: "json"
-    })
-        .done(function (data) {
-            if (DEBUG) { console.debug(data); }
-            var cover = JSON.parse(data);
+  if (DEBUG) { console.debug(data); }
+  var cover = JSON.parse(data);
 
-            if (cover !== undefined) {
-                if (DEBUG) { console.debug("Rosebud App============> Fetched remote random cover data: " + cover.name); }
-                storage.setItem("remote_cover_url", cover.location);
-                storage.setItem("random_cover_spotify_url", cover.spotifyAlbumUrl);
-                if (cover.spotifyAlbumUrl !== "" && cover.spotifyAlbumUrl !== undefined) {
-                  $("#spoty_button_img").attr('src', 'images/icons/spoti-icon.png');
-                }
-                show_image(cover.type);
-            }
-        })
-        .fail(function (err) {
-            if (DEBUG) { console.info("Rosebud App============> Error during remote covers retrieving"); }
-            if (DEBUG) { console.info("Rosebud App============> " + err.responseText); }
-        })
-        .always(function () {
-            if (DEBUG) { console.info("Rosebud App============> Random Cover 2 get done."); }
-        });
+  if (cover !== undefined) {
+      if (DEBUG) { console.debug("Rosebud App============> Fetched remote random cover data: " + cover.name); }
+      storage.setItem("remote_cover_url", cover.location);
+      storage.setItem("random_cover_spotify_url", cover.spotifyAlbumUrl);
+      if (cover.spotifyAlbumUrl !== "" && cover.spotifyAlbumUrl !== undefined) {
+
+        // FINESSE
+        if (cover.spotifyAlbumUrl.toUpperCase().indexOf("YOUTUBE") >= 0) {
+          $("#spoty_button_img").attr('src', 'images/icons/youtube-icon.png');
+        } else {
+          $("#spoty_button_img").attr('src', 'images/icons/spoti-icon.png');
+        }
+      }
+      show_image(cover.type);
+  }
 }
 
+function randomCoverFailureCB(err) {
+  if (DEBUG) { console.info("Rosebud App============> Error during remote covers retrieving"); }
+  if (DEBUG) { console.info("Rosebud App============> " + err.responseText); }
+}
+
+function get_remote_random_cover() { // eslint-disable-line no-unused-vars
+
+  var data = {
+    "username": icarusi_user,
+    "method": "POST",
+    "url": "/getrandomcover",
+    "cB": generic_json_request_new,
+    "successCb": randomCoverSuccessCB,
+    "failureCb": randomCoverFailureCB
+  };
+  if (DEBUG) { console.info("Rosebud App============> " + JSON.stringify(data)); }
+  encrypt_and_execute(getX(), "kanazzi", data);
+
+}
+
+/*
+ * ALBUMS STATS
+ */
 
 function coverStatsSuccess(data) {
     if (DEBUG) { console.info("Covers statistics: " + data); }
@@ -236,13 +208,9 @@ function coverStatsFailure(err) {
     }
     $("#remote_covers").html("N/A");
 
-    /*
-    if (err.status === 401) {
-        authenticateWithGoogle(get_remote_covers_stats, error_fall_back, {});
-    }
-    */
 }
 
+/*
 function get_remote_covers_stats() { // eslint-disable-line no-unused-vars
 
     if (!icarusi_user) {
@@ -261,6 +229,7 @@ function get_remote_covers_stats() { // eslint-disable-line no-unused-vars
 
     json_request(data);
 }
+*/
 
 function get_remote_covers_stats_legacy() { // eslint-disable-line no-unused-vars
 
@@ -348,7 +317,6 @@ function refresh_power_users() {
 
 function show_post_login_features() {
 
-    //encryptText2(getX(), 'get_remote_covers_stats_legacy');
     get_remote_covers_stats_legacy();
     refresh_power_users();
 
@@ -362,63 +330,7 @@ function show_post_login_features() {
     getServerVersion();
 }
 
-/*
- * SUBMIT
- */
 
-function submit() { // eslint-disable-line no-unused-vars
-
-    var u = $("#username").val(),
-        p = kanazzi;
-
-    if (u === "" || p === "") {
-        alert("Username and/or Passowrd cannot be empty!");
-        return false;
-    }
-
-    loading(true, "Logging in...");
-
-    $.ajax({
-        url: BE_URL + "/login",
-        method: "POST",
-        dataType: "json",
-        data: {
-            username: u,
-            password: p,
-        },
-    })
-        .done(function (response) {
-            if (DEBUG) {
-                console.info("========> Rosebud : login completed ");
-                console.info("========> Rosebud : Result... ");
-            }
-            if (response.result === "success" && response.payload.logged === "yes") {
-                if (DEBUG) { console.info("========> Rosebud : Login successful"); }
-                if (DEBUG) { console.info("========> Rosebud : " + JSON.stringify(response.payload)); }
-                storage.setItem("icarusi_user", response.payload.username);
-                storage.setItem("rosebud_uid", response.payload.rosebud_uid);
-                storage.setItem("poweruser", response.payload.extra_info.poweruser);
-                storage.setItem("geoloc_enabled", response.payload.extra_info.geoloc_enabled);
-                icarusi_user = response.payload.username;
-                rosebud_uid = response.payload.rosebud_uid;
-                //console.info(rosebud_uid);
-                $("#logged").html('Logged in as <span style="color:green">' + storage.getItem("icarusi_user") + '</span>');
-                $("#popupLogin").popup("close");
-                $("#login_message").html(response.payload.message);
-                $("#popupLoginResult").popup("open");
-                show_post_login_features();
-            } else {
-                console.info("========> Rosebud : Login unsuccessful");
-            }
-        })
-        .fail(function (err) {
-            alert(err.responseJSON.payload.message);
-            console.info("========> Rosebud : error during login");
-        })
-        .always(function () {
-            loading(false, "Logging in...");
-        });
-}
 
 /*
 * BE Url
@@ -706,7 +618,8 @@ function onDeviceReady() {  // eslint-disable-line no-unused-vars
 
 
     $(document).on("click", "#login_button", function () {
-        encryptText2($("#password").val(), "submit");
+        //encryptText2($("#password").val(), "submit");
+        submit();
     });
 
     /*
@@ -792,26 +705,11 @@ function onDeviceReady() {  // eslint-disable-line no-unused-vars
     $("#home_page").on("swipeleft", swipeleftHandler);
     $("#home_page").on("swiperight", swipeRightHandler);
 
-
     /*
      * INIT
      */
 
     listDir(cordova.file.applicationDirectory + "www/images/covers/");
     show_post_login_features();     // User can be already logged in from previous session
-
-    /*
-    function hash_success(key) {
-      if (DEBUG) { console.info("Rosebud App============> PBKDF2 Hasher: " + key); }
-    }
-
-    function hash_failure(err) {
-      if (DEBUG) { console.error("Rosebud App============> PBKDF2 Hasher Error: " + err); }
-    }
-
-    pbkdf2_hasher({}, hash_success, hash_failure);
-    */
-
-    get_remote_covers_stats_legacy();
 
 }   // CORDOVA

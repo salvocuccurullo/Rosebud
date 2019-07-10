@@ -467,10 +467,11 @@ function tvShowsNewSuccess(data) {
     setTvShows(tvshows, votes_user);
 }
 
-function tvShowsNewFailure(data) {
+function tvShowsNewFailure(err) {
 
-    console.error(JSON.stringify(data));
-    alert(data.responseJSON.message);
+    console.error(JSON.stringify(err));
+    //alert(data.responseJSON.message);
+    alert("Server error");
 
 }
 
@@ -526,7 +527,6 @@ function getTvShows(use_cache) {
             "failureCb": tvShowsNewFailure,
             };
         encrypt_and_execute(getX(), "kanazzi", data);
-        //encryptText2(getX(), "getTvShowsGo");
 
     } else {
         var tvshows = storage.getItem("tv_shows"),      // GET FROM LOCALSTORAGE
@@ -613,24 +613,29 @@ function setCtMovies(data, cached, by_search) { // eslint-disable-line no-unused
     $("#ct-movies").listview('refresh');
 }
 
+function ctMoviesSuccess(data) {
+
+  storage.setItem("baracca", JSON.stringify(data.payload));
+  ct_movies = data.payload;            // IT'S ME
+  setCtMovies(data.payload, false, false);
+
+}
+
+function ctMoviesFailure(err) {
+  alert("Get Movies CT Server Error");
+  console.error(err);
+}
+
 function getMoviesCT() {
 
-    $.ajax({
-        url: BE_URL + "/moviesct",
-        method: "GET",
-        dataType: "json"
-    })
-        .done(function (data) {
-            storage.setItem("baracca", JSON.stringify(data.payload));
-            ct_movies = data.payload;            // IT'S ME
-            setCtMovies(data.payload, false, false);
-        })
-        .fail(function () {
-            alert("Server Error");
-        })
-        .always(function () {
-            loading(false, '');
-        });
+  var data = {
+          "method": "GET",
+          "url": "/moviesct",
+          "successCb": ctMoviesSuccess,
+          "failureCb": ctMoviesFailure
+      };
+  json_request(data);
+
 }
 
 
@@ -775,7 +780,8 @@ function saveMovieNew() { // eslint-disable-line no-unused-vars
                 resetPopupElements();
                 getTvShows(false);
                 currentId = 0;
-                $.mobile.back();
+                $(':mobile-pagecontainer').pagecontainer('change', '#movies_page');
+                //$.mobile.back();
             }
             if (DEBUG) { console.info(JSON.stringify(response)); }
 
@@ -793,56 +799,60 @@ function saveMovieNew() { // eslint-disable-line no-unused-vars
     DELETE
 ***/
 
+/*
 $(document).on("click", "#delete_movie_btn", function () {
     if (confirm("The movie/serie will be deleted.\n\nAre you sure?")) {
-        encryptText2(getX(), "deleteMovie");
+        deleteMovie();
     }
 });
+*/
 
-function deleteMovie() { // eslint-disable-line no-unused-vars
+function deleteMovieSuccessCB(data) {
+
+  if (DEBUG) {
+      console.info("Rosebud App============> ========> " + data.result);
+      console.info("Rosebud App============> ========> " + data.message);
+  }
+
+  if (data.result === "failure") {
+      alert(data.message);
+      return false;
+  }
+
+  resetPopupElements();
+  getTvShows(false);
+  //currentId = 0;
+
+  $(':mobile-pagecontainer').pagecontainer('change', '#movies_page');
+}
+
+function deleteMovieFailureCB(err) {
+  alert("Server error! Please, try again later.");
+  console.error(err.responseText);
+}
+
+function deleteMovie(id) { // eslint-disable-line no-unused-vars
+
+    if (!confirm("The movie/serie will be deleted.\n\nAre you sure?")) {
+      return false;
+    }
 
     if (icarusi_user === "" || icarusi_user === undefined || icarusi_user === null) {
         alert("You must be logged in for deleting Movies/Serie");
         return false;
     }
 
-    loading(true, 'Submitting movie...');
+    var data = {
+        "username": icarusi_user,
+        "method": "POST",
+        "url": "/deletemovie",
+        "id": id,
+        "successCb": deleteMovieSuccessCB,
+        "failureCb": deleteMovieFailureCB,
+        "cB": generic_json_request_new,
+    };
+    encrypt_and_execute(getX(), "kanazzi", data);
 
-    $.ajax({
-        url: BE_URL + "/deletemovie",
-        method: "POST",
-        data: {
-            id: currentId,
-            username: icarusi_user,
-            kanazzi: kanazzi,
-        },
-    })
-        .done(function (data) {
-            var response = data;
-            if (DEBUG) {
-                console.info("Rosebud App============> ========> " + response.result);
-                console.info("Rosebud App============> ========> " + response.message);
-            }
-
-            if (response.result === "failure") {
-                alert(response.message);
-                return false;
-            }
-
-            resetPopupElements();
-            getTvShows(false);
-            currentId = 0;
-
-            $.mobile.back(); //NEW
-
-        })
-        .fail(function (err) {
-            alert("Server error!");
-            console.error(err.responseText);
-        })
-        .always(function () {
-            loading(false, '');
-        });
 }
 
 function newMoviePage() { // eslint-disable-line no-unused-vars
@@ -906,10 +916,11 @@ function setPopupData(id, src) { // eslint-disable-line no-unused-vars
     $("#link").val(item.link);
     $("#serie_season").val(item.serie_season);
     if (item.tvshow_type === "serie") {
+        $('#episode').textinput('enable');
         $('#serie_season').textinput('enable');
-    } else {
+    } /*else {
       $('#episode').textinput('disable');
-    }
+    }*/
     $('#media').val(item.media).selectmenu('refresh', true);
     $('#tvshow_type').val(item.tvshow_type).selectmenu('refresh', true);
     $("#curr_pic").val(item.poster);
@@ -920,6 +931,7 @@ function setPopupData(id, src) { // eslint-disable-line no-unused-vars
     $("#comment").val(comment);
     $("#curr_link").val(item.link);
     $('#miniseries').prop("checked", item.miniseries).flipswitch('refresh');
+    $("#delete_movie_btn").attr("onclick", "");
 
     if (item.link === "") {
         $("#btn_link").hide();
@@ -930,11 +942,8 @@ function setPopupData(id, src) { // eslint-disable-line no-unused-vars
     }
 
     if (icarusi_user === "" || icarusi_user === undefined || icarusi_user === null) {
-//        $("#send_movie_btn").addClass("ui-btn ui-state-disabled");
-//        $("#delete_movie_btn").addClass("ui-btn ui-state-disabled");
         $("#send_movie_btn").hide();
         $("#delete_movie_btn").hide();
-
     }
 
     collapse_vote = $("#the_votes_d").collapsible("option", "collapsed");
@@ -959,31 +968,12 @@ function setPopupData(id, src) { // eslint-disable-line no-unused-vars
         $('#tvshow_type').selectmenu('disable');
         $('#media').prop("readonly", true);
         $('#tvshow_type').prop("readonly", true);
-        //$("#pic").addClass("ui-btn ui-state-disabled");       // new feature to allow not movier owner to upload the poster
-        //$("#delete_movie_btn").addClass("ui-btn ui-state-disabled");
         $("#delete_movie_btn").hide();
     } else {
-        //$("#send_movie_btn").removeClass("ui-state-disabled");
-        //$("#delete_movie_btn").removeClass("ui-state-disabled");
         $("#send_movie_btn").show();
         $("#delete_movie_btn").show();
+        $("#delete_movie_btn").attr("onclick", "deleteMovie('" + id + "')");
     }
-
-    /*
-    $('#users_votes').empty();
-    $.each(item.u_v_dict, function (index, value) { // eslint-disable-line no-unused-vars
-        var content = '<li style="white-space:normal;">';
-        if (value.now_watching === true) {
-            content += '<b>' + value.us_username + '</b> <span style="color:red; float:right">now watching...</span>';
-        } else {
-            content += '<b>' + value.us_username + '</b> <span style="color:red; float:right">' + value.us_vote + '</span>';
-            content += '<br/><p style="white-space:normal; font-style:italic">' + value.comment + '</p>';
-        }
-        content += '</li>';
-        $('#users_votes').append(content);
-    });
-    $('#users_votes').listview('refresh');
-    */
 }
 
 /***
@@ -1013,6 +1003,11 @@ function setComments(id, src) { // eslint-disable-line no-unused-vars
 
       $("#media_img").attr("src", media_icon);
       $("#edit_button").attr("onclick", "setPopupData('" + item.id + "','a')");
+      if (item.link !== "" && item.link.toUpperCase().indexOf("WIKIPEDIA") >= 0) {
+        $("#wiki_img").attr("onclick", "open_link('" + item.link + "')");
+      } else {
+        $("#wiki_img").attr("onclick", "alert('No link available')");
+      }
 
       content = ''
       if (item.tvshow_type === "serie") {
@@ -1126,7 +1121,8 @@ function onDeviceReady() { // eslint-disable-line no-unused-vars
      /*
      * ASYNC POPULATE MEDIA TYPE
      */
-    var data = {"username": icarusi_user,
+    var data = {
+        "username": icarusi_user,
         "firebase_id_token": storage.getItem("firebase_id_token"),
         "method": "POST",
         "url": "/getcatalogue",
