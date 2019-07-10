@@ -964,10 +964,10 @@ function setPopupData(id, src) { // eslint-disable-line no-unused-vars
         $("#link").textinput("option", "clearBtn", false);
         $("#title").textinput("refresh");
         $("#link").textinput("refresh");
-        $('#media').selectmenu('disable');
-        $('#tvshow_type').selectmenu('disable');
-        $('#media').prop("readonly", true);
-        $('#tvshow_type').prop("readonly", true);
+        //$('#media').selectmenu('disable');
+        //$('#tvshow_type').selectmenu('disable');
+        //$('#media').prop("readonly", true);
+        //$('#tvshow_type').prop("readonly", true);
         $("#delete_movie_btn").hide();
     } else {
         $("#send_movie_btn").show();

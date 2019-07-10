@@ -215,7 +215,7 @@ function setButtons(positions) {
 
 function geolocationSuccessCB(data) {
 
-  console.info(JSON.stringify(data));
+  //console.info(JSON.stringify(data));
   $('#get_locations').prop('disabled', false).removeClass('ui-state-disabled');
 
   if (DEBUG) { console.info("Response from server =====> " + JSON.stringify(data)); }
@@ -468,7 +468,7 @@ function onDeviceReady() { // eslint-disable-line no-unused-vars
         curr_action = "GET";
         $('#get_locations').prop('disabled', true).addClass('ui-state-disabled');
 
-        geoloc_params = {
+        var geoloc_params = {
           "notification_on": storage.getItem("notification_on")
         }
         geoLocation(geoloc_params);
