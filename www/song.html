@@ -120,6 +120,7 @@
           <input type="hidden" name="id" id="id" />
           <input type="hidden" name="spotify_api_url" id="spotify_api_url" />
           <input type="hidden" name="spotify_album_url" id="spotify_album_url" />
+          <input type="hidden" name="thumbnail" id="thumbnail" />
           <input type="text" name="title" id="title" data-mini="true" placeholder="Set album title (required)" data-clear-btn="true" />
           <input type="text" name="author" id="author" data-mini="true" placeholder="Set album author (required)" data-clear-btn="true" />
           <input type="number" pattern="[0-9]*" name="year" id="year" data-mini="true" placeholder="Set album release year (optional)" data-clear-btn="true" />
@@ -234,7 +235,7 @@
     <a href="#comments_page" style="text-decoration:none;" id="back_button_list_page">
       <img src="images/icons/back-icon.png" style="width:24px; height:24px; padding: 10px" />
     </a>
-    <span id="top_title_tracks_album" style="text-align: center; font-weight: bold; color:#8B0000; font-style:italic; margin-top:10px;"></span>
+    <span id="top_title_tracks_album" style="text-align: center; font-weight: bold; color:#8B0000; font-style:italic; position: absolute; margin-left:25px; margin-top:10px;"></span>
 
     <div style="text-align:center; padding:10px">
       <ul data-role="listview" data-theme="a" data-inset="true" data-filter="false" id="spoti-list" style=""></ul>

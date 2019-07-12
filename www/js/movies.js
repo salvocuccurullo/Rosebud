@@ -1055,7 +1055,7 @@ function setComments(id, src) { // eslint-disable-line no-unused-vars
         } else {
             content += '<b>' + value.us_username + '</b> <span style="color:red; float:right">' + value.us_vote + '</span>';
             content += '<br/><p style="white-space:normal; font-style:italic; font-size:12px">' + value.comment + '</p>';
-            content += '<span style="color:#C60419; font-style:italic; font-size:10px; float:right">' + value.us_date + '</span>';
+            content += '<span style="color:#C60419; font-style:italic; font-size:10px; float:right">' + value.us_update + '</span>';
         }
         content += '</li>';
         $('#movie_comments').append(content);
@@ -1090,9 +1090,15 @@ function onDeviceReady() { // eslint-disable-line no-unused-vars
         //}
     });
 
-    var be_selector = get_ls("be-selector");
+    var be_selector = get_ls("be-selector"),
+        mdn_selector = get_ls("mdn-selector");
+
     if (be_selector !== "") {
       BE_URL = be_selector;
+    }
+
+    if (mdn_selector !== "") {
+      base_url_poster = mdn_selector;
     }
 
     if (DEBUG) {

@@ -321,10 +321,11 @@ function show_post_login_features() {
     refresh_power_users();
 
     if (power_user.includes(icarusi_user)) {
-        $("#sabba_info").html(BE_URL);
+        $("#sabba_info").html(BE_URL + "<br/>" + base_url_poster);
         $("#debug_session").show();
         $("#refresh_token").show();
         $("#be_selector").show();
+        $("#mdn_selector").show();
     }
 
     getServerVersion();
@@ -338,9 +339,20 @@ function show_post_login_features() {
 
 function set_be_list(data) {
   if (DEBUG) { console.info("Rosebud App============> " + JSON.stringify(data)); }
+  /*
+  * FAILSAFE
+  */
+
+  $("#mdn-selector").append('<option value="' + base_url_poster_default + '">Default Failsafe PROD (hardcoded)</option>');
+
   $.each(data.payload, function (index, value) { // eslint-disable-line no-unused-vars
+
     if (value.config_type === "be_url") {
       $("#be-selector").append('<option value="' + value.value + '">' + value.name + '</option>');
+    }
+
+    if (value.config_type === "base_url_poster") {
+      $("#mdn-selector").append('<option value="' + value.value + '">' + value.name + '</option>');
     }
   });
 }
@@ -418,10 +430,15 @@ function onDeviceReady() {  // eslint-disable-line no-unused-vars
         enable_geoloc = get_ls_bool("enable-geoloc"),
         lazy_load = get_ls_bool_default("lazy-load", true),
         networkState = navigator.connection.type,
-        be_selector = get_ls("be-selector");
+        be_selector = get_ls("be-selector"),
+        mdn_selector = get_ls("mdn-selector");
 
     if (be_selector !== "") {
       BE_URL = be_selector;
+    }
+
+    if (mdn_selector !== "") {
+      base_url_poster = mdn_selector;
     }
 
     get_configurations();
@@ -516,6 +533,16 @@ function onDeviceReady() {  // eslint-disable-line no-unused-vars
            storage.setItem("be-selector", val);
          } else {
            storage.setItem("be-selector", BE_URL);  //the default from shared.js
+         }
+     });
+
+     $('#mdn-selector').on('change', function () {
+         var val = $("#mdn-selector :selected").val();
+         if (DEBUG) { console.info("Rosebud App============> MDN Selector : " + val); }
+         if (val !== "") {
+           storage.setItem("mdn-selector", val);
+         } else {
+           storage.setItem("mdn-selector", base_url_poster);  //the default from shared.js
          }
      });
 
