@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html>
 
 <head>
@@ -41,7 +42,7 @@
     <div role="main" class="ui-content" style="text-align:center; margin-top:45px">
 
       <div id="logo_content">
-        <img src="images/loading.gif" style="width:85%;" id="cover_img" onerror="set_fallback_image()">
+        <img src="images/loading.gif" style="width:85%; margin-top:20%;" id="cover_img" onerror="set_fallback_image()">
       </div>
       <div id="version" style="margin-top:10px; font-weight: bold;"></div>
 
@@ -112,9 +113,12 @@
     <a href="#home_page" style="text-decoration:none;">
       <img src="images/icons/back-icon.png" style="width:24px; height:24px; padding:10px;" />
     </a>
-    <span id="sabba_info" style="font-weight: bold; position:absolute; margin-top:10px; max-width:65%; color:#8B0000; font-style:italic">Settings</span>
+    <span id="sabba_info" style="font-weight: bold; position:absolute; margin-top:10px; max-width:65%; color:#8B0000; font-style:italic"></span>
 
     <div class="ui-corner-all custom-corners" style="padding:10px">
+      <div class="ui-bar ui-bar-a">
+        <h3>Settings</h3>
+      </div>
       <div class="ui-body ui-body-a" id="switch-page">
       <!--
         <div class="ui-grid-a" id="custom-grid">
@@ -128,7 +132,7 @@
       -->
         <div class="ui-grid-a" id="custom-grid">
           <div class="ui-block-a">
-            <label for="enable-geoloc">Share your location with friends</label>
+            <label for="enable-geoloc">Share your location</label>
           </div>
           <div class="ui-block-b">
             <input type="checkbox" data-role="flipswitch" data-mini="true" name="enable-geoloc" id="enable-geoloc" data-theme="b" />
@@ -137,13 +141,13 @@
 
         <div class="ui-grid-a" id="custom-grid">
           <div class="ui-block-a">
-            <label for="enable-notifications">Enable Push Notifications</label>
+            <label for="enable-notifications">Push Notifications</label>
           </div>
           <div class="ui-block-b">
             <input type="checkbox" data-role="flipswitch" data-mini="true" name="enable-notifications" id="enable-notifications" data-theme="b" />
           </div>
         </div>
-
+<!--
         <div class="ui-grid-a" id="custom-grid">
           <div class="ui-block-a">
             <label for="flip-dld-images">Download new covers from network</label>
@@ -152,7 +156,7 @@
             <input type="checkbox" data-role="flipswitch" data-mini="true" name="flip-dld-images" id="flip-dld-images" data-theme="b" />
           </div>
         </div>
-
+-->
         <div class="ui-grid-a" id="custom-grid">
           <div class="ui-block-a">
             <label for="flip-dld-images">Google Login</label>
@@ -163,7 +167,7 @@
             </a>
           </div>
         </div>
-
+<!--
         <div class="ui-grid-a" id="custom-grid">
           <div class="ui-block-a">
             <label for="flip-save-images">Save downloaded covers on phone</label>
@@ -172,7 +176,7 @@
             <input type="checkbox" data-role="flipswitch" data-mini="true" name="flip-save-images" id="flip-save-images" data-theme="b" disabled="disabled" />
           </div>
         </div>
-
+-->
         <div class="ui-grid-a" id="custom-grid">
           <div class="ui-block-a">
             <label for="show-extra-info">Show extra info</label>
@@ -242,9 +246,10 @@
         <div style="margin-top:10px"><span style="font-weight:bold">Username</span><span style="color:#C60419; float:right" id="info_user">Not logged in</span></div>
         <div style="margin-top:10px"><span style="font-weight:bold">Network</span><span style="color:#C60419; float:right" id="info_network">Unknown</span></div>
         <div style="margin-top:10px"><span style="font-weight:bold">Installed images</span><span style="color:#C60419; float:right" id="hardcoded_images">&ndash;</span></div>
-        <div style="margin-top:10px"><span style="font-weight:bold">Downloaded images</span><span style="color:#C60419; float:right" id="dld_images">&ndash;</span></div>
+        <!--<div style="margin-top:10px"><span style="font-weight:bold">Downloaded images</span><span style="color:#C60419; float:right" id="dld_images">&ndash;</span></div>-->
         <div style="margin-top:10px"><span style="font-weight:bold">Remote covers</span><span style="color:#C60419; float:right" id="remote_covers">&ndash;</span></div>
-        <div style="margin-top:10px"><span style="font-weight:bold">Server versions (Google Login required)</span><span style="color:#C60419; float:right" id="server_version">&ndash;</span></div>
+        <div style="margin-top:10px"><span style="font-weight:bold">Django rel.</span><span style="color:#C60419; float:right" id="django_version">&ndash;</span></div>
+        <div style="margin-top:10px"><span style="font-weight:bold">Mongo rel.</span><span style="color:#C60419; float:right" id="mongo_version">&ndash;</span></div>
       </div>
     </div>
 

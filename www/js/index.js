@@ -27,11 +27,13 @@ document.addEventListener('deviceready', this.onDeviceReady.bind(this), false);
 function getServerVersion() {
 
     function versionSuccess(data) {
-       $("#server_version").html(data.message);
+       $("#django_version").html(data.payload.django);
+       $("#mongo_version").html(data.payload.mongo);
     }
 
     function versionFailure(err) {
-       $("#server_version").html("N/A");
+      $("#django_version").html("N/A");
+      $("#mongo_version").html("N/A");
        if (DEBUG) { console.info("Rosebud App============> " + err.responseText); }
     }
 
@@ -43,7 +45,7 @@ function getServerVersion() {
            id_token = "";
        }
        data = {"username": icarusi_user,
-               "firebase_id_token": id_token,
+               "rosebud_uid": rosebud_uid,
                "method": "POST",
                "url": "/version",
                "successCb": versionSuccess,
@@ -180,6 +182,39 @@ function get_remote_random_cover() { // eslint-disable-line no-unused-vars
   };
   if (DEBUG) { console.info("Rosebud App============> " + JSON.stringify(data)); }
   encrypt_and_execute(getX(), "kanazzi", data);
+
+}
+
+/*
+*   SERVER REVISION
+*/
+
+function getServerRevisionSuccessCB(data) {
+
+  if (DEBUG) { console.debug(data); }
+  var revision = data.payload.revision;
+  $("#rosebud_revision").html(revision.substring(0,10));
+
+}
+
+function getServerRevisionFailureCB(err) {
+  if (DEBUG) { console.info("Rosebud App============> Error during remote covers retrieving"); }
+  if (DEBUG) { console.info("Rosebud App============> " + err.responseText); }
+}
+
+function get_server_revision() { // eslint-disable-line no-unused-vars
+
+  var data = {
+    "username": icarusi_user,
+    "rosebud_uid": rosebud_uid,
+    "method": "POST",
+    "url": "/commit",
+    "cB": generic_json_request_new,
+    "successCb": getServerRevisionSuccessCB,
+    "failureCb": getServerRevisionFailureCB
+  };
+  if (DEBUG) { console.info("Rosebud App============> " + JSON.stringify(data)); }
+  json_request(data);
 
 }
 
@@ -321,7 +356,9 @@ function show_post_login_features() {
     refresh_power_users();
 
     if (power_user.includes(icarusi_user)) {
-        $("#sabba_info").html(BE_URL + "<br/>" + base_url_poster);
+        $("#urls").show();
+        $("#be_url").html(BE_URL);
+        $("#media_url").html(base_url_poster);
         $("#debug_session").show();
         $("#refresh_token").show();
         $("#be_selector").show();
@@ -329,6 +366,7 @@ function show_post_login_features() {
     }
 
     getServerVersion();
+    get_server_revision();
 }
 
 
@@ -425,7 +463,7 @@ function onDeviceReady() {  // eslint-disable-line no-unused-vars
     }
     var enable_notif = get_ls_bool("enable-notifications"),
         save_imgs = get_ls_bool("flip-save-images"),
-        dld_imgs = get_ls_bool("flip-dld-images"),
+        dld_imgs = get_ls_bool("flip-dld-images", true),
         extra_info = get_ls_bool("show-extra-info"),
         enable_geoloc = get_ls_bool("enable-geoloc"),
         lazy_load = get_ls_bool_default("lazy-load", true),
@@ -482,6 +520,7 @@ function onDeviceReady() {  // eslint-disable-line no-unused-vars
                 data = {
                     "username": icarusi_user,
                     "firebase_id_token": id_token,
+                    "rosebud_uid": rosebud_uid,
                     "token": token,
                     "method": "POST",
                     "url": "/setFBToken2",

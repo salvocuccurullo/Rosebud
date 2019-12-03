@@ -205,6 +205,77 @@ function generic_json_request_new(data, successCb, failureCb) { // eslint-disabl
         });
 }
 
+function generic_json_request_new_extra(data, successCb, failureCb) { // eslint-disable-line no-unused-vars
+
+    loading(true, "Loading...");
+    console.log(JSON.stringify(data));
+    $.ajax({
+        url: BE_URL + data.url,
+        method: data.method,
+        data: JSON.stringify(data),
+        cache: false,
+        contentType: false,
+        processData: false,
+    })
+        .done(function (response) {
+
+            loading(false, "Loading...");
+
+            if (DEBUG) {
+                console.info("Request to " + data.url + " completed");
+                console.info("Payload received " + JSON.stringify(response));
+            }
+
+            if (response.new_token !== undefined && response.new_token !== "") {
+              console.debug("New Token received!");
+              storage.setItem("rosebud_uid", response.new_token);
+              rosebud_uid = response.new_token;
+            }
+
+            /*
+            if ("forward_vars" in data) {
+                $.each(data.forward_vars, function (index, value) { // eslint-disable-line no-unused-vars
+                    response.value. = data.value;
+                });
+            }
+            */
+
+            try {
+                if (DEBUG) {
+                    console.info("Status response: " + response.result);
+                }
+                if (response.result === "failure") {
+                    if (failureCb) {
+                        failureCb(response);
+                    }
+                }
+            } catch (err) {
+                if (DEBUG) { console.error(err); }
+                if (failureCb) {
+                    failureCb(err);
+                }
+            }
+
+            if (successCb) {
+                successCb(response);
+            }
+
+        })
+        .fail(function (err) {
+            loading(false, "Loading...");
+            if (DEBUG) {
+                console.info("Rosebud App============> Error during generic request to " + data.url);
+                console.info("Rosebud App============> " + err.responseText);
+            }
+            if (failureCb) {
+                failureCb(err);
+            }
+        })
+        .always(function () {
+            loading(false, "Loading...");
+        });
+}
+
 
 function json_request(data) { // eslint-disable-line no-unused-vars
 
@@ -224,6 +295,12 @@ function json_request(data) { // eslint-disable-line no-unused-vars
             if (DEBUG) {
                 console.info("Request to " + data.url + " completed");
                 console.info("Payload received " + JSON.stringify(response));
+            }
+
+            if (response.new_token !== undefined && response.new_token !== "") {
+              console.debug("New Token received!");
+              storage.setItem("rosebud_uid", response.new_token);
+              rosebud_uid = response.new_token;
             }
 
             try {
