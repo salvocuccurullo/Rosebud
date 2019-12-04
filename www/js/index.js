@@ -713,11 +713,15 @@ function onDeviceReady() {  // eslint-disable-line no-unused-vars
         storage.setItem("flip-save-images", false);
     }
 
+    /*
     if (dld_imgs !== "" && dld_imgs !== null) {
         $('#flip-dld-images').prop("checked", dld_imgs);
     } else {
-        storage.setItem("flip-dld-images", false);
+
     }
+    */
+
+    storage.setItem("flip-dld-images", true);
 
     if (extra_info !== "" && extra_info !== null) {
         $('#show-extra-info').prop("checked", extra_info);

@@ -247,7 +247,7 @@ function setCovers(covers) {
 
         if (value.update_ts !== undefined && sort_type === "update_ts") {
             upd_human_date = fancyDate(new Date(Date.parse(value.update_ts)));
-            cover_content += '<br/><span style="color:#C60419; font-style:italic; font-size:10px;">' + upd_human_date + '</span>';
+            //cover_content += '<br/><span style="color:#C60419; font-style:italic; font-size:10px;">' + upd_human_date + '</span>';
         }
 
         cover_content += "</div>";
