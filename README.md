@@ -4,6 +4,7 @@ Plugins List (version number may change, please ignore it):
 
 - com.napolitano.cordova.plugin.intent 0.1.3 "IntentPlugin"
 - cordova-plugin-app-version 0.1.9 "AppVersion"
+- cordova-plugin-browsertab2 0.3.1 "cordova-plugin-browsertab2"
 - cordova-plugin-buildinfo 4.0.0 "BuildInfo"
 - cordova-plugin-cryptography-aes 1.0.7 "CryptographyAES"
 - cordova-plugin-device 2.0.3 "Device"
@@ -23,9 +24,9 @@ cordova plugin add cordova-plugin-firebase-lib --save
 cordova plugin add cordova-android-firebase-gradle-release --variable FIREBASE_VERSION=17.+ --save  
 cordova plugin add cordova-android-play-services-gradle-release --variable PLAY_SERVICES_VERSION=16.+ --save  
 
-Migrate project to AndroidX  
+1. Migrate project to AndroidX  
 
-For Google Maps plugin on files _PluginMap.java_ and _PluginLocationService.java_ replace the below lines:
+2. For Google Maps plugin on files _PluginMap.java_ and _PluginLocationService.java_ replace the below lines:
 ```
 import android.support.annotation.NonNull;
 import android.support.v4.content.PermissionChecker;
@@ -34,4 +35,14 @@ with
 ```
 import androidx.annotation.NonNull;
 import androidx.core.content.PermissionChecker;
+```
+
+3. For BrowserTab plugin on file _BrowserTab.java_ replace the below line:
+
+```
+import android.support.customtabs.CustomTabsIntent;
+```
+with  
+```
+androidx.browser.customtabs.CustomTabsIntent;
 ```
