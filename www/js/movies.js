@@ -4,7 +4,7 @@
 /*eslint no-console: ["error", { allow: ["info","warn", "error", "debug"] }] */
 /*eslint no-global-assign: "error"*/
 /*globals BE_URL:true*/
-/*eslint quotes: [1, "double", "single", "backtick"]*/
+/*eslint quotes: ["error", "single"]*/
 /*eslint-env es6*/
 
 "use strict";
@@ -32,7 +32,6 @@ var storage = window.localStorage,
     search_mode = false,
     append_mode = false,
     search_result,
-    aaaa=`aaaa`,
     tvshow_stat = {
       "total_show":0,
       "movies":0,

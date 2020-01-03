@@ -1,5 +1,5 @@
 /*global $, cordova, device, window, document, storage_keys, get_ls, alert, generic_json_request_new, encrypt_and_execute, getX*/
-/*global idTokenSuccess, idTokenFailure, encryptText2, navigator, Connection, BE_URL, BE_LIST, PullToRefresh, getServerVersion, show_image*/
+/*global idTokenSuccess, idTokenFailure, navigator, Connection, BE_URL, BE_LIST, PullToRefresh, getServerVersion, show_image*/
 /*global swipeleftHandler, swipeRightHandler, power_user, get_ls_bool, get_ls_bool_default, authenticateWithGoogle, json_request, refreshIdToken */
 /*global listDir, googleAuthSuccess, googleAuthFailure, submit */
 /*eslint no-console: ["error", { allow: ["info","warn", "error", "debug"] }] */
@@ -12,7 +12,7 @@ var DEBUG = false,
     icarusi_user = "",
     rosebud_uid = "",
     storage = window.localStorage,
-    kanazzi,
+//    kanazzi,
     swipe_left_target = "movies.html", // eslint-disable-line no-unused-vars
     swipe_right_target = "song.html"; // eslint-disable-line no-unused-vars
 
@@ -110,7 +110,6 @@ function setImage(tot_imgs) {
     if (networkState !== Connection.NONE && remote_url !== "" && dld_imgs !== "" && dld_imgs && remote_covers_count !== undefined && remote_covers_count > 0) {
         if (DEBUG) { console.info("Rosebud App============> Considering remote images..."); }
         $("#cover_img").attr("images/covers/loading_spinner.gif");
-        //encryptText2(getX(), 'get_remote_random_cover_2');
         get_remote_random_cover();
         return false;
     }
@@ -193,7 +192,7 @@ function getServerRevisionSuccessCB(data) {
 
   if (DEBUG) { console.debug(data); }
   var revision = data.payload.revision;
-  $("#rosebud_revision").html(revision.substring(0,10));
+  $("#rosebud_revision").html(revision.substring(0, 10));
 
 }
 
@@ -358,7 +357,7 @@ function show_post_login_features() {
     if (power_user.includes(icarusi_user)) {
         $("#urls").show();
         $("#be_url").html(BE_URL);
-        $("#media_url").html(base_url_poster);
+        $("#media_url").html(base_url_poster);    // eslint-disable-line no-undef
         $("#debug_session").show();
         $("#refresh_token").show();
         $("#be_selector").show();
@@ -381,7 +380,7 @@ function set_be_list(data) {
   * FAILSAFE
   */
 
-  $("#mdn-selector").append('<option value="' + base_url_poster_default + '">Default Failsafe PROD (hardcoded)</option>');
+  $("#mdn-selector").append('<option value="' + base_url_poster_default + '">Default Failsafe PROD (hardcoded)</option>'); // eslint-disable-line no-undef
 
   $.each(data.payload, function (index, value) { // eslint-disable-line no-unused-vars
 
@@ -389,7 +388,7 @@ function set_be_list(data) {
       $("#be-selector").append('<option value="' + value.value + '">' + value.name + '</option>');
     }
 
-    if (value.config_type === "base_url_poster") {
+    if (value.config_type === "base_url_poster") { // eslint-disable-line no-undef
       $("#mdn-selector").append('<option value="' + value.value + '">' + value.name + '</option>');
     }
   });
@@ -476,7 +475,7 @@ function onDeviceReady() {  // eslint-disable-line no-unused-vars
     }
 
     if (mdn_selector !== "") {
-      base_url_poster = mdn_selector;
+      base_url_poster = mdn_selector; // eslint-disable-line no-undef
     }
 
     get_configurations();
@@ -581,7 +580,8 @@ function onDeviceReady() {  // eslint-disable-line no-unused-vars
          if (val !== "") {
            storage.setItem("mdn-selector", val);
          } else {
-           storage.setItem("mdn-selector", base_url_poster);  //the default from shared.js
+           //the default from shared.js
+           storage.setItem("mdn-selector", base_url_poster);  // eslint-disable-line no-undef
          }
      });
 
@@ -684,7 +684,6 @@ function onDeviceReady() {  // eslint-disable-line no-unused-vars
 
 
     $(document).on("click", "#login_button", function () {
-        //encryptText2($("#password").val(), "submit");
         submit();
     });
 

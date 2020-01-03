@@ -88,8 +88,8 @@ function setComments(id) { // eslint-disable-line no-unused-vars
       }),
       comments_count = 0,
       content,
-      header_content,
-      upd_human_date;
+      header_content;
+      //upd_human_date;
 
       if (DEBUG) {
           console.info("==========================");
@@ -172,7 +172,7 @@ function setComments(id) { // eslint-disable-line no-unused-vars
 
     $.each(my_reviews, function (index, value) { // eslint-disable-line no-unused-vars
 
-        upd_human_date = fancyDate(new Date(Date.parse(value.updated)));
+        var upd_human_date = fancyDate(new Date(Date.parse(value.updated)));
 
         content = '<li style="white-space:normal;">';
         if (value.review !== "") {
@@ -220,13 +220,15 @@ function setCovers(covers) {
     $.each(covers, function (index, value) {
 
         var cover_location = '',
-            cover_content,
-            upd_human_date;
+            cover_content;
+            //upd_human_date;
 
         if (value.type === undefined || value.type === "local") {
             cover_location = device_app_path + "www/images/covers/" + value.location;
         } else {
-            cover_location = (value.thumbnail === "" || value.thumbnail === null) ? value.location : value.thumbnail;
+            cover_location = (value.thumbnail === "" || value.thumbnail === null)   // eslint-disable-line no-ternary
+                              ? value.location
+                              : value.thumbnail;
         }
 
         cover_content = '<li style="background-image: url(' + cover_location + '), url(' + cordova.file.applicationDirectory + 'www/images/loading.gif);';
@@ -244,12 +246,12 @@ function setCovers(covers) {
         } else {
             cover_content += '<span style="color:#000099; font-style:italic; font-size:11px;">' + value.author + '</span>';
         }
-
+        /*
         if (value.update_ts !== undefined && sort_type === "update_ts") {
             upd_human_date = fancyDate(new Date(Date.parse(value.update_ts)));
             //cover_content += '<br/><span style="color:#C60419; font-style:italic; font-size:10px;">' + upd_human_date + '</span>';
         }
-
+        */
         cover_content += "</div>";
         cover_content += '</li>';
 
@@ -430,8 +432,7 @@ function get_covers(limit) { // eslint-disable-line no-unused-vars
 function edit_cover(id) { // eslint-disable-line no-unused-vars
 
     var spotify_url_received = get_ls("spotify_url_received"),
-        vote = 0,
-        review = "";
+        vote = 0;
 
     $(':mobile-pagecontainer').pagecontainer('change', '#cover_page');
 
@@ -493,11 +494,8 @@ function edit_cover(id) { // eslint-disable-line no-unused-vars
         $("#year").val(result.year);
         $("#top_title_edit_album").html('<span style="color:#000000">Edit: </span>' + result.name);
 
-
-
         if (result.reviews !== undefined && result.reviews !== null && result.reviews[icarusi_user] !== undefined) {
           vote = result.reviews[icarusi_user].vote;
-          review = result.reviews[icarusi_user];
           $("#review").val(result.reviews[icarusi_user].review);
 
           if (vote === -1) {
@@ -749,10 +747,12 @@ function setBothTracksAlbums(data) {
     setTracks(data.tracks, "spoti-list", "yyy");
 }
 
+/*
 function setAlbumOnly(data) {
     data = JSON.parse(data);
     setSpotifyAlbum(data);
 }
+*/
 
 function spotyFailure(err) {
   if (DEBUG) { console.error("Rosebud App============> " + err.responseText); }
@@ -812,7 +812,7 @@ function spotySearchSuccess(data) {
 
   if (data.payload.length === 0) {
       if (DEBUG) { console.info("Rosebud App============> No tracks found on Spotify."); }
-      alert("No albums found on Spotiy! Change your search query and try again...")
+      alert("No albums found on Spotiy! Change your search query and try again...");
       return false;
   }
 

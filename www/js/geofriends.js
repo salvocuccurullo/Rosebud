@@ -1,16 +1,15 @@
 /*global $, window, document, loading, alert, getX*/
-/*global encryptText2, navigator, Connection, BE_URL, cordova */
-/*global swipeleftHandler, swipeRightHandler, get_ls_bool, locale_date, plugin, get_ls */
+/*global navigator, Connection, cordova */
+/*global swipeleftHandler, swipeRightHandler, get_ls_bool, locale_date, plugin */
 /*eslint no-console: ["error", { allow: ["info","warn", "error"] }] */
 /*eslint no-global-assign: "error"*/
-/*globals BE_URL:true*/
 
 "use strict";
 
 var storage = window.localStorage,
     DEBUG = false,
     icarusi_user = "",
-    kanazzi,
+    kanazzi,  // eslint-disable-line no-unused-vars
     rosebud_uid,
 //    swipe_left_target = "song.html",
 //    swipe_right_target = "movies.html",
@@ -260,11 +259,11 @@ function geoLocation(geoloc_params) { // eslint-disable-line no-unused-vars
       "photo": friend_photo_url,
       "username": icarusi_user,
       "rosebud_uid": rosebud_uid,
-      "cB": generic_json_request_new,
+      "cB": generic_json_request_new,     // eslint-disable-line no-undef
       "successCb": geolocationSuccessCB,
       "failureCb": geolocationFailureCB,
-    }
-    encrypt_and_execute(getX(), "kanazzi", data);
+    };
+    encrypt_and_execute(getX(), "kanazzi", data);   // eslint-disable-line no-undef
 
 }
 
@@ -287,12 +286,7 @@ function onDeviceReady() { // eslint-disable-line no-unused-vars
 
     var positions = [],
         networkState,
-        div,
-        be_selector = get_ls("be-selector");
-
-    if (be_selector !== "") {
-      BE_URL = be_selector;
-    }
+        div;
 
     $("#geoloc_info").html("");
     $("#distance_info").html("");
@@ -414,7 +408,7 @@ function onDeviceReady() { // eslint-disable-line no-unused-vars
 
         geoloc_params = {
           "notification_on": storage.getItem("notification_on")
-        }
+        };
         geoLocation(geoloc_params);
     }
 
@@ -470,7 +464,7 @@ function onDeviceReady() { // eslint-disable-line no-unused-vars
 
         var geoloc_params = {
           "notification_on": storage.getItem("notification_on")
-        }
+        };
         geoLocation(geoloc_params);
     });
 
