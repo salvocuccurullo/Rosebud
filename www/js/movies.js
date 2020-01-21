@@ -1002,7 +1002,10 @@ function setComments(id, src) { // eslint-disable-line no-unused-vars
 
       $("#media_img").attr("src", media_icon);
       $("#edit_button").attr("onclick", "setPopupData('" + item.id + "','a')");
-      if (item.link !== "" && item.link.toUpperCase().indexOf("WIKIPEDIA") >= 0) {
+      if (item.link !== "" && (
+          item.link.toUpperCase().indexOf("WIKIPEDIA") >= 0 ||
+          item.link.toUpperCase().indexOf("IMDB") >= 0 )
+        ) {
         $("#wiki_img").attr("onclick", "open_link('" + item.link + "')");
       } else {
         $("#wiki_img").attr("onclick", "alert('No link available')");

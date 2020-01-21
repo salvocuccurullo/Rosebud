@@ -46,3 +46,22 @@ with
 ```
 androidx.browser.customtabs.CustomTabsIntent;
 ```
+
+- - - -
+On 21 Jan 2020 build was not working anymore because of this:
+```
+  Dependency failing: com.google.firebase:firebase-messaging:19.0.1 -> com.google.firebase:firebase-iid@[19.0.1], but firebase-iid version was 20.0.2
+```
+
+Editing the file _platforms/android/project.properties_
+
+line:
+```
+cordova.system.library.4=com.google.firebase:firebase-messaging:19.+
+```
+has been replaced with:
+```
+cordova.system.library.4=com.google.firebase:firebase-messaging:20.+
+```
+
+issue sorted.

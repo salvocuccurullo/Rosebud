@@ -94,6 +94,30 @@
     width: 25% !important;
 }
 
+
+/*
+ * BLOCK 4.1
+ */
+
+#custom-grid-movies-41 .ui-block-a1 {
+    width: 25% !important;
+    padding-top: 10px;
+}
+
+#custom-grid-movies-41 .ui-block-b1 {
+    width: 25% !important;
+}
+
+#custom-grid-movies-41 .ui-block-c1 {
+    width: 25% !important;
+    padding-top: 10px;
+		padding-left: 10px;
+}
+
+#custom-grid-movies-41 .ui-block-d1 {
+    width: 25% !important;
+}
+
 #custom-grid-spoti .ui-block-a {
     width: 80% !important;
     vertical-align: middle;
