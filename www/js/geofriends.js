@@ -334,6 +334,14 @@ function onDeviceReady() { // eslint-disable-line no-unused-vars
             'indoorPicker': true,
             'zoom': true // Only for Android
         },
+        'camera': {
+          'target': [
+            {'lat': 41.9, 'lng': 12.4}
+          ]
+        },
+        preferences: {
+          building: true
+        }
     });
 
     /*

@@ -203,6 +203,8 @@ function getServerRevisionFailureCB(err) {
 
 function get_server_revision() { // eslint-disable-line no-unused-vars
 
+  console.info("Rosebud App UID============> " + rosebud_uid);
+
   var data = {
     "username": icarusi_user,
     "rosebud_uid": rosebud_uid,
