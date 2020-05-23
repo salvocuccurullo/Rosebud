@@ -854,6 +854,59 @@ function deleteMovie(id) { // eslint-disable-line no-unused-vars
 
 }
 
+function setLikeSuccessCB(data) {
+
+  if (DEBUG) {
+      console.info("Rosebud App============> ========> " + data.result);
+      console.info("Rosebud App============> ========> " + JSON.stringify(data.payload));
+  }
+
+  if (data.result === "failure") {
+      alert(data.message);
+      return false;
+  }
+
+
+  $("#like_" + data.payload.id_vote).attr("you", data.payload.you);
+  $("#" + data.payload.id_vote).html("");
+
+  if (data.payload.you == 1) {
+    $("#like_" + data.payload.id_vote).attr('src','images/icons/like-icon.png');
+  }
+
+  if (data.payload.count > 0) {
+    $("#" + data.payload.id_vote).html("(" + data.payload.count + ")");
+  }
+
+}
+
+function setLikeFailureCB(err) {
+  alert("Server error! Please, try again later.");
+  console.error(err.responseText);
+}
+
+function setLike(id_vote, reaction, action) { // eslint-disable-line no-unused-vars
+
+    if (icarusi_user === "" || icarusi_user === undefined || icarusi_user === null) {
+        alert("You must be logged in for this action");
+        return false;
+    }
+
+    var data = {
+        "username": icarusi_user,
+        "method": "POST",
+        "url": "/setlike",
+        "id_vote": id_vote,
+        "reaction": reaction,
+        "action": action,
+        "successCb": setLikeSuccessCB,
+        "failureCb": setLikeFailureCB,
+        "cB": generic_json_request_new,
+    };
+    encrypt_and_execute(getX(), "kanazzi", data);
+
+}
+
 function newMoviePage() { // eslint-disable-line no-unused-vars
     $(':mobile-pagecontainer').pagecontainer('change', '#detail_page');
     resetPopupElements();
@@ -1046,6 +1099,7 @@ function setComments(id, src) { // eslint-disable-line no-unused-vars
     $('#movie_comments').empty();
 
     comments_count = 0;
+
     $.each(item.u_v_dict, function (index, value) { // eslint-disable-line no-unused-vars
         content = '<li style="white-space:normal;">';
         if (value.comment !== "") {
@@ -1057,7 +1111,12 @@ function setComments(id, src) { // eslint-disable-line no-unused-vars
         } else {
             content += '<b>' + value.us_username + '</b> <span style="color:red; float:right">' + value.us_vote + '</span>';
             content += '<br/><p style="white-space:normal; font-style:italic; font-size:12px">' + value.comment + '</p>';
+            content += '<span style="color:#C60419; font-style:italic; font-size:10px; float:left">';
+            content += '<div id="'+ value.id_vote  +'"></div>';
+            content += '<img src="images/icons/like-gray-icon.png" style="widht:16px; height:16px; display:block;" you="0" class="like_button" id_vote="'+ value.id_vote  +'" name="like_'+ index  +'" id="like_'+ value.id_vote +'">';
+            content += '</span>';
             content += '<span style="color:#C60419; font-style:italic; font-size:10px; float:right">' + value.us_update + '</span>';
+            setLike(value.id_vote, "O", "fetch");
         }
         content += '</li>';
         $('#movie_comments').append(content);
@@ -1186,6 +1245,24 @@ function onDeviceReady() { // eslint-disable-line no-unused-vars
         } else {
             $("#upload_result").html('<span style="color:red">File size (' +  sizekb.toFixed(2) + " KB) not OK! Max 500 KB! </span>");
         }
+    });
+
+
+    $(document).on("click", ".like_button", function (elem, data) {
+
+      var like_id = $(this).attr('id'),
+          id_vote = $(this).attr('id_vote');
+
+      if ($("#"+like_id).attr('you') === '1') {
+          $("#"+like_id).attr('src','images/icons/like-gray-icon.png');
+          $("#"+like_id).attr('you','0');
+          setLike(id_vote, "O", "set");
+      } else {
+          $("#"+like_id).attr('src','images/icons/like-icon.png');
+          $("#"+like_id).attr('you','1');
+          setLike(id_vote, "*", "set");
+      }
+
     });
 
     $("#popupPhotoPortrait").bind({
