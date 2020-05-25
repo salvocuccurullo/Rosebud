@@ -65,3 +65,12 @@ cordova.system.library.4=com.google.firebase:firebase-messaging:20.+
 ```
 
 issue sorted.
+
+- - - -
+If there are unwated permissions added to AndroidManifest.xml:
+
+* add the permissions you need on config.xml
+* delete the unwanted from ```\platforms\android\app\src\main\AndroidManifest.xml```
+* delete the unwanted from ```\platforms\android\android.json```
+
+Rebuild. The unwanted permissions should be gone.
