@@ -1,6 +1,6 @@
 /*global $, cordova, device, window, document, storage_keys, get_ls, alert, generic_json_request_new, encrypt_and_execute, getX*/
 /*global idTokenSuccess, idTokenFailure, navigator, Connection, BE_URL, BE_LIST, PullToRefresh, getServerVersion, show_image*/
-/*global swipeleftHandler, swipeRightHandler, power_user, get_ls_bool, get_ls_bool_default, authenticateWithGoogle, json_request, refreshIdToken */
+/*global swipeleftHandler, swipeRightHandler, power_user, get_ls_bool, get_ls_bool_default, json_request, refreshIdToken */
 /*global listDir, googleAuthSuccess, googleAuthFailure, submit */
 /*eslint no-console: ["error", { allow: ["info","warn", "error", "debug"] }] */
 /*eslint no-global-assign: "error"*/
@@ -482,10 +482,11 @@ function onDeviceReady() {  // eslint-disable-line no-unused-vars
 
     get_configurations();
 
-
+    /*
     $(document).on("click", "#loginGoogle", function () {
         authenticateWithGoogle(googleAuthSuccess, googleAuthFailure, {});
     });
+    */
 
     $(document).on("click", "#spoty_album_go", function () {
         var spotifyAlbumUrl = storage.getItem("random_cover_spotify_url");

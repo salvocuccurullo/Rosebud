@@ -51,9 +51,6 @@
         <a href="#popupLogin" data-rel="popup" data-role="button" data-position-to="window" data-transition="flow" data-inline="true" data-iconpos="right" data-mini="true">
           <img src="images/icons/user.png" style="width:24px; height:24px" />
         </a>
-        <a id="loginGoogle" href="#" id="spoty_album_go" data-role="button" data-inline="true" data-iconpos="right" data-mini="true">
-          <img src="images/icons/google.png" style="width:24px; height:24px" />
-        </a>
         <a href="#" id="spoty_album_go" data-role="button" data-inline="true" data-iconpos="right" data-mini="true">
           <img src="images/icons/spoti-icon-gray.png" style="width:24px; height:24px" id="spoty_button_img" />
         </a>
@@ -68,25 +65,6 @@
           <a href="#" data-role="button" data-icon="check" data-iconpos="right" id="login_button">Login</a>
         </div>
       </div>
-      <!--
-      <a href="#popupLoginFireBase" data-rel="popup" data-position-to="window" class="ui-btn ui-corner-all ui-shadow ui-btn-inline ui-icon-cloud ui-btn-icon-left ui-btn-a" data-transition="flow">Email Login</a>
-      <div data-role="popup" id="popupLoginFireBase" data-theme="a" class="ui-corner-all">
-      <div style="padding:10px 20px;">
-      <label for="username_fireb">Email</label>
-      <input type="email" name="username_fireb" id="username_fireb"  data-clear-btn="true" value="">
-      <label for="password_fireb">Password:</label>
-      <input type="password" name="password_fireb" id="password_fireb" value="" autocomplete="off" data-clear-btn="true"/>
-      <div class="ui-grid-a">
-      <div class="ui-block-a">
-      <a href="#" class="ui-btn-inline" data-role="button" data-icon="user" data-iconpos="right" name="login_button_fireb" id="login_button_fireb" data-mini="true">Login</a>
-      </div>
-      <div class="ui-block-b">
-      <a href="#" class="ui-btn-inline" data-role="button" data-icon="check" data-iconpos="right" name="register_button_fireb" id="register_button_fireb" data-mini="true">Register</a>
-      </div>
-      </div>
-      </div>
-      </div>
-      -->
 
       <div data-role="popup" id="popupLoginResult" data-theme="a" class="ui-corner-all">
         <div style="padding:10px 20px;" id="login_message"></div>
@@ -120,16 +98,6 @@
         <h3>Settings</h3>
       </div>
       <div class="ui-body ui-body-a" id="switch-page">
-      <!--
-        <div class="ui-grid-a" id="custom-grid">
-          <div class="ui-block-a">
-            <label for="lazy-load">Movie lazy load</label>
-          </div>
-          <div class="ui-block-b">
-            <input type="checkbox" data-role="flipswitch" data-mini="true" name="lazy-load" id="lazy-load" data-theme="b" checked="checked" />
-          </div>
-        </div>
-      -->
         <div class="ui-grid-a" id="custom-grid">
           <div class="ui-block-a">
             <label for="enable-geoloc">Share your location</label>
@@ -147,36 +115,7 @@
             <input type="checkbox" data-role="flipswitch" data-mini="true" name="enable-notifications" id="enable-notifications" data-theme="b" />
           </div>
         </div>
-<!--
-        <div class="ui-grid-a" id="custom-grid">
-          <div class="ui-block-a">
-            <label for="flip-dld-images">Download new covers from network</label>
-          </div>
-          <div class="ui-block-b">
-            <input type="checkbox" data-role="flipswitch" data-mini="true" name="flip-dld-images" id="flip-dld-images" data-theme="b" />
-          </div>
-        </div>
--->
-        <div class="ui-grid-a" id="custom-grid">
-          <div class="ui-block-a">
-            <label for="flip-dld-images">Google Login</label>
-          </div>
-          <div class="ui-block-b">
-            <a id="loginGoogle" href="#" id="spoty_album_go" data-role="button" data-inline="true" data-iconpos="right" data-mini="true">
-              <img src="images/icons/google.png" style="width:18px; height:18px" />
-            </a>
-          </div>
-        </div>
-<!--
-        <div class="ui-grid-a" id="custom-grid">
-          <div class="ui-block-a">
-            <label for="flip-save-images">Save downloaded covers on phone</label>
-          </div>
-          <div class="ui-block-b">
-            <input type="checkbox" data-role="flipswitch" data-mini="true" name="flip-save-images" id="flip-save-images" data-theme="b" disabled="disabled" />
-          </div>
-        </div>
--->
+
         <div class="ui-grid-a" id="custom-grid">
           <div class="ui-block-a">
             <label for="show-extra-info">Show extra info</label>
@@ -185,29 +124,7 @@
             <input type="checkbox" data-role="flipswitch" data-mini="true" name="show-extra-info" id="show-extra-info" data-theme="b" />
           </div>
         </div>
-        <!--
-        <div id="debug_session" style="display:none">
-          <div class="ui-grid-a" id="custom-grid">
-            <div class="ui-block-a">
-              <label for="check-session">Share Spotify</label>
-            </div>
-            <div class="ui-block-b">
-              <input type="checkbox" data-role="flipswitch" data-mini="true" name="check-session" id="check-session" data-theme="b" />
-            </div>
-          </div>
-        </div>
 
-        <div id="refresh_token" style="display:none">
-          <div class="ui-grid-a" id="custom-grid">
-            <div class="ui-block-a">
-              <label for="check-session">Refresh Token</label>
-            </div>
-            <div class="ui-block-b">
-              <input type="checkbox" data-role="flipswitch" data-mini="true" name="refresh-token" id="refresh-token" data-theme="b" />
-            </div>
-          </div>
-        </div>
-        -->
         <div id="be_selector" style="display:none">
           <div class="ui-grid-a" id="custom-grid-movies">
             <div class="ui-block-a">

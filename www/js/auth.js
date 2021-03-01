@@ -10,7 +10,7 @@
  * FIREBASE AUTH WITH GOOGLE
  */
 
-
+/*
  function googlePostSuccessAuth(data) {
 
      var g_photo = storage.getItem("google_photo_url"),
@@ -97,6 +97,7 @@ function authenticateWithGoogle(googleAuthSuccess, googleAuthFailure, data) { //
             }
         });
 }
+*/
 
 function refreshIdToken() { // eslint-disable-line no-unused-vars
 
