@@ -541,12 +541,14 @@ function onDeviceReady() {  // eslint-disable-line no-unused-vars
      * CURRENTLY JUST PRINT SOMETHING ON CONSOLE
      */
 
-         // FIREBASE DISABLED
+     // FIREBASE DISABLED
+     /*
     window.FirebasePlugin.onNotificationOpen(function (notification) {
         console.info("======= FCM NOTIFICATION OPEN EVENT ======> " + JSON.stringify(notification));
     }, function (error) {
         console.error("======= FCM NOTIFICATION OPEN EVENT ERROR ======> " + error);
     });
+    */
 
 
     /*

@@ -9,7 +9,7 @@ Plugins List (version number may change, please ignore it):
 - cordova-plugin-cryptography-aes 1.0.7 "CryptographyAES"
 - cordova-plugin-device 2.0.3 "Device"
 - cordova-plugin-file 6.0.2 "File"
-- cordova-plugin-firebase-lib 5.1.1 "Google Firebase Plugin"
+- cordova-plugin-firebasex 11.0.3 "Google Firebase Plugin"
 - cordova-plugin-geolocation 4.0.2 "Geolocation"
 - cordova-plugin-googlemaps 2.6.2 "cordova-plugin-googlemaps"
 - cordova-plugin-inappbrowser 3.1.0 "InAppBrowser"
@@ -20,7 +20,6 @@ Plugins List (version number may change, please ignore it):
 - cordova-universal-links-plugin-v2 2.0.0 "Universal Links Plugin"
 - es6-promise-plugin 4.2.2 "Promise"
 
-cordova plugin add cordova-plugin-firebase-lib --save  
 cordova plugin add cordova-android-firebase-gradle-release --variable FIREBASE_VERSION=17.+ --save  
 cordova plugin add cordova-android-play-services-gradle-release --variable PLAY_SERVICES_VERSION=16.+ --save  
 
