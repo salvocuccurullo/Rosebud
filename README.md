@@ -20,6 +20,24 @@ Plugins List (version number may change, please ignore it):
 - cordova-universal-links-plugin-v2 2.0.0 "Universal Links Plugin"
 - es6-promise-plugin 4.2.2 "Promise"
 
+- - - -
+**01-MAR-2021**
+ - Upgraded _cordova-android_ from 8.1.0 to 9.0.0
+ - Removed _cordova-plugin-firebase-lib_
+ - Added _cordova-plugin-firebasex_
+
+Added to _config.xml_
+
+    <preference name="android-minSdkVersion" value="22" />
+    <preference name="AndroidXEnabled" value="true" />
+    <preference name="GradlePluginGoogleServicesEnabled" value="true" />
+    <preference name="GradlePluginGoogleServicesVersion" value="4.2.0" />
+    <plugin name="cordova-plugin-firebasex">
+        <variable name="ANDROID_FIREBASE_CONFIG_FILEPATH" value="./google-services.json" />
+    </plugin>
+
+- - - -
+
 cordova plugin add cordova-android-firebase-gradle-release --variable FIREBASE_VERSION=17.+ --save  
 cordova plugin add cordova-android-play-services-gradle-release --variable PLAY_SERVICES_VERSION=16.+ --save  
 
@@ -47,7 +65,8 @@ androidx.browser.customtabs.CustomTabsIntent;
 ```
 
 - - - -
-On 21 Jan 2020 build was not working anymore because of this:
+**21-JAN-2020**
+Build was not working anymore because of this:
 ```
   Dependency failing: com.google.firebase:firebase-messaging:19.0.1 -> com.google.firebase:firebase-iid@[19.0.1], but firebase-iid version was 20.0.2
 ```
