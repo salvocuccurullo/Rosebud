@@ -21,6 +21,15 @@ Plugins List (version number may change, please ignore it):
 - es6-promise-plugin 4.2.2 "Promise"
 
 - - - -
+**01-APR-2021**
+ - Upgraded _cordova-plugin-firebasex_ to ver. 12.0.1
+ - Upgraded _cordova-plugin-googlemaps_ to ver. 2.7.1
+
+Changed on _config.xml_
+
+    <preference name="GradlePluginGoogleServicesVersion" value="4.3.5" />
+
+- - - -
 **01-MAR-2021**
  - Upgraded _cordova-android_ from 8.1.0 to 9.0.0
  - Removed _cordova-plugin-firebase-lib_
