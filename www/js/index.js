@@ -1,6 +1,6 @@
 /*global $, cordova, device, window, document, storage_keys, get_ls, alert, generic_json_request_new, encrypt_and_execute, getX*/
 /*global idTokenSuccess, idTokenFailure, navigator, Connection, BE_URL, BE_LIST, PullToRefresh, getServerVersion, show_image*/
-/*global swipeleftHandler, swipeRightHandler, power_user, get_ls_bool, get_ls_bool_default, json_request, refreshIdToken */
+/*global swipeleftHandler, swipeRightHandler, power_user, get_ls_bool, get_ls_bool_default, json_request, refreshIdToken, second_collection */
 /*global listDir, googleAuthSuccess, googleAuthFailure, submit */
 /*eslint no-console: ["error", { allow: ["info","warn", "error", "debug"] }] */
 /*eslint no-global-assign: "error"*/
@@ -8,7 +8,7 @@
 
 "use strict";
 
-var DEBUG = false,
+var DEBUG = true,
     icarusi_user = "",
     rosebud_uid = "",
     storage = window.localStorage,
@@ -176,6 +176,7 @@ function get_remote_random_cover() { // eslint-disable-line no-unused-vars
     "method": "POST",
     "url": "/getrandomcover",
     "cB": generic_json_request_new,
+    "second_collection": get_ls_bool("second-collection", false),
     "successCb": randomCoverSuccessCB,
     "failureCb": randomCoverFailureCB
   };
@@ -275,6 +276,7 @@ function get_remote_covers_stats_legacy() { // eslint-disable-line no-unused-var
 
     var data = {
       "username": icarusi_user,
+      "second_collection": get_ls_bool("second-collection", false),
       "method": "POST",
       "url": "/getcoversstats",
       "cB": generic_json_request_new,
@@ -470,7 +472,8 @@ function onDeviceReady() {  // eslint-disable-line no-unused-vars
         lazy_load = get_ls_bool_default("lazy-load", true),
         networkState = navigator.connection.type,
         be_selector = get_ls("be-selector"),
-        mdn_selector = get_ls("mdn-selector");
+        mdn_selector = get_ls("mdn-selector"),
+        second_collection = get_ls_bool("second-collection", false);
 
     if (be_selector !== "") {
       BE_URL = be_selector;
@@ -511,7 +514,7 @@ function onDeviceReady() {  // eslint-disable-line no-unused-vars
      * IF SUCCESS: IT WILL BE SAVED ON BOTH LOCALSTORAGE AND SERVER SIDE
      */
 
-        // FIREBASE DISABLED
+    // FIREBASE DISABLED
     if (icarusi_user !== "") {
         window.FirebasePlugin.getToken(function (token) {
             // save this server-side and use it to push notifications to this device
@@ -616,6 +619,13 @@ function onDeviceReady() {  // eslint-disable-line no-unused-vars
         storage.setItem("show-extra-info", val);
     });
 
+    $('#second-collection').on('change', function () {
+        var val = $('#second-collection').prop("checked");
+        if (DEBUG) { console.info("Rosebud App============> Second Collection info : " + val); }
+        storage.setItem("second-collection", val);
+        get_remote_covers_stats_legacy();
+    });
+
     $('#enable-geoloc').on('change', function () {
 
         var val = $('#enable-geoloc').prop("checked"),
@@ -701,29 +711,13 @@ function onDeviceReady() {  // eslint-disable-line no-unused-vars
     if (DEBUG) { console.info("Rosebud App============> Show Extra info switch STORAGE : " + extra_info); }
     if (DEBUG) { console.info("Rosebud App============> Enable Push Notification STORAGE : " + enable_notif); }
     if (DEBUG) { console.info("Rosebud App============> Enable Geo Location : " + enable_geoloc); }
-    if (DEBUG) { console.info("Rosebud App============> Lazy Movie Search : " + lazy_load); }
-
-    /*
-    if (lazy_load !== "" && lazy_load !== null) {
-        $('#lazy-load').prop("checked", lazy_load);
-    } else {
-        storage.setItem("lazy-load", true);
-    }
-    */
+    if (DEBUG) { console.info("Rosebud App============> Second collection : " + second_collection); }
 
     if (save_imgs !== "" && save_imgs !== null) {
         $('#flip-save-images').prop("checked", save_imgs);
     } else {
         storage.setItem("flip-save-images", false);
     }
-
-    /*
-    if (dld_imgs !== "" && dld_imgs !== null) {
-        $('#flip-dld-images').prop("checked", dld_imgs);
-    } else {
-
-    }
-    */
 
     storage.setItem("flip-dld-images", true);
 
@@ -743,6 +737,12 @@ function onDeviceReady() {  // eslint-disable-line no-unused-vars
         $('#enable-geoloc').prop("checked", enable_geoloc);
     } else {
         storage.setItem("enable-geoloc", false);
+    }
+
+    if (second_collection !== "" && second_collection !== null) {
+        $('#second-collection').prop("checked", second_collection);
+    } else {
+        storage.setItem("second-collection", false);
     }
 
     $("#connection").html("");

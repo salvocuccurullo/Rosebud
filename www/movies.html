@@ -36,6 +36,7 @@
 
     <div role="main" class="ui-content" style="">
 
+      <!--
       <div data-role="tabs" id="movie_header_tabs" name="movie_header_tabs">
         <div data-role="navbar">
           <ul>
@@ -44,8 +45,8 @@
             <li><a href="#tab_ct">Catania</a></li>
           </ul>
         </div>
-
-        <div id="tab_movies" style="margin-top:15px">
+      -->
+        <div id="tab_movies"> <!-- style="margin-top:15px" -->
           <!-- Tab Movies -->
 
           <div data-role="popup" id="popupPhotoPortrait" class="photopopup" data-overlay-theme="a" data-corners="false" data-tolerance="30,15">
@@ -98,8 +99,8 @@
           </div>
         </div> <!-- end tab movies -->
 
+        <!--
         <div id="tab_charts" style="margin-top:15px">
-          <!-- Tab Charts -->
           <div data-role="tabs" id="chart_type_tabs" name="chart_type_tabs">
             <div data-role="navbar">
               <ul>
@@ -113,12 +114,14 @@
             <div id="tab_top_voters">
               <ol data-role="listview" data-theme="a" data-inset="true" data-filter="false" id="top-list-voters"></ol>
             </div>
-          </div> <!-- end tabs movies and voters -->
-        </div> <!-- END tab charts -->
+          </div>
+        </div>
+        --> <!-- END tab charts -->
 
         <!-- CT MOVIES TAB -->
+        <!--
         <div id="tab_ct" style="margin-top:15px; min-height:700px">
-          <!-- <input type="text" data-type="search" name="ct_search" id="ct_search" value="" data-mini="true" placeholder="search (min 4 chars)"/> -->
+
 
           <div id="total_ct_movies" style="text-align:center"></div>
           <ul data-role="listview" data-theme="a" data-inset="true" data-filter="true" id="ct-movies"></ul>
@@ -127,9 +130,10 @@
             <div id="movie-table-custom"></div>
           </div>
         </div>
+        -->
         <!-- END CT MOVIES TAB -->
 
-      </div> <!-- end tabs -->
+      <!-- </div> --> <!-- end tabs -->
     </div> <!-- end main role -->
     <div data-role="footer" id="footer2" data-position="fixed" data-theme="b">
       <div data-role="navbar" id="navbar2" class="custom-footer" data-theme="a">

@@ -418,6 +418,7 @@ function get_covers(limit) { // eslint-disable-line no-unused-vars
       "limit": limit,
       "method": "POST",
       "url": "/getcovers2",
+      "second_collection": get_ls_bool("second-collection", false),
       "cB": generic_json_request_new,
       "successCb": getCoversSuccess,
       "failureCb": getCoversFailure
@@ -561,6 +562,7 @@ function uploadCover() { // eslint-disable-line no-unused-vars
 
     $("#username2").val(icarusi_user);
     $("#kanazzi").val(kanazzi);
+    $("#second_collection").val(get_ls_bool("second-collection", false));
 
     if ($("#nl").prop("checked")) {
       $("#vote").val("-1");
@@ -904,6 +906,7 @@ function show_me_more() {
         "limit": 15 * current_page,
         "method": "POST",
         "url": "/localsearch2",
+        "second_collection": get_ls_bool("second-collection", false),
         "cB": generic_json_request_new,
         "successCb": getCoversSuccess,
         "failureCb": getCoversFailure
@@ -1090,6 +1093,7 @@ function onDeviceReady() { // eslint-disable-line no-unused-vars
             "search": search,
             "method": "POST",
             "url": "/localsearch2",
+            "second_collection": get_ls_bool("second-collection", false),
             "cB": generic_json_request_new,
             "successCb": getCoversSuccess,
             "failureCb": getCoversFailure

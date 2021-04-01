@@ -7,7 +7,7 @@
 "use strict";
 
 var storage = window.localStorage,
-    DEBUG = false,
+    DEBUG = true,
     icarusi_user = "",
     kanazzi,  // eslint-disable-line no-unused-vars
     rosebud_uid,
@@ -277,13 +277,14 @@ function onDeviceReady() { // eslint-disable-line no-unused-vars
     storage.setItem("notification_on", false);
     //storage.setItem("spotify_url_received", "");
 
+/*
     window.plugins.intent.setNewIntentHandler(function (intent) {
         console.info(JSON.stringify(intent));
         //if (intent !== undefined) {
            storage.setItem("spotify_url_received", intent.clipItems[0].text);
         //}
     });
-
+*/
     var positions = [],
         networkState,
         div;

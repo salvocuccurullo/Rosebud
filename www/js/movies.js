@@ -50,7 +50,7 @@ function poster(img_name) { // eslint-disable-line no-unused-vars
     if (curr_pic !== "") {
         final_pic_url = base_url_poster + curr_pic;
     } else {
-        final_pic_url = device_app_path + "www/images/no-image-available.jpg";
+        final_pic_url = device_app_path + "images/no-image-available.jpg";
     }
 
     if (DEBUG) { console.info("Show poster called on " + final_pic_url); }
@@ -278,39 +278,6 @@ function setTvShows(tvshows, votes_user) {
             if (sort_type === "media") {
                 content += '<br/><span style="color:#000099; font-style:italic; font-size:10px;">Watched on: <b>' +  value.media + '</b></span>';
             }
-            // ICONS BLOCK -------------------------
-
-            //content += '<span style="color:#C60419; float:right">';
-
-            /*
-            // PICTURE ICON
-
-            if (value.poster !== "") {
-                content += '<button class="ui-btn ui-icon-camera ui-btn-icon-notext ui-corner-all ui-mini ui-btn-inline" id="btn_show_poster" onclick="poster(\'' + value.poster + '\')"></button>';
-            }
-            */
-
-            // EDIT ICON
-            //content += '<button class="ui-btn ui-icon-edit ui-btn-icon-notext ui-mini ui-corner-all ui-btn-inline" id="btn_show_poster" onclick="setPopupData(\'' + value.id + '\',\'a\')"></button>';
-
-            // LINK ICON
-            /*
-            if (value.link !== "") {
-                link = value.link.replace(/'/g, "\\'");
-                content += '<button class="ui-btn ui-btn-icon-notext ui-icon-forward ui-mini ui-corner-all ui-btn-inline" data-theme="a" id="btn_link" onclick="javascript:open_link(\'' + link + '\')"></button>';
-            }
-            */
-
-            // COMMENT ICON
-            /*
-            if (comment_count > 0) {
-                content += '<button class="ui-btn  ui-mini ui-corner-all ui-btn-inline" data-theme="e" style="color:#8B0000; border-radius: 50%" onclick="setComments(\'' + value.id + '\',\'c\')">' + comment_count + '</button>';
-            }
-
-
-            content += '</span><br/>';
-            */
-            // END ICONS BLOCK ---------------------------
 
             content += '</li>';
 
@@ -364,18 +331,20 @@ function setTvShows(tvshows, votes_user) {
             return a.count < b.count;
         });
 
+        /*
         $.each(votes_user, function (index, value) { // eslint-disable-line no-unused-vars
             content = '<li style="white-space:normal;">';
             content += '<b>' + value.name + '</b> <span style="color:red; float:right">' + value.count + '</span>';
             content += '</li>';
             $('#top-list-voters').append(content);
         });
+        */
 
         $('#movies-list').listview('refresh');
         $('#series-list').listview('refresh');
         $('#movies-list_nw').listview('refresh');
-        $('#top-list-voters').listview('refresh');
-        $('#top-list-movies').listview('refresh');
+        //$('#top-list-voters').listview('refresh');
+        //$('#top-list-movies').listview('refresh');
 
 
         $('#movies_link').text('Movies (' + tvshow_stat.movies + ')');
@@ -386,7 +355,7 @@ function setTvShows(tvshows, votes_user) {
         $('#series_link').text('Series (' + (parseInt($('#series-list').children().length, 10) - 1) + ')');
         $('#movies_nw_link').text('#NW (' + $('#movies-list_nw').children().length + ')');
         */
-        checkMoviesCT();
+        //checkMoviesCT();
 
         loading(false, '');
 
@@ -1219,7 +1188,7 @@ function onDeviceReady() { // eslint-disable-line no-unused-vars
     if (networkState === Connection.NONE) {
         $("#connection").html("No network... Pantalica mode...");
 
-        checkMoviesCT();
+        //checkMoviesCT();
 
         if (tv_shows_storage !== "" && tv_shows_storage !== undefined && tv_shows_storage !== null) {
             if (DEBUG) { console.info("Rosebud App============> Found Tv Shows Storage"); }
