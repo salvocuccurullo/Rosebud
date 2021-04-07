@@ -926,6 +926,7 @@ function onDeviceReady() { // eslint-disable-line no-unused-vars
     rosebud_uid = storage.getItem("rosebud_uid");
     covers_storage = storage.getItem("covers_storage");
     device_app_path = cordova.file.applicationDirectory;
+    $("#second_collection").val(get_ls_bool("second-collection", false));
 
     window.plugins.intent.setNewIntentHandler(function (intent) { // eslint-disable-line no-unused-vars
         //console.info(JSON.stringify(intent));

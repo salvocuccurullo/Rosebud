@@ -165,6 +165,7 @@ function submit() { // eslint-disable-line no-unused-vars
       "username": u,
       "method": "POST",
       "url": "/login",
+      "device_uuid": device.uuid,
       "cB": generic_json_request_new,
       "successCb": loginSuccesfulCB,
       "failureCb": loginFailureCB

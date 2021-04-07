@@ -46,6 +46,7 @@ function getServerVersion() {
        }
        data = {"username": icarusi_user,
                "rosebud_uid": rosebud_uid,
+               "device_uuid": device.uuid,
                "method": "POST",
                "url": "/version",
                "successCb": versionSuccess,
@@ -209,8 +210,10 @@ function get_server_revision() { // eslint-disable-line no-unused-vars
   var data = {
     "username": icarusi_user,
     "rosebud_uid": rosebud_uid,
+    "device_uuid": device.uuid,
     "method": "POST",
     "url": "/commit",
+    "device_uuid": device.uuid,
     "cB": generic_json_request_new,
     "successCb": getServerRevisionSuccessCB,
     "failureCb": getServerRevisionFailureCB
@@ -279,6 +282,7 @@ function get_remote_covers_stats_legacy() { // eslint-disable-line no-unused-var
       "second_collection": get_ls_bool("second-collection", false),
       "method": "POST",
       "url": "/getcoversstats",
+      "device_uuid": device.uuid,
       "cB": generic_json_request_new,
       "successCb": coverStatsSuccess,
       "failureCb": coverStatsFailure
@@ -526,6 +530,7 @@ function onDeviceReady() {  // eslint-disable-line no-unused-vars
                     "username": icarusi_user,
                     "firebase_id_token": id_token,
                     "rosebud_uid": rosebud_uid,
+                    "device_uuid": device.uuid,
                     "token": token,
                     "method": "POST",
                     "url": "/setFBToken2",
