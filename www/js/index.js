@@ -420,6 +420,7 @@ function get_configurations() { // eslint-disable-line no-unused-vars
     var data = {
       "username": icarusi_user,
       "rosebud_uid": rosebud_uid,
+      "device_uuid": device.uuid,
       "app_version": app_version,
       "method": "POST",
       "url": "/getconfigs2",
