@@ -279,6 +279,10 @@ function generic_json_request_new_extra(data, successCb, failureCb) { // eslint-
 
 function json_request(data) { // eslint-disable-line no-unused-vars
 
+    data.username = icarusi_user;
+    data.rosebud_uid =  rosebud_uid;
+    data.device_uuid = device.uuid;
+
     loading(true, "Loading...");
 
     $.ajax({

@@ -1,5 +1,5 @@
 /*global $, cordova, device, window, document, storage_keys, get_ls, alert, generic_json_request_new, encrypt_and_execute, getX*/
-/*global idTokenSuccess, idTokenFailure, navigator, Connection, BE_URL, BE_LIST, PullToRefresh, getServerVersion, show_image*/
+/*global navigator, Connection, BE_URL, BE_LIST, PullToRefresh, getServerVersion, show_image*/
 /*global swipeleftHandler, swipeRightHandler, power_user, get_ls_bool, get_ls_bool_default, json_request, refreshIdToken, second_collection */
 /*global listDir, googleAuthSuccess, googleAuthFailure, submit, refreshToken */
 /*eslint no-console: ["error", { allow: ["info","warn", "error", "debug"] }] */
@@ -45,8 +45,6 @@ function getServerVersion() {
            id_token = "";
        }
        data = {"username": icarusi_user,
-               "rosebud_uid": rosebud_uid,
-               "device_uuid": device.uuid,
                "method": "POST",
                "url": "/version",
                "successCb": versionSuccess,
@@ -61,7 +59,7 @@ function error_fall_back() { // eslint-disable-line no-unused-vars
     alert("HAMMUORT!");
 }
 
-function idTokenSuccess(data) {
+function geoLocationSuccess(data) {
     try {
         alert("Status: " + data.result + "\n\n" + data.message);
     } catch (err) {
@@ -69,7 +67,7 @@ function idTokenSuccess(data) {
     }
 }
 
-function idTokenFailure(data) {
+function geoLocationFailure(data) {
     try {
         alert("Status: " + data.responseJSON.result + "\n\nMessage: " + data.responseJSON.message);
     } catch (err) {
@@ -208,9 +206,6 @@ function get_server_revision() { // eslint-disable-line no-unused-vars
   console.info("Rosebud App UID============> " + rosebud_uid);
 
   var data = {
-    "username": icarusi_user,
-    "rosebud_uid": rosebud_uid,
-    "device_uuid": device.uuid,
     "method": "POST",
     "url": "/commit",
     "cB": generic_json_request_new,
@@ -360,19 +355,20 @@ function show_post_login_features() {
 
     get_remote_covers_stats_legacy();
     refresh_power_users();
+    getServerVersion();
+    get_server_revision();
+    get_configurations();
+    $("#info_user").html(icarusi_user);
 
     if (power_user.includes(icarusi_user)) {
         $("#urls").show();
         $("#be_url").html(BE_URL);
         $("#media_url").html(base_url_poster);    // eslint-disable-line no-undef
         $("#debug_session").show();
-        $("#refresh_token").show();
         $("#be_selector").show();
         $("#mdn_selector").show();
     }
 
-    getServerVersion();
-    get_server_revision();
 }
 
 
@@ -417,9 +413,6 @@ function get_configurations() { // eslint-disable-line no-unused-vars
     }
 
     var data = {
-      "username": icarusi_user,
-      "rosebud_uid": rosebud_uid,
-      "device_uuid": device.uuid,
       "app_version": app_version,
       "method": "POST",
       "url": "/getconfigs2",
@@ -431,6 +424,23 @@ function get_configurations() { // eslint-disable-line no-unused-vars
     //encrypt_and_execute(getX(), "kanazzi", data);
     json_request(data);
 
+}
+
+
+/*
+*   REFRESH TOKEN OVERRIDES
+*/
+
+function refreshTokenSuccessCB(data) {
+
+  if (DEBUG) { console.debug(data); }
+  show_post_login_features();
+
+}
+
+function refreshTokenFailureCB(err) {
+  if (DEBUG) { console.info("Rosebud App============> Error during refresh token retrieving"); }
+  if (DEBUG) { console.info("Rosebud App============> " + err.responseText); }
 }
 
 
@@ -465,8 +475,6 @@ function onDeviceReady() {  // eslint-disable-line no-unused-vars
     icarusi_user = storage.getItem("icarusi_user");
     rosebud_uid = storage.getItem("rosebud_uid");
 
-    refreshToken();
-
     if (!icarusi_user) {
         if (DEBUG) { console.info("====Username is not set: " + icarusi_user + ". Setting it to blank value."); }
         icarusi_user = "";
@@ -489,8 +497,6 @@ function onDeviceReady() {  // eslint-disable-line no-unused-vars
     if (mdn_selector !== "") {
       base_url_poster = mdn_selector; // eslint-disable-line no-undef
     }
-
-    get_configurations();
 
     /*
     $(document).on("click", "#loginGoogle", function () {
@@ -530,10 +536,7 @@ function onDeviceReady() {  // eslint-disable-line no-unused-vars
 
             var id_token = storage.getItem("firebase_id_token"),
                 data = {
-                    "username": icarusi_user,
                     "firebase_id_token": id_token,
-                    "rosebud_uid": rosebud_uid,
-                    "device_uuid": device.uuid,
                     "token": token,
                     "method": "POST",
                     "url": "/setFBToken2",
@@ -590,6 +593,7 @@ function onDeviceReady() {  // eslint-disable-line no-unused-vars
          }
      });
 
+     /*
      $('#mdn-selector').on('change', function () {
          var val = $("#mdn-selector :selected").val();
          if (DEBUG) { console.info("Rosebud App============> MDN Selector : " + val); }
@@ -600,14 +604,7 @@ function onDeviceReady() {  // eslint-disable-line no-unused-vars
            storage.setItem("mdn-selector", base_url_poster);  // eslint-disable-line no-undef
          }
      });
-
-    /*
-    $('#lazy-load').on('change', function () {
-        var val = $('#lazy-load').prop("checked");
-        if (DEBUG) { console.info("Rosebud App============> Lazy Movie Search : " + val); }
-        storage.setItem("lazy-load", val);
-    });
-    */
+     */
 
     $('#flip-dld-images').on('change', function () {
         var val = $('#flip-dld-images').prop("checked");
@@ -650,50 +647,23 @@ function onDeviceReady() {  // eslint-disable-line no-unused-vars
 
                 data = {"username": icarusi_user,
                         "action": "DELETE",
-                        "firebase_id_token": id_token,
                         "method": "POST",
                         "url": "/geolocation2",
                         "cB": generic_json_request_new,
-                        "successCb": idTokenSuccess,
-                        "failureCb": idTokenFailure
+                        "successCb": geoLocationSuccess,
+                        "failureCb": geoLocationFailure
                         };
                 encrypt_and_execute(getX(), "kanazzi", data);
-            } else {
+            }/* else {
                 alert("Thanks for sharing your location!\n\nPlease open 'Geo Friends' page for sharing your gps coords");
-            }
+            }*/
         }
-    });
-
-    $('#check-session').on('change', function () {
-        var id_token = storage.getItem("firebase_id_token"),
-            data;
-
-        if (DEBUG) { console.info("Rosebud App============> Flip check session (" + icarusi_user + ")"); }
-        if (icarusi_user !== "" && icarusi_user !== undefined) {
-            if (id_token === undefined) {
-                id_token = "";
-            }
-            data = {"username": icarusi_user,
-                    "firebase_id_token": id_token,
-                    "method": "POST",
-                    "url": "/testSession",
-                    "successCb": idTokenSuccess,
-                    "failureCb": idTokenFailure
-                };
-            json_request(data);
-        }
-    });
-
-    $('#refresh-token').on('change', function () {
-
-        refreshIdToken();
-
     });
 
     $('#enable-notifications').on('change', function () {
         var val = $('#enable-notifications').prop("checked");
         if (DEBUG) { console.info("Rosebud App============> Flip Enable Notifications : " + val); }
-             // FIREBASE DISABLED
+
         if (val) {
             window.FirebasePlugin.subscribe("iCarusiNotifications");
         } else {
@@ -792,6 +762,6 @@ function onDeviceReady() {  // eslint-disable-line no-unused-vars
      */
 
     listDir(cordova.file.applicationDirectory + "www/images/covers/");
-    show_post_login_features();     // User can be already logged in from previous session
+    refreshToken();     // User can be already logged in from previous session
 
 }   // CORDOVA
