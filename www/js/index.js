@@ -1,14 +1,14 @@
 /*global $, cordova, device, window, document, storage_keys, get_ls, alert, generic_json_request_new, encrypt_and_execute, getX*/
 /*global idTokenSuccess, idTokenFailure, navigator, Connection, BE_URL, BE_LIST, PullToRefresh, getServerVersion, show_image*/
 /*global swipeleftHandler, swipeRightHandler, power_user, get_ls_bool, get_ls_bool_default, json_request, refreshIdToken, second_collection */
-/*global listDir, googleAuthSuccess, googleAuthFailure, submit */
+/*global listDir, googleAuthSuccess, googleAuthFailure, submit, refreshToken */
 /*eslint no-console: ["error", { allow: ["info","warn", "error", "debug"] }] */
 /*eslint no-global-assign: "error"*/
 /*globals BE_URL:true*/
 
 "use strict";
 
-var DEBUG = true,
+var DEBUG = false,
     icarusi_user = "",
     rosebud_uid = "",
     storage = window.localStorage,
@@ -213,7 +213,6 @@ function get_server_revision() { // eslint-disable-line no-unused-vars
     "device_uuid": device.uuid,
     "method": "POST",
     "url": "/commit",
-    "device_uuid": device.uuid,
     "cB": generic_json_request_new,
     "successCb": getServerRevisionSuccessCB,
     "failureCb": getServerRevisionFailureCB
@@ -429,7 +428,8 @@ function get_configurations() { // eslint-disable-line no-unused-vars
       "failureCb": configsFailure
     };
     if (DEBUG) { console.info("Rosebud App============> Configs: " + JSON.stringify(data)); }
-    encrypt_and_execute(getX(), "kanazzi", data);
+    //encrypt_and_execute(getX(), "kanazzi", data);
+    json_request(data);
 
 }
 
@@ -464,6 +464,8 @@ function onDeviceReady() {  // eslint-disable-line no-unused-vars
 
     icarusi_user = storage.getItem("icarusi_user");
     rosebud_uid = storage.getItem("rosebud_uid");
+
+    refreshToken();
 
     if (!icarusi_user) {
         if (DEBUG) { console.info("====Username is not set: " + icarusi_user + ". Setting it to blank value."); }

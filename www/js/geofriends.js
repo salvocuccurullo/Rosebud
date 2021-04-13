@@ -7,7 +7,7 @@
 "use strict";
 
 var storage = window.localStorage,
-    DEBUG = true,
+    DEBUG = false,
     icarusi_user = "",
     kanazzi,  // eslint-disable-line no-unused-vars
     rosebud_uid,

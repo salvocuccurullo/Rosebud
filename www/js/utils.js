@@ -340,6 +340,39 @@ function json_request(data) { // eslint-disable-line no-unused-vars
         });
 }
 
+/*
+*   REFRESH TOKEN
+*/
+
+function refreshTokenSuccessCB(data) {
+
+  if (DEBUG) { console.debug(data); }
+
+}
+
+function refreshTokenFailureCB(err) {
+  if (DEBUG) { console.info("Rosebud App============> Error during refresh token retrieving"); }
+  if (DEBUG) { console.info("Rosebud App============> " + err.responseText); }
+}
+
+function refreshToken() { // eslint-disable-line no-unused-vars
+
+  console.info("Rosebud App UID============> " + rosebud_uid);
+
+  var data = {
+    "username": icarusi_user,
+    "rosebud_uid": rosebud_uid,
+    "device_uuid": device.uuid,
+    "method": "POST",
+    "url": "/refreshtoken",
+    "successCb": refreshTokenSuccessCB,
+    "failureCb": refreshTokenFailureCB
+  };
+  if (DEBUG) { console.info("Rosebud App============> " + JSON.stringify(data)); }
+  json_request(data);
+
+}
+
 function locale_date(input_date) { // eslint-disable-line no-unused-vars
     var d = new Date(input_date);
     moment.locale('it');
