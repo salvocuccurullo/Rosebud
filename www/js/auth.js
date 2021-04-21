@@ -1,6 +1,6 @@
 /*global $, cordova, firebase, storage, DEBUG, loading, firebase_config */
 /*global googleAuthSuccess, googleAuthFailure, getServerVersion, json_request */
-/*global generic_json_request_new, encrypt_and_execute, show_post_login_features */
+/*global generic_json_request_new, show_post_login_features */
 /*global icarusi_user, rosebud_uid */
 /*eslint no-console: ["error", { allow: ["info","warn", "error"] }] */
 
@@ -118,7 +118,7 @@ function refreshIdToken() { // eslint-disable-line no-unused-vars
 }
 
 /*
- * SUBMIT
+ * LOGIN
  */
 
 function loginSuccesfulCB(data) {
@@ -163,59 +163,12 @@ function submit() { // eslint-disable-line no-unused-vars
 
     data = {
       "username": u,
+      "password": p,
       "method": "POST",
       "url": "/login",
-      "device_uuid": device.uuid,
-      "cB": generic_json_request_new,
       "successCb": loginSuccesfulCB,
       "failureCb": loginFailureCB
     };
     if (DEBUG) { console.info("Rosebud App============> " + JSON.stringify(data)); }
-    encrypt_and_execute(p, "password", data);
-
-
-/*
-    loading(true, "Logging in...");
-
-    $.ajax({
-        url: BE_URL + "/login",
-        method: "POST",
-        dataType: "json",
-        data: {
-            username: u,
-            password: p,
-        },
-    })
-        .done(function (response) {
-            if (DEBUG) {
-                console.info("========> Rosebud : login completed ");
-                console.info("========> Rosebud : Result... ");
-            }
-            if (response.result === "success" && response.payload.logged === "yes") {
-                if (DEBUG) { console.info("========> Rosebud : Login successful"); }
-                if (DEBUG) { console.info("========> Rosebud : " + JSON.stringify(response.payload)); }
-                storage.setItem("icarusi_user", response.payload.username);
-                storage.setItem("rosebud_uid", response.payload.rosebud_uid);
-                storage.setItem("poweruser", response.payload.extra_info.poweruser);
-                storage.setItem("geoloc_enabled", response.payload.extra_info.geoloc_enabled);
-                icarusi_user = response.payload.username;
-                rosebud_uid = response.payload.rosebud_uid;
-                //console.info(rosebud_uid);
-                $("#logged").html('Logged in as <span style="color:green">' + storage.getItem("icarusi_user") + '</span>');
-                $("#popupLogin").popup("close");
-                $("#login_message").html(response.payload.message);
-                $("#popupLoginResult").popup("open");
-                show_post_login_features();
-            } else {
-                console.info("========> Rosebud : Login unsuccessful");
-            }
-        })
-        .fail(function (err) {
-            alert(err.responseJSON.payload.message);
-            console.info("========> Rosebud : error during login");
-        })
-        .always(function () {
-            loading(false, "Logging in...");
-        });
-*/
+    json_request(data);
 }

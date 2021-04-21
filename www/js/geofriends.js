@@ -9,16 +9,12 @@
 var storage = window.localStorage,
     DEBUG = false,
     icarusi_user = "",
-    kanazzi,  // eslint-disable-line no-unused-vars
     rosebud_uid,
-//    swipe_left_target = "song.html",
-//    swipe_right_target = "movies.html",
     curr_action = "GET",
     curr_latitude = "",
     curr_longitude = "",
     curr_positions = [],
     curr_friend_pos = {},
-//    curr_picture = '',
     friend_photo_url = "",
     map,
     enable_geoloc = false,
@@ -257,13 +253,10 @@ function geoLocation(geoloc_params) { // eslint-disable-line no-unused-vars
       "longitude": curr_longitude,
       "notification_on" : geoloc_params.notification_on,
       "photo": friend_photo_url,
-      "username": icarusi_user,
-      "rosebud_uid": rosebud_uid,
-      "cB": generic_json_request_new,     // eslint-disable-line no-undef
       "successCb": geolocationSuccessCB,
       "failureCb": geolocationFailureCB,
     };
-    encrypt_and_execute(getX(), "kanazzi", data);   // eslint-disable-line no-undef
+    json_request(data);   // eslint-disable-line no-undef
 
 }
 
@@ -275,16 +268,7 @@ function onDeviceReady() { // eslint-disable-line no-unused-vars
     friend_photo_url = storage.getItem("google_photo_url");
     rosebud_uid = storage.getItem("rosebud_uid");
     storage.setItem("notification_on", false);
-    //storage.setItem("spotify_url_received", "");
 
-/*
-    window.plugins.intent.setNewIntentHandler(function (intent) {
-        console.info(JSON.stringify(intent));
-        //if (intent !== undefined) {
-           storage.setItem("spotify_url_received", intent.clipItems[0].text);
-        //}
-    });
-*/
     var positions = [],
         networkState,
         div;
