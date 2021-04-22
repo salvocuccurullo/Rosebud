@@ -1,6 +1,6 @@
 /*global $, cordova, device, window, document, loading, alert, json_request, refreshToken*/
 /*global navigator, Connection, BE_URL, PullToRefresh, get_ls_bool_default, is_storage_expired_or_invalid*/
-/*global power_user, get_ls_bool, base_url_poster, PhotoViewer, fancyDate, confirm, FormData, power_user, get_ls */
+/*global get_ls_bool, base_url_poster, PhotoViewer, fancyDate, confirm, FormData, get_ls */
 /*eslint no-console: ["error", { allow: ["info","warn", "error", "debug"] }] */
 /*eslint no-global-assign: "error"*/
 /*globals BE_URL:true*/
@@ -1185,10 +1185,6 @@ function onDeviceReady() { // eslint-disable-line no-unused-vars
         $('#version').html(" " + version);
         storage.setItem("app_version", version);
     });
-
-    if (power_user.includes(icarusi_user)) {
-        $("#sabba_info").html(BE_URL);
-    }
 
     if (!lazy_load) {
         $("#movie_list_footer").hide();

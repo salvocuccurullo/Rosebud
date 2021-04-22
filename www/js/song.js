@@ -1,5 +1,5 @@
 /*global $, cordova, document, window, DEBUG, BE_URL, alert */
-/*global loading, get_ls_bool, fancyDate, PhotoViewer, device, FormData, power_user */
+/*global loading, get_ls_bool, fancyDate, PhotoViewer, device, FormData */
 /*global device, Connection, storage, navigator, swipeleftHandler, swipeRightHandler, send_comment */
 /*global get_ls, json_request, refreshToken */
 /*eslint no-global-assign: "error"*/
@@ -927,10 +927,6 @@ function onDeviceReady() { // eslint-disable-line no-unused-vars
 
     if (networkState === Connection.NONE) {
         $("#connection").html("No network... Pantalica mode...");
-    }
-
-    if (power_user.includes(icarusi_user)) {
-        $("#sabba_info").html(BE_URL);
     }
 
     if (networkState === Connection.NONE) {

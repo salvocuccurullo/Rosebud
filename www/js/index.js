@@ -1,6 +1,6 @@
 /*global $, cordova, device, window, document, storage_keys, get_ls, alert, generic_json_request_new*/
 /*global navigator, Connection, BE_URL, BE_LIST, PullToRefresh, getServerVersion, show_image*/
-/*global swipeleftHandler, swipeRightHandler, power_user, get_ls_bool, get_ls_bool_default, json_request, second_collection */
+/*global swipeleftHandler, swipeRightHandler, get_ls_bool, get_ls_bool_default, json_request, second_collection */
 /*global listDir, googleAuthSuccess, googleAuthFailure, submit, refreshToken */
 /*eslint no-console: ["error", { allow: ["info","warn", "error", "debug"] }] */
 /*eslint no-global-assign: "error"*/
@@ -311,13 +311,6 @@ function listDir(path) {
 
 }
 
-function refresh_power_users() {
-  var isPowerUser = get_ls_bool_default("poweruser", false);
-  if (isPowerUser && !power_user.includes(icarusi_user)) {
-    power_user.push(icarusi_user);
-  }
-
-}
 
 /*
  * DO SOMETHING AFTER THE SUCCESSFUL LOGIN
@@ -326,23 +319,12 @@ function refresh_power_users() {
 function show_post_login_features() {
 
     get_remote_covers_stats();
-    refresh_power_users();
     getServerVersion();
     get_server_revision();
     get_configurations();
     $("#info_user").html(icarusi_user);
 
-    if (power_user.includes(icarusi_user)) {
-        $("#urls").show();
-        $("#be_url").html(BE_URL);
-        $("#media_url").html(base_url_poster);    // eslint-disable-line no-undef
-        $("#debug_session").show();
-        $("#be_selector").show();
-        $("#mdn_selector").show();
-    }
-
 }
-
 
 
 /*
