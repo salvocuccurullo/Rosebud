@@ -1,4 +1,4 @@
-/*global $, window, document, loading, alert, getX*/
+/*global $, window, document, loading, alert */
 /*global navigator, Connection, cordova */
 /*global swipeleftHandler, swipeRightHandler, get_ls_bool, locale_date, plugin */
 /*eslint no-console: ["error", { allow: ["info","warn", "error"] }] */
@@ -215,15 +215,15 @@ function geolocationSuccessCB(data) {
 
   if (DEBUG) { console.info("Response from server =====> " + JSON.stringify(data)); }
 
-  if (data.result === "failure") {
+  if (data.payload.result === "failure") {
       alert(data.message);
       return false;
   }
 
-  $("#distance_info").html("As the crow flies...<br/> from your last location you moved about " + data.distance + " km.");
+  $("#distance_info").html("As the crow flies...<br/> from your last location you moved about " + data.payload.distance + " km.");
 
   if (curr_action === "GET") {
-      curr_positions = data.body;
+      curr_positions = data.payload.body;
       //$("#distance_info").html("As the crow flies...<br/> from your last location you moved about " + data.distance + " km.");
       //storage.setItem("location_string", data.location_string);
       setMarkers2();
