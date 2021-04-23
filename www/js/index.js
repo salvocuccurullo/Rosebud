@@ -1,4 +1,4 @@
-/*global $, cordova, device, window, document, storage_keys, get_ls, alert, generic_json_request_new*/
+/*global $, cordova, device, window, document, storage_keys, get_ls, alert*/
 /*global navigator, Connection, BE_URL, BE_LIST, PullToRefresh, getServerVersion, show_image*/
 /*global swipeleftHandler, swipeRightHandler, get_ls_bool, get_ls_bool_default, json_request, second_collection */
 /*global listDir, googleAuthSuccess, googleAuthFailure, submit, refreshToken */

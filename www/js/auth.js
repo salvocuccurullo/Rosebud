@@ -1,6 +1,6 @@
 /*global $, cordova, firebase, storage, DEBUG, loading, firebase_config */
 /*global googleAuthSuccess, googleAuthFailure, getServerVersion, json_request */
-/*global generic_json_request_new, show_post_login_features */
+/*global show_post_login_features */
 /*global icarusi_user, rosebud_uid */
 /*eslint no-console: ["error", { allow: ["info","warn", "error"] }] */
 

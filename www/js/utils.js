@@ -89,6 +89,7 @@ function json_request(data) { // eslint-disable-line no-unused-vars
     data.device_uuid = device.uuid;
     data.device_platform = device.platform;
     data.device_version = device.version;
+    data.app_version = storage.getItem("app_version");
 
     loading(true, "Loading...");
 
@@ -138,7 +139,7 @@ function json_request(data) { // eslint-disable-line no-unused-vars
         .fail(function (err) {
             loading(false, "Loading...");
             if (DEBUG) {
-                console.info("Rosebud App============> Error during generic request to " + data.url);
+                console.info("Rosebud App============> Error during request to " + data.url);
                 console.info("Rosebud App============> " + err.responseText);
                 console.info("Rosebud App============> " + JSON.stringify(err));
             }

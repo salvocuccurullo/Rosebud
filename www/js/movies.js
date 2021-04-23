@@ -1450,7 +1450,6 @@ function onDeviceReady() { // eslint-disable-line no-unused-vars
             "query": search,
             "method": "POST",
             "url": "/getTvShows3",
-            "cB": generic_json_request_new,
             "successCb": tvShowsNewSuccess,
             "failureCb": tvShowsNewFailure,
             };
