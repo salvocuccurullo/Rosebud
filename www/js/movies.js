@@ -744,8 +744,8 @@ function saveMovieNew() { // eslint-disable-line no-unused-vars
             if (response.result === "failure") {
                 alert(response.message);
                 return false;
-            } else if (response.upload_result.result === "failure") {
-                alert(response.upload_result.message);
+            } else if (response.payload.upload_result.result === "failure") {
+                alert(response.payload.upload_result.message);
             } else {
                 resetPopupElements();
                 getTvShows(false);
