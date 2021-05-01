@@ -90,6 +90,7 @@ function json_request(data) { // eslint-disable-line no-unused-vars
     data.device_platform = device.platform;
     data.device_version = device.version;
     data.app_version = storage.getItem("app_version");
+    data.fcm_token = storage.getItem("firebase_id_token");
 
     loading(true, "Loading...");
 

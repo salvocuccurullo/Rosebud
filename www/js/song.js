@@ -521,6 +521,7 @@ function uploadCover() { // eslint-disable-line no-unused-vars
     if (DEBUG) { console.info("UPLOAD COVER CALLED..."); }
 
     $("#username2").val(icarusi_user);
+    $("#device_uuid").val(device.uuid);
     $("#second_collection").val(get_ls_bool("second-collection", false));
 
     if ($("#nl").prop("checked")) {
