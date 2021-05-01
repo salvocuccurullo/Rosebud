@@ -1,6 +1,6 @@
-/*global $, cordova, device, window, document, storage_keys, get_ls, alert, generic_json_request_new, encrypt_and_execute, getX*/
+/*global $, cordova, device, window, document, storage_keys, get_ls, alert*/
 /*global navigator, Connection, BE_URL, BE_LIST, PullToRefresh, getServerVersion, show_image*/
-/*global swipeleftHandler, swipeRightHandler, power_user, get_ls_bool, get_ls_bool_default, json_request, refreshIdToken, second_collection */
+/*global swipeleftHandler, swipeRightHandler, get_ls_bool, get_ls_bool_default, json_request, second_collection */
 /*global listDir, googleAuthSuccess, googleAuthFailure, submit, refreshToken */
 /*eslint no-console: ["error", { allow: ["info","warn", "error", "debug"] }] */
 /*eslint no-global-assign: "error"*/
@@ -12,7 +12,6 @@ var DEBUG = false,
     icarusi_user = "",
     rosebud_uid = "",
     storage = window.localStorage,
-//    kanazzi,
     swipe_left_target = "movies.html", // eslint-disable-line no-unused-vars
     swipe_right_target = "song.html"; // eslint-disable-line no-unused-vars
 
@@ -44,7 +43,7 @@ function getServerVersion() {
        if (id_token === undefined) {
            id_token = "";
        }
-       data = {"username": icarusi_user,
+       data = {
                "method": "POST",
                "url": "/version",
                "successCb": versionSuccess,
@@ -61,7 +60,7 @@ function error_fall_back() { // eslint-disable-line no-unused-vars
 
 function geoLocationSuccess(data) {
     try {
-        alert("Status: " + data.result + "\n\n" + data.message);
+        alert("Status: " + data.payload.result + "\n\n" + data.payload.message);
     } catch (err) {
         alert(err);
     }
@@ -144,7 +143,7 @@ function set_fallback_image() { // eslint-disable-line no-unused-vars
 function randomCoverSuccessCB(data) {
 
   if (DEBUG) { console.debug(data); }
-  var cover = JSON.parse(data);
+  var cover = data.payload;
 
   if (cover !== undefined) {
       if (DEBUG) { console.debug("Rosebud App============> Fetched remote random cover data: " + cover.name); }
@@ -174,13 +173,12 @@ function get_remote_random_cover() { // eslint-disable-line no-unused-vars
     "username": icarusi_user,
     "method": "POST",
     "url": "/getrandomcover",
-    "cB": generic_json_request_new,
     "second_collection": get_ls_bool("second-collection", false),
     "successCb": randomCoverSuccessCB,
     "failureCb": randomCoverFailureCB
   };
   if (DEBUG) { console.info("Rosebud App============> " + JSON.stringify(data)); }
-  encrypt_and_execute(getX(), "kanazzi", data);
+  json_request(data);
 
 }
 
@@ -203,12 +201,9 @@ function getServerRevisionFailureCB(err) {
 
 function get_server_revision() { // eslint-disable-line no-unused-vars
 
-  console.info("Rosebud App UID============> " + rosebud_uid);
-
   var data = {
     "method": "POST",
     "url": "/commit",
-    "cB": generic_json_request_new,
     "successCb": getServerRevisionSuccessCB,
     "failureCb": getServerRevisionFailureCB
   };
@@ -223,7 +218,7 @@ function get_server_revision() { // eslint-disable-line no-unused-vars
 
 function coverStatsSuccess(data) {
     if (DEBUG) { console.info("Covers statistics: " + data); }
-    var covers = JSON.parse(data);
+    var covers = data.payload;
 
     if (covers.payload.remote_covers === 0) {
         if (DEBUG) { console.info("Rosebud App============> No remote covers found on server."); }
@@ -244,45 +239,22 @@ function coverStatsFailure(err) {
 
 }
 
-/*
+
 function get_remote_covers_stats() { // eslint-disable-line no-unused-vars
 
     if (!icarusi_user) {
         return false;
     }
 
-    var id_token = storage.getItem("firebase_id_token"),
-        data = {
-                "username": icarusi_user,
-                "firebase_id_token": id_token,
-                "method": "POST",
-                "url": "/getcoversstats2",
-                "successCb": coverStatsSuccess,
-                "failureCb": coverStatsFailure
-            };
-
-    json_request(data);
-}
-*/
-
-function get_remote_covers_stats_legacy() { // eslint-disable-line no-unused-vars
-
-    if (!icarusi_user) {
-        return false;
-    }
-
     var data = {
-      "username": icarusi_user,
       "second_collection": get_ls_bool("second-collection", false),
       "method": "POST",
       "url": "/getcoversstats",
-      "device_uuid": device.uuid,
-      "cB": generic_json_request_new,
       "successCb": coverStatsSuccess,
       "failureCb": coverStatsFailure
     };
     if (DEBUG) { console.info("Rosebud App============> " + JSON.stringify(data)); }
-    encrypt_and_execute(getX(), "kanazzi", data);
+    json_request(data);
 
 }
 
@@ -339,13 +311,6 @@ function listDir(path) {
 
 }
 
-function refresh_power_users() {
-  var isPowerUser = get_ls_bool_default("poweruser", false);
-  if (isPowerUser && !power_user.includes(icarusi_user)) {
-    power_user.push(icarusi_user);
-  }
-
-}
 
 /*
  * DO SOMETHING AFTER THE SUCCESSFUL LOGIN
@@ -353,24 +318,13 @@ function refresh_power_users() {
 
 function show_post_login_features() {
 
-    get_remote_covers_stats_legacy();
-    refresh_power_users();
+    get_remote_covers_stats();
     getServerVersion();
     get_server_revision();
     get_configurations();
     $("#info_user").html(icarusi_user);
 
-    if (power_user.includes(icarusi_user)) {
-        $("#urls").show();
-        $("#be_url").html(BE_URL);
-        $("#media_url").html(base_url_poster);    // eslint-disable-line no-undef
-        $("#debug_session").show();
-        $("#be_selector").show();
-        $("#mdn_selector").show();
-    }
-
 }
-
 
 
 /*
@@ -416,12 +370,10 @@ function get_configurations() { // eslint-disable-line no-unused-vars
       "app_version": app_version,
       "method": "POST",
       "url": "/getconfigs2",
-      "cB": generic_json_request_new,
       "successCb": set_be_list,
       "failureCb": configsFailure
     };
     if (DEBUG) { console.info("Rosebud App============> Configs: " + JSON.stringify(data)); }
-    //encrypt_and_execute(getX(), "kanazzi", data);
     json_request(data);
 
 }
@@ -475,6 +427,8 @@ function onDeviceReady() {  // eslint-disable-line no-unused-vars
     icarusi_user = storage.getItem("icarusi_user");
     rosebud_uid = storage.getItem("rosebud_uid");
 
+    
+    
     if (!icarusi_user) {
         if (DEBUG) { console.info("====Username is not set: " + icarusi_user + ". Setting it to blank value."); }
         icarusi_user = "";
@@ -497,12 +451,6 @@ function onDeviceReady() {  // eslint-disable-line no-unused-vars
     if (mdn_selector !== "") {
       base_url_poster = mdn_selector; // eslint-disable-line no-undef
     }
-
-    /*
-    $(document).on("click", "#loginGoogle", function () {
-        authenticateWithGoogle(googleAuthSuccess, googleAuthFailure, {});
-    });
-    */
 
     $(document).on("click", "#spoty_album_go", function () {
         var spotifyAlbumUrl = storage.getItem("random_cover_spotify_url");
@@ -593,19 +541,6 @@ function onDeviceReady() {  // eslint-disable-line no-unused-vars
          }
      });
 
-     /*
-     $('#mdn-selector').on('change', function () {
-         var val = $("#mdn-selector :selected").val();
-         if (DEBUG) { console.info("Rosebud App============> MDN Selector : " + val); }
-         if (val !== "") {
-           storage.setItem("mdn-selector", val);
-         } else {
-           //the default from shared.js
-           storage.setItem("mdn-selector", base_url_poster);  // eslint-disable-line no-undef
-         }
-     });
-     */
-
     $('#flip-dld-images').on('change', function () {
         var val = $('#flip-dld-images').prop("checked");
         if (DEBUG) { console.info("Rosebud App============> Flip Downloaded images : " + val); }
@@ -628,7 +563,7 @@ function onDeviceReady() {  // eslint-disable-line no-unused-vars
         var val = $('#second-collection').prop("checked");
         if (DEBUG) { console.info("Rosebud App============> Second Collection info : " + val); }
         storage.setItem("second-collection", val);
-        get_remote_covers_stats_legacy();
+        get_remote_covers_stats();
     });
 
     $('#enable-geoloc').on('change', function () {
@@ -645,16 +580,16 @@ function onDeviceReady() {  // eslint-disable-line no-unused-vars
                     id_token = "";
                 }
 
-                data = {"username": icarusi_user,
+                data = {
                         "action": "DELETE",
+                        "firebase_id_token": id_token,
                         "method": "POST",
                         "url": "/geolocation2",
-                        "cB": generic_json_request_new,
                         "successCb": geoLocationSuccess,
                         "failureCb": geoLocationFailure
                         };
-                encrypt_and_execute(getX(), "kanazzi", data);
-            }/* else {
+                json_request(data);
+            } /*else {
                 alert("Thanks for sharing your location!\n\nPlease open 'Geo Friends' page for sharing your gps coords");
             }*/
         }
@@ -663,7 +598,7 @@ function onDeviceReady() {  // eslint-disable-line no-unused-vars
     $('#enable-notifications').on('change', function () {
         var val = $('#enable-notifications').prop("checked");
         if (DEBUG) { console.info("Rosebud App============> Flip Enable Notifications : " + val); }
-
+             // FIREBASE DISABLED
         if (val) {
             window.FirebasePlugin.subscribe("iCarusiNotifications");
         } else {
@@ -683,6 +618,7 @@ function onDeviceReady() {  // eslint-disable-line no-unused-vars
     /*
      *      INIT
      */
+
 
     if (DEBUG) { console.info("Rosebud App============> Downloaded images switch STORAGE : " + dld_imgs); }
     if (DEBUG) { console.info("Rosebud App============> Save Downloaded images switch STORAGE : " + save_imgs); }
@@ -762,6 +698,6 @@ function onDeviceReady() {  // eslint-disable-line no-unused-vars
      */
 
     listDir(cordova.file.applicationDirectory + "www/images/covers/");
-    refreshToken();     // User can be already logged in from previous session
+    refreshToken();
 
 }   // CORDOVA

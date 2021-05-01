@@ -1,6 +1,6 @@
-/*global $, cordova, device, window, document, loading, alert, getX, generic_json_request_new, encrypt_and_execute*/
-/*global encryptText2, navigator, Connection, BE_URL, PullToRefresh, get_ls_bool_default, is_storage_expired_or_invalid*/
-/*global power_user, get_ls_bool, base_url_poster, PhotoViewer, fancyDate, confirm, FormData, power_user, get_ls */
+/*global $, cordova, device, window, document, loading, alert, json_request, refreshToken*/
+/*global navigator, Connection, BE_URL, PullToRefresh, get_ls_bool_default, is_storage_expired_or_invalid*/
+/*global get_ls_bool, base_url_poster, PhotoViewer, fancyDate, confirm, FormData, get_ls */
 /*eslint no-console: ["error", { allow: ["info","warn", "error", "debug"] }] */
 /*eslint no-global-assign: "error"*/
 /*globals BE_URL:true*/
@@ -11,8 +11,8 @@
 
 var storage = window.localStorage,
     icarusi_user = "",
+    rosebud_uid = "",
     ct_movies = "",
-    //tvshows = "",
     jsonTvShows = [],
     currentId = 0,
     kanazzi,
@@ -392,14 +392,14 @@ function tvShowsNewSuccess(data) {
         console.info("TvShowsNews Success callback called");
     }
 
-    var tvshows = data.payload.tvshows,
-        votes_user = data.payload.votes_user;
-    tvshow_stat.total_show = data.payload.total_show;
-    tvshow_stat.movies = data.payload.stat.movie;
-    tvshow_stat.series = data.payload.stat.serie;
+    var tvshows = data.payload.payload.tvshows,
+        votes_user = data.payload.payload.votes_user;
+    tvshow_stat.total_show = data.payload.payload.total_show;
+    tvshow_stat.movies = data.payload.payload.stat.movie;
+    tvshow_stat.series = data.payload.payload.stat.serie;
 
-    if (DEBUG) { console.info("- HAS REMOTE MORE DATA? -> + " + data.payload.has_more); }
-    if (data.payload.has_more === true) {
+    if (DEBUG) { console.info("- HAS REMOTE MORE DATA? -> + " + data.payload.payload.has_more); }
+    if (data.payload.payload.has_more === true) {
         $("#movie_list_footer").show();
         $("#serie_list_footer").show();
     } else {
@@ -407,7 +407,7 @@ function tvShowsNewSuccess(data) {
         $("#serie_list_footer").hide();
     }
 
-    if (data.payload.query === "") {
+    if (data.payload.payload.query === "") {
 
         if (current_page > 1) {
             var tvshows_cache = JSON.parse(storage.getItem("tv_shows"));
@@ -447,11 +447,11 @@ function catalogueSuccess(data) {
 
     if (DEBUG) { console.info(JSON.stringify(data)); }
 
-    $.each(data.payload, function (index, value) { // eslint-disable-line no-unused-vars
+    $.each(data.payload.payload, function (index, value) { // eslint-disable-line no-unused-vars
         $("#media").append('<option value="' + value.name + '">' + value.label + '</option>');
     });
 
-    storage.setItem("media_catalogue", JSON.stringify(data.payload));
+    storage.setItem("media_catalogue", JSON.stringify(data.payload.payload));
 }
 
 function catalogueFailure(data) {
@@ -483,18 +483,17 @@ function getTvShows(use_cache) {
 
     if (!use_cache) {
 
-        var data = {"username": icarusi_user,
+        var data = {
             "firebase_id_token": storage.getItem("firebase_id_token"),
             "current_page": current_page,
             "method": "POST",
             "url": "/getTvShows3",
             "lazy_load": lazy_load,
-            "cB": generic_json_request_new,
             "query": search,
             "successCb": tvShowsNewSuccess,
             "failureCb": tvShowsNewFailure,
             };
-        encrypt_and_execute(getX(), "kanazzi", data);
+        json_request(data);
 
     } else {
         var tvshows = storage.getItem("tv_shows"),      // GET FROM LOCALSTORAGE
@@ -512,7 +511,7 @@ function getTvShows(use_cache) {
 /***
 CT MOVIES
 ***/
-
+/*
 function checkMoviesCT() {
 
     var ct_movies = storage.getItem("baracca"),
@@ -532,6 +531,7 @@ function checkMoviesCT() {
         setCtMovies(ct_movies, true, false);
     }
 }
+*/
 
 function setCtMovies(data, cached, by_search) { // eslint-disable-line no-unused-vars
 
@@ -581,6 +581,7 @@ function setCtMovies(data, cached, by_search) { // eslint-disable-line no-unused
     $("#ct-movies").listview('refresh');
 }
 
+/*
 function ctMoviesSuccess(data) {
 
   storage.setItem("baracca", JSON.stringify(data.payload));
@@ -605,7 +606,7 @@ function getMoviesCT() {
   json_request(data);
 
 }
-
+*/
 
 function setPopupCT(id) { // eslint-disable-line no-unused-vars
 
@@ -655,29 +656,28 @@ $(document).on("click", "#send_movie_btn", function () {
         vote = $('#vote').val(),
         first = 0,
         last = 0,
-        clone_alert = '';
+        clone_alert = "";
 
     if (!parseInt(serie_s, 10) || !parseInt(vote, 10) || parseInt(clone_s, 10) < 0 || parseInt(serie_s, 10) < 0) {
         alert("Not valid numeric value");
         return false;
     }
 
-    if ( clone_s > 0 && clone_s <= 10 ) {
-      first = parseInt(parseInt(serie_s,10) + 1, 10);
-      last = parseInt(parseInt(clone_s,10) + parseInt(serie_s,10), 10);
-      clone_alert = `
-This serie will be cloned ${clone_s} times.\n
+    if (clone_s > 0 && clone_s <= 10) {
+      first = parseInt(parseInt(serie_s, 10) + 1, 10);
+      last = parseInt(parseInt(clone_s, 10) + parseInt(serie_s, 10), 10);
+      clone_alert = `This serie will be cloned ${clone_s} times.\n
 First clone will be season ${first}, last season ${last} \n
 Poster/Vote/Comment (if available) will be applied only to season ${serie_s} \n
 Note: it won't work on editing movie mode`;
       if (!confirm(clone_alert)) {
         return false;
       }
-    } else if ( clone_s > 10 ) {
+    } else if (clone_s > 10) {
       alert("The max number of allowed cloned season is 10");
       return false;
     }
-    encryptText2(getX(), "saveMovieNew");
+    saveMovieNew();
 });
 
 function saveMovieNew() { // eslint-disable-line no-unused-vars
@@ -690,6 +690,8 @@ function saveMovieNew() { // eslint-disable-line no-unused-vars
     $("#username").val(icarusi_user);
     $("#kanazzi").val(kanazzi);
     $("#id").val(currentId);
+    $("#device_uuid").val(device.uuid);
+    $("#rosebud_uid").val(rosebud_uid);
 
     var title = $("#title").val(),
         media = $("#media :selected").val(),
@@ -742,8 +744,8 @@ function saveMovieNew() { // eslint-disable-line no-unused-vars
             if (response.result === "failure") {
                 alert(response.message);
                 return false;
-            } else if (response.upload_result.result === "failure") {
-                alert(response.upload_result.message);
+            } else if (response.payload.upload_result.result === "failure") {
+                alert(response.payload.upload_result.message);
             } else {
                 resetPopupElements();
                 getTvShows(false);
@@ -811,23 +813,21 @@ function deleteMovie(id) { // eslint-disable-line no-unused-vars
     }
 
     var data = {
-        "username": icarusi_user,
         "method": "POST",
         "url": "/deletemovie",
         "id": id,
         "successCb": deleteMovieSuccessCB,
         "failureCb": deleteMovieFailureCB,
-        "cB": generic_json_request_new,
     };
-    encrypt_and_execute(getX(), "kanazzi", data);
+    json_request(data);
 
 }
 
 function setLikeSuccessCB(data) {
 
   if (DEBUG) {
-      console.info("Rosebud App============> ========> " + data.result);
-      console.info("Rosebud App============> ========> " + JSON.stringify(data.payload));
+      console.info("Rosebud App============> ========> " + data.payload.payload.result);
+      console.info("Rosebud App============> ========> " + JSON.stringify(data.payload.payload));
   }
 
   if (data.result === "failure") {
@@ -836,15 +836,15 @@ function setLikeSuccessCB(data) {
   }
 
 
-  $("#like_" + data.payload.id_vote).attr("you", data.payload.you);
-  $("#" + data.payload.id_vote).html("");
+  $("#like_" + data.payload.payload.id_vote).attr("you", data.payload.payload.you);
+  $("#" + data.payload.payload.id_vote).html("");
 
-  if (data.payload.you == 1) {
-    $("#like_" + data.payload.id_vote).attr('src','images/icons/like-icon.png');
+  if (data.payload.payload.you === 1) {
+    $("#like_" + data.payload.payload.id_vote).attr('src', 'images/icons/like-icon.png');
   }
 
-  if (data.payload.count > 0) {
-    $("#" + data.payload.id_vote).html("(" + data.payload.count + ")");
+  if (data.payload.payload.count > 0) {
+    $("#" + data.payload.payload.id_vote).html("(" + data.payload.payload.count + ")");
   }
 
 }
@@ -862,7 +862,6 @@ function setLike(id_vote, reaction, action) { // eslint-disable-line no-unused-v
     }
 
     var data = {
-        "username": icarusi_user,
         "method": "POST",
         "url": "/setlike",
         "id_vote": id_vote,
@@ -870,9 +869,8 @@ function setLike(id_vote, reaction, action) { // eslint-disable-line no-unused-v
         "action": action,
         "successCb": setLikeSuccessCB,
         "failureCb": setLikeFailureCB,
-        "cB": generic_json_request_new,
     };
-    encrypt_and_execute(getX(), "kanazzi", data);
+    json_request(data);
 
 }
 
@@ -958,7 +956,7 @@ function setPopupData(id, src) { // eslint-disable-line no-unused-vars
         $("#btn_link").hide();
     }
 
-    if (item.tvshow_type == "serie") {
+    if (item.tvshow_type === "serie") {
       $('#miniseries').flipswitch('enable');
     }
 
@@ -1026,19 +1024,19 @@ function setComments(id, src) { // eslint-disable-line no-unused-vars
       $("#edit_button").attr("onclick", "setPopupData('" + item.id + "','a')");
       if (item.link !== "" && (
           item.link.toUpperCase().indexOf("WIKIPEDIA") >= 0 ||
-          item.link.toUpperCase().indexOf("IMDB") >= 0 )
+          item.link.toUpperCase().indexOf("IMDB") >= 0)
         ) {
         $("#wiki_img").attr("onclick", "open_link('" + item.link + "')");
       } else {
         $("#wiki_img").attr("onclick", "alert('No link available')");
       }
 
-      content = ''
+      content = '';
       if (item.tvshow_type === "serie") {
         if (item.miniseries) {
           content += '<span style="color:#00000">Miniseries</span><br/>';
         } else {
-          content += '<span style="color:#00000">Season <b>' + item.serie_season+ '</b></span><br/>';
+          content += '<span style="color:#00000">Season <b>' + item.serie_season + '</b></span><br/>';
         }
       }
 
@@ -1081,8 +1079,8 @@ function setComments(id, src) { // eslint-disable-line no-unused-vars
             content += '<b>' + value.us_username + '</b> <span style="color:red; float:right">' + value.us_vote + '</span>';
             content += '<br/><p style="white-space:normal; font-style:italic; font-size:12px">' + value.comment + '</p>';
             content += '<span style="color:#C60419; font-style:italic; font-size:10px; float:left">';
-            content += '<div id="'+ value.id_vote  +'"></div>';
-            content += '<img src="images/icons/like-gray-icon.png" style="widht:16px; height:16px; display:block;" you="0" class="like_button" id_vote="'+ value.id_vote  +'" name="like_'+ index  +'" id="like_'+ value.id_vote +'">';
+            content += '<div id="' + value.id_vote  + '"></div>';
+            content += '<img src="images/icons/like-gray-icon.png" style="widht:16px; height:16px; display:block;" you="0" class="like_button" id_vote="' + value.id_vote  + '" name="like_' + index  + '" id="like_' + value.id_vote + '">';
             content += '</span>';
             content += '<span style="color:#C60419; font-style:italic; font-size:10px; float:right">' + value.us_update + '</span>';
             setLike(value.id_vote, "O", "fetch");
@@ -1104,88 +1102,32 @@ function open_link(link) { // eslint-disable-line no-unused-vars
     }
 }
 
-// CORDOVA
-function onDeviceReady() { // eslint-disable-line no-unused-vars
+/*
+*   REFRESH TOKEN OVERRIDES
+*/
 
-    icarusi_user = storage.getItem("icarusi_user");
-    tv_shows_storage = storage.getItem("tv_shows");
-    tv_shows_storage_ts = storage.getItem("tv_shows_count_ts");
-    device_app_path = cordova.file.applicationDirectory;
-    //storage.setItem("spotify_url_received", "");
+function refreshTokenSuccessCB(data) { // eslint-disable-line no-unused-vars
 
-    window.plugins.intent.setNewIntentHandler(function (intent) {
-        console.info(JSON.stringify(intent));
-        //if (intent !== undefined) {
-           storage.setItem("spotify_url_received", intent.clipItems[0].text);
-        //}
-    });
-
-    var be_selector = get_ls("be-selector"),
-        mdn_selector = get_ls("mdn-selector");
-
-    if (be_selector !== "") {
-      BE_URL = be_selector;
-    }
-
-    if (mdn_selector !== "") {
-      base_url_poster = mdn_selector;
-    }
-
-    if (DEBUG) {
-        console.info("Rosebud App============> Found Tv Shows Storage");
-        console.info("Rosebud App============> Tv Shows Storage datetime " + tv_shows_storage_ts);
-    }
-
-    var networkState = navigator.connection.type;
-
-    $("#connection").html("");
-
-    cordova.getAppVersion.getVersionNumber().then(function (version) {
-        $('#version').html(" " + version);
-        storage.setItem("app_version", version);
-    });
-
-    if (power_user.includes(icarusi_user)) {
-        $("#sabba_info").html(BE_URL);
-    }
-
-    if (!lazy_load) {
-        $("#movie_list_footer").hide();
-        $("#serie_list_footer").hide();
-    }
-
-     /*
-     * ASYNC POPULATE MEDIA TYPE
-     */
-    var data = {
-        "username": icarusi_user,
-        "firebase_id_token": storage.getItem("firebase_id_token"),
-        "method": "POST",
-        "url": "/getcatalogue",
-        "cat_type": "media_type",
-        "cB": generic_json_request_new,
-        "successCb": catalogueSuccess,
-        "failureCb": catalogueFailure,
-     };
-     encrypt_and_execute(getX(), "kanazzi", data);
+  if (DEBUG) { console.debug(data); }
 
     /*
-    console.info("===============================================");
-    var location = window.location;
-    console.info("RECEIVED LOCATION " + location);
-
-    if (location !== "") {
-        q = parseQuery(location);
-        console.info(JSON.stringify(q));
-    }
-    console.info("===============================================");
+    * ASYNC POPULATE MEDIA TYPE
     */
+   var datap = {
+       "firebase_id_token": storage.getItem("firebase_id_token"),
+       "method": "POST",
+       "url": "/getcatalogue",
+       "cat_type": "media_type",
+       "successCb": catalogueSuccess,
+       "failureCb": catalogueFailure,
+    };
+   json_request(datap);
 
     /*
      * OFFLINE MODE CHECKER
      */
 
-    if (networkState === Connection.NONE) {
+    if (navigator.connection.type === Connection.NONE) {
         $("#connection").html("No network... Pantalica mode...");
 
         //checkMoviesCT();
@@ -1199,6 +1141,68 @@ function onDeviceReady() { // eslint-disable-line no-unused-vars
     } else {
             getTvShows(false);
     }
+}
+
+function refreshTokenFailureCB(err) { // eslint-disable-line no-unused-vars
+  if (DEBUG) { console.info("Rosebud App============> Error during refresh token retrieving"); }
+  if (DEBUG) { console.info("Rosebud App============> " + err.responseText); }
+}
+
+// CORDOVA
+function onDeviceReady() { // eslint-disable-line no-unused-vars
+
+    icarusi_user = storage.getItem("icarusi_user");
+    tv_shows_storage = storage.getItem("tv_shows");
+    tv_shows_storage_ts = storage.getItem("tv_shows_count_ts");
+    device_app_path = cordova.file.applicationDirectory;
+    rosebud_uid = storage.getItem("rosebud_uid");
+    //storage.setItem("spotify_url_received", "");
+
+    /*
+    window.plugins.intent.setNewIntentHandler(function (intent) {
+        console.info(JSON.stringify(intent));
+        //if (intent !== undefined) {
+           storage.setItem("spotify_url_received", intent.clipItems[0].text);
+        //}
+    });
+     */
+
+    var be_selector = get_ls("be-selector");
+        //mdn_selector = get_ls("mdn-selector");
+
+    if (be_selector !== "") {
+      BE_URL = be_selector;
+    }
+
+    if (DEBUG) {
+        console.info("Rosebud App============> Found Tv Shows Storage");
+        console.info("Rosebud App============> Tv Shows Storage datetime " + tv_shows_storage_ts);
+    }
+
+    $("#connection").html("");
+
+    cordova.getAppVersion.getVersionNumber().then(function (version) {
+        $('#version').html(" " + version);
+        storage.setItem("app_version", version);
+    });
+
+    if (!lazy_load) {
+        $("#movie_list_footer").hide();
+        $("#serie_list_footer").hide();
+    }
+
+    /*
+    console.info("===============================================");
+    var location = window.location;
+    console.info("RECEIVED LOCATION " + location);
+
+    if (location !== "") {
+        q = parseQuery(location);
+        console.info(JSON.stringify(q));
+    }
+    console.info("===============================================");
+    */
+
 
     /*
      *  BINDINGS
@@ -1222,13 +1226,13 @@ function onDeviceReady() { // eslint-disable-line no-unused-vars
       var like_id = $(this).attr('id'),
           id_vote = $(this).attr('id_vote');
 
-      if ($("#"+like_id).attr('you') === '1') {
-          $("#"+like_id).attr('src','images/icons/like-gray-icon.png');
-          $("#"+like_id).attr('you','0');
+      if ($("#" + like_id).attr('you') === '1') {
+          $("#" + like_id).attr('src', 'images/icons/like-gray-icon.png');
+          $("#" + like_id).attr('you', '0');
           setLike(id_vote, "O", "set");
       } else {
-          $("#"+like_id).attr('src','images/icons/like-icon.png');
-          $("#"+like_id).attr('you','1');
+          $("#" + like_id).attr('src', 'images/icons/like-icon.png');
+          $("#" + like_id).attr('you', '1');
           setLike(id_vote, "*", "set");
       }
 
@@ -1327,7 +1331,7 @@ function onDeviceReady() { // eslint-disable-line no-unused-vars
 
 
     $('#tvshow_type').on('change', function () {
-        if ( $('#tvshow_type').val() === "serie" ) {
+        if ($('#tvshow_type').val() === "serie") {
           $('#clone_season').textinput('enable');
           $('#serie_season').textinput('enable');
           $('#miniseries').flipswitch('enable');
@@ -1401,16 +1405,15 @@ function onDeviceReady() { // eslint-disable-line no-unused-vars
             search_mode = true;
             append_mode = false;
 
-            var data = {"username": icarusi_user,
+            var data = {
                 "firebase_id_token": storage.getItem("firebase_id_token"),
                 "method": "POST",
                 "url": "/getTvShows3",
-                "cB": generic_json_request_new,
                 "successCb": tvShowsNewSuccess,
                 "failureCb": tvShowsNewFailure,
                 "query": search.trim()
                 };
-            encrypt_and_execute(getX(), "kanazzi", data);
+            json_request(data);
 
         } else {
 
@@ -1441,17 +1444,16 @@ function onDeviceReady() { // eslint-disable-line no-unused-vars
 
         current_page += 1;
         append_mode = true;
-        var data = {"username": icarusi_user,
+        var data = {
             "firebase_id_token": storage.getItem("firebase_id_token"),
             "current_page": current_page,
             "query": search,
             "method": "POST",
             "url": "/getTvShows3",
-            "cB": generic_json_request_new,
             "successCb": tvShowsNewSuccess,
             "failureCb": tvShowsNewFailure,
             };
-        encrypt_and_execute(getX(), "kanazzi", data);
+        json_request(data);
     }
 
     $("#btn_show_more").on("click", function () {
@@ -1548,5 +1550,6 @@ function onDeviceReady() { // eslint-disable-line no-unused-vars
     $("#top-list-movies").listview('refresh');
     $("#top-list-voters").listview('refresh');
 
+    refreshToken();
 
 }  // CORDOVA

@@ -1,10 +1,8 @@
 /*global $, cordova, document, window, DEBUG, BE_URL, alert */
-/*global loading, get_ls_bool, fancyDate, PhotoViewer, device, FormData, encryptText2, getX, power_user */
-/*global device, Connection, storage, navigator, swipeleftHandler, swipeRightHandler, generic_json_request_new */
-/*global encrypt_and_execute, get_ls */
+/*global loading, get_ls_bool, fancyDate, PhotoViewer, device, FormData */
+/*global device, Connection, storage, navigator, swipeleftHandler, swipeRightHandler, send_comment */
+/*global get_ls, json_request, refreshToken */
 /*eslint no-global-assign: "error"*/
-/*globals kanazzi:true*/
-/*exported kanazzi */
 /*eslint no-console: ["error", { allow: ["info","warn", "error"] }] */
 /*eslint no-global-assign: "error"*/
 /*globals BE_URL:true*/
@@ -13,7 +11,6 @@
 
 var storage = window.localStorage,
     icarusi_user = "",
-    kanazzi,
     rosebud_uid = "",
     swipe_left_target = "index.html", // eslint-disable-line no-unused-vars
     swipe_right_target = "geofriends.html", // eslint-disable-line no-unused-vars
@@ -25,7 +22,6 @@ var storage = window.localStorage,
     curr_file_size = 0,
     curr_cover_id = "",
     current_page = 1,
-//    append_mode = false,
     covers_storage = [];
 
 document.addEventListener('deviceready', this.onDeviceReady.bind(this), false);
@@ -46,39 +42,6 @@ function setCacheInfo() {
         }
     }
 }
-
-/*
-*   UPLOAD COMMENT
-*/
-
-/*
-function sendCommentSuccess(data) { // eslint-disable-line no-unused-vars
-}
-
-function sendCommentFailure(err) { // eslint-disable-line no-unused-vars
-  console.log(err);
-}
-
-function send_comment() { // eslint-disable-line no-unused-vars
-
-    if (DEBUG) { console.info("Send comment called..."); }
-
-    $("#kanazzi").val(kanazzi);
-
-    var the_form = $("#comment_form"),
-        formData = new FormData(comment_form[0]),
-        data = {
-          "username": icarusi_user,
-          "search": search,
-          "method": "POST",
-          "url": "/savecovercomment",
-          "cB": generic_json_request_new,
-          "successCb": sendCommentSuccess,
-          "failureCb": sendCommentFailure
-        };
-    encrypt_and_execute(getX(), "kanazzi", data);
-}
-*/
 
 function setComments(id) { // eslint-disable-line no-unused-vars
 
@@ -269,13 +232,13 @@ function getSongSuccess(data) {
 
   $("#lyrics-list").empty();
 
-  if (data.message === "song not found" || data.message === "not valid id") {
+  if (data.payload.message === "song not found" || data.payload.message === "not valid id") {
       $('#lyrics-list').append('<li style="white-space:normal;">Song not found ;(</li>');
       return;
   }
 
   //if (DEBUG) { console.info("Retrieved song data:" + JSON.stringify(data)); }
-  var song = data.message,
+  var song = data.payload.message,
       song_header = '';
 
   if (DEBUG) { console.info("Retrieved song data:" + song.title + " - " + song.author); }
@@ -311,14 +274,12 @@ function getSongFailure(err) {
 function get_song() { // eslint-disable-line no-unused-vars
 
     var data = {
-        "username": icarusi_user,
         "method": "POST",
         "url": "/randomSong",
-        "cB": generic_json_request_new,
         "successCb": getSongSuccess,
         "failureCb": getSongFailure
       };
-    encrypt_and_execute(getX(), "kanazzi", data);
+    json_request(data);
 
 }
 
@@ -376,14 +337,13 @@ function sort_covers(s_type) {
 */
 
 function getCoversSuccess(data) { // eslint-disable-line no-unused-vars
-    var response = JSON.parse(data);
-    storage.setItem("covers_storage", JSON.stringify(response.payload));      // SAVE ON LOCALSTORAGE
+    var response = data;
+    storage.setItem("covers_storage", JSON.stringify(response.payload.payload));      // SAVE ON LOCALSTORAGE
     storage.setItem("covers_ts", new Date().getTime());
     setCacheInfo();
-    //current_covers = response.payload.covers;
-    current_covers = response.payload;
+    current_covers = response.payload.payload;
 
-    if (response.payload.hasMore) {
+    if (response.payload.payload.hasMore) {
       $("#album_list_footer").show();
     }
 
@@ -414,16 +374,14 @@ function get_covers(limit) { // eslint-disable-line no-unused-vars
   $("#cover_search_online").val("");
 
   var data = {
-      "username": icarusi_user,
       "limit": limit,
       "method": "POST",
       "url": "/getcovers2",
       "second_collection": get_ls_bool("second-collection", false),
-      "cB": generic_json_request_new,
       "successCb": getCoversSuccess,
       "failureCb": getCoversFailure
     };
-  encrypt_and_execute(getX(), "kanazzi", data);
+  json_request(data);
 }
 
 /*
@@ -447,6 +405,8 @@ function edit_cover(id) { // eslint-disable-line no-unused-vars
     $("#spoty_btn").hide();
     $("#top_title_tracks_album").html("");
     $("#spoty_url").val("");
+    $("#rosebud_uid").val(rosebud_uid);
+    $("#device_uid").val(device.uuid);
 
     if (id === 0) {
         $("#cover_img").hide();
@@ -561,7 +521,7 @@ function uploadCover() { // eslint-disable-line no-unused-vars
     if (DEBUG) { console.info("UPLOAD COVER CALLED..."); }
 
     $("#username2").val(icarusi_user);
-    $("#kanazzi").val(kanazzi);
+    $("#device_uuid").val(device.uuid);
     $("#second_collection").val(get_ls_bool("second-collection", false));
 
     if ($("#nl").prop("checked")) {
@@ -650,7 +610,7 @@ function uploadCover() { // eslint-disable-line no-unused-vars
         });
 }
 
-function no_image() { // eslint-disable-line no-unused-vars
+function set_fallback_image() { // eslint-disable-line no-unused-vars
     $("#cover_img").attr("src", device_app_path + "www/images/no-image-available.jpg");
 }
 
@@ -717,7 +677,7 @@ function tracks_me(spotifyUrl, source) { // eslint-disable-line no-unused-vars
 }
 
 function setSpotifyAlbum(data) {
-    data = JSON.parse(data);
+    data = data.payload;
     if (DEBUG) { console.info("Rosebud App============> " + data.images[0].url); }
     $("#id").val("0");
     $("#cover_img").attr("src", data.images[0].url);
@@ -738,13 +698,13 @@ function setSpotifyAlbum(data) {
 }
 
 function setSpotifyTracks(data) {
-    data = JSON.parse(data);
+    data = data.payload;
     $("#top_title_tracks_album").html(data.name + " <br/> " + data.artists[0].name + " (" + data.release_date.split("-")[0] + ")");
     setTracks(data.tracks, "spoti-list", "xxx");
 }
 
 function setBothTracksAlbums(data) {
-    data = JSON.parse(data);
+    data = data.payload;
     setSpotifyAlbum(data);
     setTracks(data.tracks, "spoti-list", "yyy");
 }
@@ -791,16 +751,14 @@ function get_spotify(fn_data) {
     } */
 
     data = {
-      "username": icarusi_user,
       "album_url": spoty_url,
       "method": "POST",
       "url": "/spotify",
-      "cB": generic_json_request_new,
       "successCb": successCB,
       "failureCb": spotyFailure
     };
     if (DEBUG) { console.info("Rosebud App============> " + JSON.stringify(data)); }
-    encrypt_and_execute(getX(), "kanazzi", data);
+    json_request(data);
 }
 
 function set_album(url) {  // eslint-disable-line no-unused-vars
@@ -812,7 +770,7 @@ function set_album(url) {  // eslint-disable-line no-unused-vars
 
 function spotySearchSuccess(data) {
 
-  if (data.payload.length === 0) {
+  if (data.payload.payload.length === 0) {
       if (DEBUG) { console.info("Rosebud App============> No tracks found on Spotify."); }
       alert("No albums found on Spotiy! Change your search query and try again...");
       return false;
@@ -823,15 +781,15 @@ function spotySearchSuccess(data) {
   $('#spoti-list').empty();
 
   var tracks_header = '<li data-role="list-divider" data-theme="b" style="text-align:center">';
-  tracks_header += 'Found <span style="color:yellow">' + data.payload.length + '</span> albums on Spotify';
+  tracks_header += 'Found <span style="color:yellow">' + data.payload.payload.length + '</span> albums on Spotify';
   tracks_header += '</li>';
   $('#spoti-list').append(tracks_header);
 
-  if (data.payload.length === 0) {
+  if (data.payload.payload.length === 0) {
       $('#spoti-list').append('<li style="white-space:normal;">No results</li>');
   }
 
-  $.each(data.payload, function (index, value) {
+  $.each(data.payload.payload, function (index, value) {
       var album_item = '<li style="white-space:normal">';
 
       album_item += '<div style:"display:table">';
@@ -869,17 +827,15 @@ function search_spotify(fn_data) {
     }
 
     data = {
-      "username": icarusi_user,
       "query": spoty_search,
       "search_type": 'track',
       "method": "POST",
       "url": "/spotifysearch",
-      "cB": generic_json_request_new,
       "successCb": spotySearchSuccess,
       "failureCb": spotyFailure
     };
     if (DEBUG) { console.info("Rosebud App============> " + JSON.stringify(data)); }
-    encrypt_and_execute(getX(), "kanazzi", data);
+    json_request(data);
 }
 
 /*
@@ -895,7 +851,6 @@ function show_me_more() {
     current_page += 1;
 
     if (search.trim() === "" || search.trim().length < 3) {
-      //append_mode = true;   // not used
       get_covers(15 * current_page);
     } else {
       // SEARCH CASE
@@ -907,12 +862,29 @@ function show_me_more() {
         "method": "POST",
         "url": "/localsearch2",
         "second_collection": get_ls_bool("second-collection", false),
-        "cB": generic_json_request_new,
         "successCb": getCoversSuccess,
         "failureCb": getCoversFailure
       };
-      encrypt_and_execute(getX(), "kanazzi", data);
+      json_request(data);
   }
+}
+
+/*
+*   REFRESH TOKEN OVERRIDES
+*/
+
+function refreshTokenSuccessCB(data) { // eslint-disable-line no-unused-vars
+
+  if (DEBUG) { console.info(data); }
+
+  get_song();
+  get_covers(15);
+
+  }
+
+function refreshTokenFailureCB(err) { // eslint-disable-line no-unused-vars
+  if (DEBUG) { console.info("Rosebud App============> Error during refresh token retrieving"); }
+  if (DEBUG) { console.info("Rosebud App============> " + err.responseText); }
 }
 
 
@@ -939,12 +911,6 @@ function onDeviceReady() { // eslint-disable-line no-unused-vars
     });
 
     var networkState = navigator.connection.type,
-    /*
-        old_ts  = parseInt(storage.getItem("covers_ts"), 10),
-        new_ts,
-        diff,
-        diff_sec,
-    */
         be_selector = get_ls("be-selector");
 
     if (be_selector !== "") {
@@ -964,10 +930,6 @@ function onDeviceReady() { // eslint-disable-line no-unused-vars
         $("#connection").html("No network... Pantalica mode...");
     }
 
-    if (power_user.includes(icarusi_user)) {
-        $("#sabba_info").html(BE_URL);
-    }
-
     if (networkState === Connection.NONE) {
         $("#connection").html("No network... Pantalica mode...");
 
@@ -980,39 +942,9 @@ function onDeviceReady() { // eslint-disable-line no-unused-vars
 
     } else {
 
-        encryptText2(getX(), "get_song");
-        get_covers(15);
-
-        /* Disabling cache in case of connection */
-        /*
-        if (old_ts !== "" && old_ts !== null && old_ts !== undefined) {
-
-            new_ts = new Date().getTime();
-            diff = new_ts - old_ts;
-            diff_sec = diff / 1000;
-
-            if (icarusi_user !== "" && diff_sec < 86400 && covers_storage !== "" && covers_storage !== undefined && covers_storage !== null) {
-                if (DEBUG) { console.info("Rosebud App============> CACHE AVAILABLE AND NOT EXPIRED -> Cached Covers loading"); }
-                sort_covers("update_ts");
-            } else {
-                get_covers(15);
-            }
-        } else {
-            get_covers(15);
-        }
-        */
+        refreshToken();
     }
 
-    /*
-    PullToRefresh.init({
-        mainElement: '#lyrics-list',
-        onRefresh: function () {
-            get_song();
-        },
-        distThreshold : 20,
-        instructionsReleaseToRefresh: "I kani anassiri!",
-    });
-    */
 
     // SWIPE RUDIMENTALE
     $("#song_page").on("swipeleft", swipeleftHandler);
@@ -1059,11 +991,6 @@ function onDeviceReady() { // eslint-disable-line no-unused-vars
     * REMOTE SEARCH
     */
 
-    /*
-    $('#cover_search_online').on('change', function () {
-        var search = $("#cover_search_online").val();
-    });
-    */
 
     $("#cover_search_online").bind("input", function () {
         var search = $("#cover_search_online").val(),
@@ -1095,11 +1022,10 @@ function onDeviceReady() { // eslint-disable-line no-unused-vars
             "method": "POST",
             "url": "/localsearch2",
             "second_collection": get_ls_bool("second-collection", false),
-            "cB": generic_json_request_new,
             "successCb": getCoversSuccess,
             "failureCb": getCoversFailure
           };
-          encrypt_and_execute(getX(), "kanazzi", data);
+          json_request(data);
       }
     });
 
@@ -1111,11 +1037,11 @@ function onDeviceReady() { // eslint-disable-line no-unused-vars
     });
 
     $(document).on("click", "#send_album_btn", function () {
-        encryptText2(getX(), "uploadCover");
+        uploadCover();
     });
 
     $(document).on("click", "#send_comment_btn", function () {
-        encryptText2(getX(), "send_comment");
+        send_comment();
     });
 
     $(document).on("click", "#btn_show_more_album", function () {
