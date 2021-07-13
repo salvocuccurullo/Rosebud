@@ -220,7 +220,7 @@ function geolocationSuccessCB(data) {
       return false;
   }
 
-  $("#distance_info").html("As the crow flies...<br/> from your last location you moved about " + data.payload.distance + " km.");
+  $("#distance_info").html("As the crow flies...<br/> from your last location you moved about " + data.payload.distance + " km.<br/>" + data.payload.location_string);
 
   if (curr_action === "GET") {
       curr_positions = data.payload.body;
